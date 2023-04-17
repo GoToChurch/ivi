@@ -1,0 +1,6 @@
+- Имя varchar
+- Фамилия varchar
+- Дата рождения date
+- Место рождения varchar
+- Фильмы (many-to-many с таблице Film)
+- Профессия (many-to-many с таблице Profession)
