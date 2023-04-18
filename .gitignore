@@ -1,0 +1,37 @@
+# compiled output
+.idea
+
+/ivi/dist
+/ivi/node_modules
+
+# Logs
+/ivi/logs
+/ivi/*.log
+/ivi/npm-debug.log*
+/ivi/pnpm-debug.log*
+/ivi/yarn-debug.log*
+/ivi/yarn-error.log*
+/ivi/lerna-debug.log*
+
+# OS
+/ivi/.DS_Store
+
+# Tests
+/ivi//coverage
+/ivi/.nyc_output
+
+# IDEs and editors
+/ivi/.idea
+/ivi/.project
+/ivi/.classpath
+/ivi/.c9/
+/ivi/*.launch
+/ivi/.settings/
+/ivi/*.sublime-workspace
+
+# IDE - VSCode
+/ivi/.vscode/*
+!/ivi/.vscode/settings.json
+!/ivi/.vscode/tasks.json
+!/ivi/.vscode/launch.json
+!/ivi/.vscode/extensions.json

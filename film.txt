@@ -1,5 +1,5 @@
+- id
 - Название varchar
-- Возростной рейтинг? varchar
 - Постер varchar (ссылка)
 - Оценка number
 - Количество оценок number
@@ -7,7 +7,6 @@
 - Год производства number
 - Страна varchar
 - Жанр (many-to-many с таблице Genre)
-- Слоган varchar
 - Режиссер (many-to-many с таблице Person)
 - Сценарий (many-to-many с таблице Person)
 - Продюссер (many-to-many с таблице Person)
@@ -15,13 +14,7 @@
 - Композитор (many-to-many с таблице Person)
 - Художник (many-to-many с таблице Person)
 - Монтаж (many-to-many с таблице Person)
-- Бюджет number/money
-- Сборы в США number/money
-- Сборы в мире number/money
-- Зрители?
-- Сборы в России number/money
-- Премьера в России timestamp
-- Примьера в мире timestamp
 - Время timestamp
 - Описание text
 - Комментарии (many-to-one с таблицей Review)
+- Похожие фильмы (many-to-one с таблицей Film)

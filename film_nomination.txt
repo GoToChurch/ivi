@@ -1,0 +1,4 @@
+- id
+- filmid
+- awardid
+- nominationid
