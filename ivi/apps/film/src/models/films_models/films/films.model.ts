@@ -10,9 +10,11 @@ import {FilmDesigners} from "./film_designers.model";
 import {FilmEditors} from "./film_editors.model";
 import {Genre} from "../../genre_models/genre.model";
 import {FilmGenres} from "../../genre_models/film_genres.model";
-import {Award} from "../awards/awards.model";
-import {FilmAwards} from "../awards/film_awards.model";
+import {Award} from "../../awards/awards.model";
+import {FilmAwards} from "../../awards/film_awards.model";
 import {Review} from "../reviews/reviews.model";
+import {Country} from "../../countries/country.model";
+import {FilmCountries} from "../../countries/film_country.model";
 
 
 interface FilmCreationAttrs {
@@ -22,7 +24,6 @@ interface FilmCreationAttrs {
     rating: number,
     ratingsNumber: number,
     year: number,
-    country: string,
     duration: string,
     description: string,
 }
@@ -49,9 +50,6 @@ export class Film extends Model<Film, FilmCreationAttrs> {
 
     @Column({type: DataType.INTEGER, allowNull: false})
     year: number
-
-    @Column({type: DataType.STRING, allowNull: false})
-    country: string
 
     @Column({type: DataType.STRING, allowNull: false})
     duration: string
@@ -88,6 +86,9 @@ export class Film extends Model<Film, FilmCreationAttrs> {
 
     @BelongsToMany(() => Award, () => FilmAwards)
     awards: Award[];
+
+    @BelongsToMany(() => Country, () => FilmCountries)
+    countries: Award[];
 
     @HasMany(() => Review)
     reviews: Review[];

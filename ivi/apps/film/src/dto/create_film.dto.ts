@@ -21,9 +21,6 @@ export class CreateFilmDto {
     year: number
 
     @IsString({message: 'Должно быть строкой'})
-    country: string
-
-    @IsString({message: 'Должно быть строкой'})
     duration: string
 
     @IsString({message: 'Должно быть строкой'})

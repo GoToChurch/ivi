@@ -1,7 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Award} from "../models/films_models/awards/awards.model";
-import {Nomination} from "../models/films_models/awards/nominations.model";
+import {Award} from "../models/awards/awards.model";
+import {Nomination} from "../models/awards/nominations.model";
 import {CreateAwardDto} from "../dto/create_award.dto";
 import {CreateNominationDto} from "../dto/create_nomination.dto";
 

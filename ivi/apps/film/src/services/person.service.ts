@@ -31,7 +31,9 @@ export class PersonService {
 
     async getPersonById(id: number) {
         return await this.personRepository.findByPk(id, {
-            include: Profession,
+            include: {
+                all: true
+            },
         });
     }
 
@@ -88,6 +90,23 @@ export class PersonService {
         await person.$add('profession', profession.id)
     }
 
+    async addProfessionInFilmForPerson(film: Film, person: Person, profession: Profession) {
+        const filmProfession = await this.personFilmsRepository.findOne({
+            where: {
+                personId: person.id,
+                filmId: film.id
+            }
+        })
+
+        const professionId = profession.id
+
+        if (filmProfession === null || filmProfession.professionId != professionId) {
+            filmProfession.professionId = professionId
+        }
+
+        filmProfession.save();
+    }
+
     async createProfession(dto: CreateProfessionDto) {
         return await this.professionepository.create(dto);
     }
@@ -124,5 +143,15 @@ export class PersonService {
                 id
             }
         })
+    }
+
+    async getOrCreateProfession(name) {
+        let profession = await this.getProfessionByName(name);
+
+        if(!profession) {
+            profession = await this.createProfession({name});
+        }
+
+        return profession;
     }
 }

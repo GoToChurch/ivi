@@ -1,7 +1,7 @@
 import {Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
 import {Award} from "./awards.model";
 import {Nomination} from "./nominations.model";
-import {Film} from "../films/films.model";
+import {Film} from "../films_models/films/films.model";
 
 
 
