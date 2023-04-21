@@ -1,4 +1,4 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {CreateFilmDto} from "../../film/src/dto/create_film.dto";
 import {AppService} from "./app.service";
@@ -7,6 +7,7 @@ import {CreateProfessionDto} from "../../film/src/dto/create_profession.dto";
 import {CreateGenreDto} from "../../film/src/dto/create_genre.dto";
 import {CreateAwardDto} from "../../film/src/dto/create_award.dto";
 import {CreateNominationDto} from "../../film/src/dto/create_nomination.dto";
+import {CreateCountryDto} from "../../film/src/dto/create_country.dto";
 
 @Controller()
 export class AppController {
@@ -25,6 +26,8 @@ export class AppController {
     const editors = this.appService.getEditors();
     const genres = this.appService.getGenres();
     const countries = this.appService.getCountries();
+    const awards = this.appService.getAwards();
+    const nominations = this.appService.getNominations();
 
       return this.filmService.send(
           {
@@ -41,18 +44,24 @@ export class AppController {
               designers,
               editors,
               genres,
-              countries
+              countries,
+              awards,
+              nominations
           },
       );
     }
 
     @Get('/films')
-    async getAllFilms() {
+    async getAllFilms(@Req() request) {
+        const query = request.query;
+
         return this.filmService.send(
             {
                 cmd: 'get-all-films',
             },
-            {},
+            {
+                query
+            },
         );
     }
 
@@ -95,7 +104,8 @@ export class AppController {
     }
 
     @Get('/films/filter/:filter1')
-    async filterFilmWithOneFilter(@Param('filter1') filter1: any) {
+    async filterFilmWithOneFilter(@Param('filter1') filter1: any,
+                                  @Req() request) {
         let filterObject = {
             genres: null,
             year: null,
@@ -103,20 +113,23 @@ export class AppController {
         }
 
         this.appService.addFiltersToFilterObject(filterObject, filter1);
+        const query = request.query;
 
         return this.filmService.send(
             {
                 cmd: 'filter-films',
             },
             {
-                filterObject
+                filterObject,
+                query
             },
         );
     }
 
     @Get('/films/filter/:filter1/:filter2')
     async filterFilmWithTwoFilters(@Param('filter1') filter1: any,
-                                   @Param('filter2') filter2: any) {
+                                   @Param('filter2') filter2: any,
+                                   @Req() request) {
         let filterObject = {
             genres: null,
             year: null,
@@ -126,12 +139,15 @@ export class AppController {
         this.appService.addFiltersToFilterObject(filterObject, filter1);
         this.appService.addFiltersToFilterObject(filterObject, filter2);
 
+        const query = request.query;
+
         return this.filmService.send(
             {
                 cmd: 'filter-films',
             },
             {
-                filterObject
+                filterObject,
+                query
             },
         );
     }
@@ -139,7 +155,8 @@ export class AppController {
     @Get('/films/filter/:filter1/:filter2/:filter3')
     async filterFilmWithThreeFilters(@Param('filter1') filter1: any,
                                      @Param('filter2') filter2: any,
-                                     @Param('filter3') filter3: any) {
+                                     @Param('filter3') filter3: any,
+                                     @Req() request) {
         let filterObject = {
             genres: null,
             year: null,
@@ -150,12 +167,15 @@ export class AppController {
         this.appService.addFiltersToFilterObject(filterObject, filter2);
         this.appService.addFiltersToFilterObject(filterObject, filter3);
 
+        const query = request.query;
+
         return this.filmService.send(
             {
                 cmd: 'filter-films',
             },
             {
-                filterObject
+                filterObject,
+                query
             },
         );
     }
@@ -243,7 +263,9 @@ export class AppController {
     }
 
     @Get('/professions/:id')
-    async getProfession(@Param('id') id: any) {
+    async getProfession(@Param('id') id: any, @Req() req) {
+        console.log(req.query);
+
         return this.filmService.send(
             {
                 cmd: 'get-profession'
@@ -413,7 +435,7 @@ export class AppController {
     }
 
     @Get('/nominations')
-    async getAllNomination() {
+    async getAllNominations() {
         return this.filmService.send(
             {
                 cmd: 'get-all-nominations',
@@ -453,6 +475,66 @@ export class AppController {
         return this.filmService.send(
             {
                 cmd: 'delete-nomination'
+            },
+            {
+                id
+            }
+        )
+    }
+
+    @Post('/countries')
+    async createCountry(@Body() createCountryDto: CreateCountryDto) {
+        return this.filmService.send(
+            {
+                cmd: 'create-country',
+            },
+            {
+                createCountryDto
+            },
+        );
+    }
+
+    @Get('/countries')
+    async getAllCountries() {
+        return this.filmService.send(
+            {
+                cmd: 'get-all-countries',
+            },
+            {},
+        );
+    }
+
+    @Get('/countries/:id')
+    async getCountry(@Param('id') id: any) {
+        return this.filmService.send(
+            {
+                cmd: 'get-country'
+            },
+            {
+                id
+            }
+        )
+    }
+
+    @Put('/countries/:id')
+    async editCountry(@Body() createCountryDto: CreateCountryDto,
+                         @Param('id') id: any) {
+        return this.filmService.send(
+            {
+                cmd: 'edit-country'
+            },
+            {
+                createCountryDto,
+                id
+            }
+        )
+    }
+
+    @Delete('/countries/:id')
+    async deleteCountry(@Param('id') id: any) {
+        return this.filmService.send(
+            {
+                cmd: 'delete-country'
             },
             {
                 id

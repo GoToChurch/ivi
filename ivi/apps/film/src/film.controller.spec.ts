@@ -15,8 +15,6 @@ describe('FilmController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(filmController.getHello()).toBe('Hello World!');
-    });
+
   });
 });

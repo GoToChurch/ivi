@@ -1,7 +1,6 @@
 import {Controller} from "@nestjs/common";
 import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {GenreService} from "../services/genre.service";
 import {AwardService} from "../services/award.service";
 
 @Controller()

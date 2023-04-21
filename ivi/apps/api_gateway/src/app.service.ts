@@ -37,7 +37,7 @@ export class AppService {
     }
 
     getEditors() {
-        return ['Татьяна Кальдерон']
+        return ['Татьяна Кальдерон', 'Лоик Реми']
     }
 
     getGenres() {
@@ -46,6 +46,14 @@ export class AppService {
 
     getCountries() {
         return ['США', 'Россия']
+    }
+
+    getAwards() {
+        return [{name: 'Оскар', year: 2023}]
+    }
+
+    getNominations() {
+        return ['Лучший фильм']
     }
 
     addFiltersToFilterObject(filterObject, filter: string) {

@@ -27,20 +27,23 @@ export class FilmController {
         payload.designers,
         payload.editors,
         payload.genres,
-        payload.countries
+        payload.countries,
+        payload.awards,
+        payload.nominations,
     );
   }
 
   @MessagePattern({ cmd: 'get-all-films' })
-  async getAllFilms(@Ctx() context: RmqContext) {
+  async getAllFilms(@Ctx() context: RmqContext,
+                    @Payload() payload) {
     // this.commonService.acknowledgeMessage(context)
 
-    return this.filmService.getAllFilms();
+    return this.filmService.getAllFilms(payload.query);
   }
 
   @MessagePattern({ cmd: 'get-film' })
   async getFilm(@Ctx() context: RmqContext,
-                  @Payload() payload) {
+                @Payload() payload) {
     // this.commonService.acknowledgeMessage(context)
 
     return this.filmService.getFilmById(payload.id);
@@ -72,8 +75,8 @@ export class FilmController {
     return this.filmService.filterFilms(
         payload.filterObject.genres,
         payload.filterObject.year,
-        payload.filterObject.countries);
+        payload.filterObject.countries,
+        payload.query);
   }
-
 
 }

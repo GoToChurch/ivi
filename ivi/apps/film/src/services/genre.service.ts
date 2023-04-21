@@ -20,13 +20,20 @@ export class GenreService {
     }
 
     async getAllGenres() {
-        return await this.genreRepository.findAll();
+        return await this.genreRepository.findAll({
+            include: {
+                all: true
+            }
+        });
     }
 
     async getGenreByName(name: string) {
         return await this.genreRepository.findOne({
             where: {
                 name
+            },
+            include: {
+                all: true
             }
         });
     }
@@ -39,18 +46,12 @@ export class GenreService {
         });
     }
 
-    async filterGenresByName(names) {
-        return await this.genreRepository.findAll({
-            where: {
-                englishName: {
-                    [Op.in]: names
-                }
+    async getGenreById(id: number) {
+        return await this.genreRepository.findByPk(id, {
+            include: {
+                all: true
             }
         });
-    }
-
-    async getGenreById(id: number) {
-        return await this.genreRepository.findByPk(id);
     }
 
     async editGenre(name: string, id: number) {

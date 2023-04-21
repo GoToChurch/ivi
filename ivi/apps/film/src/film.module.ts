@@ -32,6 +32,7 @@ import {FilmCountries} from "./models/countries/film_country.model";
 import {AwardController} from "./controllers/award.controller";
 import {GenreController} from "./controllers/genre.controller";
 import {CountryService} from "./services/country.service";
+import {CountryController} from "./controllers/country.controller";
 
 @Module({
   imports: [
@@ -43,7 +44,7 @@ import {CountryService} from "./services/country.service";
     Nomination, Review, Genre, Person, Profession, PersonFilms, PersonProfessions, Country, FilmCountries]
     ),
   ],
-  controllers: [FilmController, PersonController, AwardController, GenreController],
+  controllers: [FilmController, PersonController, AwardController, GenreController, CountryController],
   providers: [FilmService, PersonService, AwardService, GenreService, CountryService],
 })
 export class FilmModule {}

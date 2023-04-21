@@ -42,7 +42,7 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @Column({type: DataType.STRING})
     mpaaRating: string
 
-    @Column({type: DataType.FLOAT})
+    @Column({type: DataType.DECIMAL(2, 1)})
     rating: number
 
     @Column({type: DataType.INTEGER, defaultValue: 0})
@@ -54,7 +54,7 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @Column({type: DataType.STRING, allowNull: false})
     duration: string
 
-    @Column({type: DataType.STRING})
+    @Column({type: DataType.TEXT})
     description: string
 
     @BelongsToMany(() => Person, () => FilmDirectors)

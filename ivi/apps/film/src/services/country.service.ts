@@ -21,13 +21,20 @@ export class CountryService {
     }
 
     async getAllCountries() {
-        return await this.countryRepository.findAll();
+        return await this.countryRepository.findAll({
+            include: {
+                all: true
+            }
+        });
     }
 
     async getCountryByName(name: string) {
         return await this.countryRepository.findOne({
             where: {
                 name
+            },
+            include: {
+                all: true
             }
         });
     }
@@ -36,21 +43,19 @@ export class CountryService {
         return await this.countryRepository.findOne({
             where: {
                 englishName
+            },
+            include: {
+                all: true
             }
         });
     }
-    // async filterCountriesByNames(names) {
-    //     return await this.countryRepository.findAll({
-    //         where: {
-    //             englishName: {
-    //                 [Op.in]: names
-    //             }
-    //         }
-    //     });
-    // }
 
     async getCountryById(id: number) {
-        return await this.countryRepository.findByPk(id);
+        return await this.countryRepository.findByPk(id, {
+            include: {
+                all: true
+            }
+        });
     }
 
     async editCountry(dto: CreateCountryDto, id: number) {

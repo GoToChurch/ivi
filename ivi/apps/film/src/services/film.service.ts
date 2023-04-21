@@ -7,7 +7,8 @@ import {PersonService} from "./person.service";
 import {GenreService} from "./genre.service";
 import {Profession} from "../models/persons_models/professions.model";
 import {CountryService} from "./country.service";
-import {countriesMap, genresMap} from "../../../api_gateway/src/maps/maps";
+import {countriesMap, genresMap} from "@app/common/maps/maps";
+import {AwardService} from "./award.service";
 
 
 @Injectable()
@@ -15,10 +16,11 @@ export class FilmService {
   constructor(@InjectModel(Film) private filmRepository: typeof Film,
               private personService: PersonService,
               private genreService: GenreService,
-              private countryService: CountryService) {}
+              private countryService: CountryService,
+              private awardService: AwardService) {}
 
   async createFilm(dto: CreateFilmDto, directors, actors, writers, producers, cinematography, musicians, designers,
-                   editors, genres, countries) {
+                   editors, genres, countries, awards, nominations) {
     const film = await this.filmRepository.create(dto);
 
     await this.addDirectorsForFilm(film, directors);
@@ -31,33 +33,42 @@ export class FilmService {
     await this.addEditorsForFilm(film, editors);
     await this.addGenresForFilm(film, genres);
     await this.addCountriesForFilm(film, countries);
+    await this.addAwardsForFilm(film, awards, nominations);
 
     return film;
   }
 
-  async getAllFilms() {
-    return await this.filmRepository.findAll({
+  async getAllFilms(query) {
+    let films = await this.filmRepository.findAll({
+      include: {
+        all: true
+      }
+    });
+
+    films = this.handleQuery(films, query)
+
+    return films;
+  }
+
+  async getFilmById(id: number) {
+    return await this.filmRepository.findByPk(id, {
       include: {
         all: true
       }
     });
   }
 
-  async getFilmById(id: number) {
-    return await this.filmRepository.findByPk(id);
-  }
-
-  async filterFilms(genreFilter, yearFilter, countriesFilter) {
-    let films: Film[] = await this.getAllFilms();
+  async filterFilms(genreFilter, yearFilter, countriesFilter, query) {
+    let films: Film[] = await this.getAllFilms(query);
 
     if (genreFilter) {
       films = await this.filterFilmsByGenres(films, genreFilter);
     }
     if (yearFilter) {
       if (yearFilter.includes('-')) {
-        films = await this.filterFilmsByYearInterval(films, yearFilter);
+        films = this.filterFilmsByYearInterval(films, yearFilter);
       } else {
-        films = await this.filterFilmsBySingleYear(films, yearFilter)
+        films = this.filterFilmsBySingleYear(films, yearFilter)
       }
     }
     if (countriesFilter) {
@@ -67,64 +78,6 @@ export class FilmService {
     return films;
 
   }
-
-  // async getFilmsByGenresAndYear(genresFilter, yearFilter) {
-  //   if (yearFilter.includes('-')) {
-  //     const [firstYear, secondYear] = yearFilter.split('-');
-  //
-  //
-  //     return await this.filmRepository.findAll({
-  //       where: {
-  //         genres: {
-  //         },
-  //         year: {
-  //           [Op.between]: [+firstYear, +secondYear]
-  //         }
-  //       }
-  //     })
-  //   }
-  //
-  //   return await this.filmRepository.findAll({
-  //     where: {
-  //       genres: {
-  //
-  //       },
-  //       year: +yearFilter
-  //     }
-  //   })
-  // }
-  //
-  // async getFilmsByGenresAndYearAndCountries(genresFilter, yearFilter, countryFilter) {
-  //   if (yearFilter.includes('-')) {
-  //     const [firstYear, secondYear] = yearFilter.split('-');
-  //
-  //     return await this.filmRepository.findAll({
-  //       where: {
-  //         genres: {
-  //           [Op.in]: genresFilter
-  //         },
-  //         year: {
-  //           [Op.between]: [+firstYear, +secondYear]
-  //         },
-  //         countries: {
-  //           [Op.in]: countryFilter
-  //         }
-  //       }
-  //     })
-  //   }
-  //
-  //   return await this.filmRepository.findAll({
-  //     where: {
-  //       genres: {
-  //         [Op.in]: genresFilter
-  //       },
-  //       year: +yearFilter,
-  //       countries: {
-  //         [Op.in]: countryFilter
-  //       }
-  //     }
-  //   })
-  // }
 
   async filterFilmsByCountries(films, countries) {
     let filmsIds =  await this.countryService.getFilmsIdsByCountries(countries);
@@ -136,33 +89,21 @@ export class FilmService {
     return films.filter(film => filmsIds.includes(film.id))
   }
 
-  async filterFilmsBySingleYear(films, year: number) {
+  filterFilmsBySingleYear(films, year: number) {
     return films.filter(film => film.year == year);
   }
 
-  async filterFilmsByYearInterval(films, interval: string) {
+  filterFilmsByYearInterval(films, interval: string) {
     const [firstYear, secondYear] = interval.split('-');
     return films.filter(film => film.year >= +firstYear && film.year <= +secondYear);
   }
 
-  async getFilmsWithHigherRating(rating: number) {
-    return await this.filmRepository.findAll({
-      where: {
-        rating: {
-          [Op.gte]: rating,
-        }
-      }
-    })
+  filterFilmsByRating(films, query) {
+      return films.filter(film => film.rating >= query.rating_gte)
   }
 
-  async getFilmsWithHigherRatingsNumber(ratingsNumber: number) {
-    return await this.filmRepository.findAll({
-      where: {
-        ratingsNumber: {
-          [Op.gte]: ratingsNumber,
-        }
-      }
-    })
+  filterFilmsByRatingNumber(films, query) {
+      return films.filter(film => film.ratingsNumber >= query.ratingsNumber_gte)
   }
 
   async getFilmsByDirector(director: string) {
@@ -280,13 +221,20 @@ export class FilmService {
     }
   }
 
+  async addAwardsForFilm(film: Film, awards, nominations) {
+    await film.$set('awards', []);
+
+    for (const awardDto of awards) {
+      let award = await this.awardService.getOrCreateAward(awardDto);
+
+      await film.$add('award', award.id);
+      await this.awardService.addFilmAndNominationsForAward(film, award, nominations);
+    }
+  }
+
   async addInfoForPesronAndFilm(film: Film, persons, profession: Profession, professionName) {
     for (const personName of persons) {
-      let person = await this.personService.getPersonByName(personName);
-
-      if (!person) {
-        person = await this.personService.createPerson({name: personName, photo: "aa"});
-      }
+      let person = await this.personService.getOrCreatePerson({name: personName, photo: "aa"});
 
       await this.personService.addFilmForPerson(person, film);
       await this.personService.addProfessionForPerson(person, profession);
@@ -296,5 +244,18 @@ export class FilmService {
 
       await this.personService.addProfessionInFilmForPerson(film, person, profession)
     }
+  }
+
+  handleQuery(films, query) {
+    let filteredFilms: Film[] = films;
+
+    if (query.rating_gte) {
+      filteredFilms = this.filterFilmsByRating(films, query);
+    }
+    if (query.ratingsNumber_gte) {
+      filteredFilms = this.filterFilmsByRatingNumber(films, query);
+    }
+
+    return filteredFilms;
   }
 }

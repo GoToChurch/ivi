@@ -21,6 +21,16 @@ export class PersonService {
         return person;
     }
 
+    async getOrCreatePerson(dto: CreatePersonDto) {
+        let person = await this.getPersonByName(dto.name)
+
+        if (!person) {
+            person = await this.createPerson(dto);
+        }
+
+        return person;
+    }
+
     async getAllPersons() {
         return await this.personRepository.findAll({
             include: {
@@ -100,11 +110,12 @@ export class PersonService {
 
         const professionId = profession.id
 
-        if (filmProfession === null || filmProfession.professionId != professionId) {
-            filmProfession.professionId = professionId
+        if (filmProfession.professionId) {
+            await this.createPersonFilm(film.id, person.id, professionId)
+        } else {
+            filmProfession.professionId = professionId;
+            filmProfession.save();
         }
-
-        filmProfession.save();
     }
 
     async createProfession(dto: CreateProfessionDto) {
@@ -112,11 +123,19 @@ export class PersonService {
     }
 
     async getAllProfessions() {
-        return await this.professionepository.findAll();
+        return await this.professionepository.findAll({
+            include: {
+                all: true
+            },
+        });
     }
 
     async getProfessionById(id: number) {
-        return await this.professionepository.findByPk(id);
+        return await this.professionepository.findByPk(id, {
+            include: {
+                all: true
+            },
+        });
     }
 
     async getProfessionByName(name: string) {
@@ -153,5 +172,9 @@ export class PersonService {
         }
 
         return profession;
+    }
+
+    async createPersonFilm(filmId, personId, professionId) {
+        return await this.personFilmsRepository.create({filmId, personId, professionId})
     }
 }

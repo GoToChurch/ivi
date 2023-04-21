@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import {Controller, Req} from '@nestjs/common';
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 import {CommonService} from "@app/common";
 import {PersonService} from "../services/person.service";
@@ -58,7 +58,6 @@ export class PersonController {
     @MessagePattern({ cmd: 'get-all-professions' })
     async getAllProfession(@Ctx() context: RmqContext) {
         // this.commonService.acknowledgeMessage(context)
-
         return this.personService.getAllProfessions();
     }
 
