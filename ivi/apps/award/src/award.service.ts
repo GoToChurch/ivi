@@ -1,11 +1,8 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Award} from "../models/awards/awards.model";
-import {Nomination} from "../models/awards/nominations.model";
-import {CreateAwardDto} from "../dto/create_award.dto";
-import {CreateNominationDto} from "../dto/create_nomination.dto";
-import {Film} from "../models/films_models/films/films.model";
-import {FilmAwards} from "../models/awards/film_awards.model";
+import {Award, CreateAwardDto, CreateNominationDto, Film, FilmAwards, Nomination} from "@app/common";
+
+
 
 @Injectable()
 export class AwardService {
@@ -117,10 +114,12 @@ export class AwardService {
         });
     }
 
-    async addFilmAndNominationsForAward(film: Film, award: Award, nominations) {
+    async addFilmAndNominationsForAward(film: Film, awardDto, nominations) {
         for (const nominationName of nominations) {
             let nomination = await this.getOrCreateNomination({name: nominationName});
-            const nominationId = nomination.id
+            const nominationId = nomination.id;
+
+            let award = await this.getAwardByName(awardDto.name);
 
             await award.$add('nomination', nominationId);
 
@@ -137,6 +136,8 @@ export class AwardService {
 
             filmAward.save();
         }
+
+        return film;
     }
 
 }

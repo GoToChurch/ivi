@@ -1,11 +1,9 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Op} from "sequelize";
-import {Country} from "../models/countries/country.model";
-import {FilmCountries} from "../models/countries/film_country.model";
-import {CreateCountryDto} from "../dto/create_country.dto";
-import {Film} from "../models/films_models/films/films.model";
-import {Genre} from "../models/genre_models/genre.model";
+
+import {Film, Country, FilmCountries, CreateCountryDto} from "@app/common";
+
 
 @Injectable()
 export class CountryService {
@@ -16,6 +14,16 @@ export class CountryService {
     async createCountry(dto: CreateCountryDto) {
         const country = await this.countryRepository.create(dto);
         country.$set('films', []);
+
+        return country;
+    }
+
+    async getOrCreateCounty(dto: CreateCountryDto) {
+        let country = await this.getCountryByName(dto.name);
+
+        if (!country) {
+            country = await this.createCountry(dto);
+        }
 
         return country;
     }
@@ -74,10 +82,6 @@ export class CountryService {
                 id
             }
         });
-    }
-
-    async addFilmsForCountry(film: Film, country: Country) {
-        country.$add('film', film.id)
     }
 
     async getFilmsIdsByCountries(countries) {

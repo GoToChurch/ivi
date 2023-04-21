@@ -1,17 +1,23 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {CreateFilmDto} from "../../film/src/dto/create_film.dto";
 import {AppService} from "./app.service";
-import {CreatePersonDto} from "../../film/src/dto/create_person.dto";
-import {CreateProfessionDto} from "../../film/src/dto/create_profession.dto";
-import {CreateGenreDto} from "../../film/src/dto/create_genre.dto";
-import {CreateAwardDto} from "../../film/src/dto/create_award.dto";
-import {CreateNominationDto} from "../../film/src/dto/create_nomination.dto";
-import {CreateCountryDto} from "../../film/src/dto/create_country.dto";
+import {
+    CreateAwardDto, CreateCountryDto,
+    CreateFilmDto,
+    CreateGenreDto,
+    CreateNominationDto,
+    CreatePersonDto,
+    CreateProfessionDto
+} from "@app/common";
+
 
 @Controller()
 export class AppController {
   constructor(@Inject('FILM') private readonly filmService: ClientProxy,
+              @Inject('PERSON') private readonly personService: ClientProxy,
+              @Inject('GENRE') private readonly genreService: ClientProxy,
+              @Inject('AWARD') private readonly awardService: ClientProxy,
+              @Inject('COUNTRY') private readonly countryService: ClientProxy,
               private appService: AppService) {}
 
     @Post('/films')
@@ -182,7 +188,7 @@ export class AppController {
 
     @Post('/persons')
     async createPerson(@Body() createPersonDto: CreatePersonDto) {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'create-person',
             },
@@ -194,7 +200,7 @@ export class AppController {
 
     @Get('/persons')
     async getAllPersons() {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'get-all-persons',
             },
@@ -204,7 +210,7 @@ export class AppController {
 
     @Get('/persons/:id')
     async getPerson(@Param('id') id: any) {
-      return this.filmService.send(
+      return this.personService.send(
           {
               cmd: 'get-person'
           },
@@ -217,7 +223,7 @@ export class AppController {
     @Put('/persons/:id')
     async editPerson(@Body() createPersonDto: CreatePersonDto,
                      @Param('id') id: any) {
-      return this.filmService.send(
+      return this.personService.send(
           {
           cmd: 'edit-person'
           },
@@ -230,7 +236,7 @@ export class AppController {
 
     @Delete('/persons/:id')
     async deletePerson(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'delete-person'
             },
@@ -242,7 +248,7 @@ export class AppController {
 
     @Post('/professions')
     async createProfession(@Body() createProfessionDto: CreateProfessionDto) {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'create-profession',
             },
@@ -254,7 +260,7 @@ export class AppController {
 
     @Get('/professions')
     async getAllProfessions() {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'get-all-professions',
             },
@@ -264,9 +270,7 @@ export class AppController {
 
     @Get('/professions/:id')
     async getProfession(@Param('id') id: any, @Req() req) {
-        console.log(req.query);
-
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'get-profession'
             },
@@ -279,7 +283,7 @@ export class AppController {
     @Put('/professions/:id')
     async editProfession(@Body() createProfessionDto: CreateProfessionDto,
                          @Param('id') id: any) {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'edit-profession'
             },
@@ -292,7 +296,7 @@ export class AppController {
 
     @Delete('/professions/:id')
     async deleteProfession(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.personService.send(
             {
                 cmd: 'delete-profession'
             },
@@ -304,7 +308,7 @@ export class AppController {
 
     @Post('/genres')
     async createGenre(@Body() createGenreDto: CreateGenreDto) {
-        return this.filmService.send(
+        return this.genreService.send(
             {
                 cmd: 'create-genre',
             },
@@ -316,7 +320,7 @@ export class AppController {
 
     @Get('/genres')
     async getAllGenres() {
-        return this.filmService.send(
+        return this.genreService.send(
             {
                 cmd: 'get-all-genres',
             },
@@ -326,7 +330,7 @@ export class AppController {
 
     @Get('/genres/:id')
     async getGenre(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.genreService.send(
             {
                 cmd: 'get-genre'
             },
@@ -338,8 +342,8 @@ export class AppController {
 
     @Put('/genres/:id')
     async editGenre(@Body() createGenreDto: CreateGenreDto,
-                         @Param('id') id: any) {
-        return this.filmService.send(
+                    @Param('id') id: any) {
+        return this.genreService.send(
             {
                 cmd: 'edit-genre'
             },
@@ -352,7 +356,7 @@ export class AppController {
 
     @Delete('/genres/:id')
     async deleteGenre(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.genreService.send(
             {
                 cmd: 'delete-genre'
             },
@@ -364,7 +368,7 @@ export class AppController {
 
     @Post('/awards')
     async createAward(@Body() createAwardDto: CreateAwardDto) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'create-award',
             },
@@ -376,7 +380,7 @@ export class AppController {
 
     @Get('/awards')
     async getAllAwards() {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'get-all-awards',
             },
@@ -386,7 +390,7 @@ export class AppController {
 
     @Get('/awards/:id')
     async getAward(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'get-award'
             },
@@ -399,7 +403,7 @@ export class AppController {
     @Put('/awards/:id')
     async editAward(@Body() createAwardDto: CreateAwardDto,
                     @Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'edit-award'
             },
@@ -412,7 +416,7 @@ export class AppController {
 
     @Delete('/awards/:id')
     async deleteAward(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'delete-award'
             },
@@ -424,7 +428,7 @@ export class AppController {
 
     @Post('/nominations')
     async createNomination(@Body() createNominationDto: CreateNominationDto) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'create-nomination',
             },
@@ -436,7 +440,7 @@ export class AppController {
 
     @Get('/nominations')
     async getAllNominations() {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'get-all-nominations',
             },
@@ -446,7 +450,7 @@ export class AppController {
 
     @Get('/nominations/:id')
     async getNomination(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'get-nomination'
             },
@@ -459,7 +463,7 @@ export class AppController {
     @Put('/nominations/:id')
     async editNomination(@Body() createNominationDto: CreateNominationDto,
                     @Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'edit-nomination'
             },
@@ -472,7 +476,7 @@ export class AppController {
 
     @Delete('/nominations/:id')
     async deleteNomination(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.awardService.send(
             {
                 cmd: 'delete-nomination'
             },
@@ -484,7 +488,7 @@ export class AppController {
 
     @Post('/countries')
     async createCountry(@Body() createCountryDto: CreateCountryDto) {
-        return this.filmService.send(
+        return this.countryService.send(
             {
                 cmd: 'create-country',
             },
@@ -496,7 +500,7 @@ export class AppController {
 
     @Get('/countries')
     async getAllCountries() {
-        return this.filmService.send(
+        return this.countryService.send(
             {
                 cmd: 'get-all-countries',
             },
@@ -506,7 +510,7 @@ export class AppController {
 
     @Get('/countries/:id')
     async getCountry(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.countryService.send(
             {
                 cmd: 'get-country'
             },
@@ -519,7 +523,7 @@ export class AppController {
     @Put('/countries/:id')
     async editCountry(@Body() createCountryDto: CreateCountryDto,
                          @Param('id') id: any) {
-        return this.filmService.send(
+        return this.countryService.send(
             {
                 cmd: 'edit-country'
             },
@@ -532,7 +536,7 @@ export class AppController {
 
     @Delete('/countries/:id')
     async deleteCountry(@Param('id') id: any) {
-        return this.filmService.send(
+        return this.countryService.send(
             {
                 cmd: 'delete-country'
             },

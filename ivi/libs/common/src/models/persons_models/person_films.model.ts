@@ -13,7 +13,7 @@ export class PersonFilms extends Model<PersonFilms> {
     filmId: number
 
     @ForeignKey(() => Person)
-    @Column({type: DataType.INTEGER})
+    @Column({type: DataType.INTEGER, unique: false})
     personId: number
 
     @ForeignKey(() => Profession)

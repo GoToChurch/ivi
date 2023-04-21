@@ -1,7 +1,8 @@
 import {Controller} from "@nestjs/common";
 import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {AwardService} from "../services/award.service";
+import {AwardService} from "./award.service";
+
 
 @Controller()
 export class AwardController {
@@ -84,5 +85,20 @@ export class AwardController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.awardService.deleteNomination(payload.id);
+    }
+
+    @MessagePattern({ cmd: 'get-or-create-award' })
+    async getOrCreateAward(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+        return this.awardService.getOrCreateAward(payload.awardDto);
+    }
+
+    @MessagePattern({ cmd: 'add-film-and-nominations-for-award' })
+    async addFilmAndNominationsForAward(@Ctx() context: RmqContext,
+                                        @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.awardService.addFilmAndNominationsForAward(payload.film, payload.award, payload.nominations);
     }
 }

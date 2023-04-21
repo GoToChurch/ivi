@@ -1,8 +1,8 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { FilmService } from '../services/film.service';
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 import {CommonService} from "@app/common";
-import {CreateFilmDto} from "../dto/create_film.dto";
+
 
 @Controller()
 export class FilmController {

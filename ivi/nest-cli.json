@@ -36,6 +36,42 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "person": {
+      "type": "application",
+      "root": "apps/person",
+      "entryFile": "main",
+      "sourceRoot": "apps/person/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/person/tsconfig.app.json"
+      }
+    },
+    "genre": {
+      "type": "application",
+      "root": "apps/genre",
+      "entryFile": "main",
+      "sourceRoot": "apps/genre/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/genre/tsconfig.app.json"
+      }
+    },
+    "country": {
+      "type": "application",
+      "root": "apps/country",
+      "entryFile": "main",
+      "sourceRoot": "apps/country/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/country/tsconfig.app.json"
+      }
+    },
+    "award": {
+      "type": "application",
+      "root": "apps/award",
+      "entryFile": "main",
+      "sourceRoot": "apps/award/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/award/tsconfig.app.json"
+      }
     }
   }
 }

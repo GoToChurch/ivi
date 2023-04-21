@@ -1,11 +1,8 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Film} from "../models/films_models/films/films.model";
-import {Person} from "../models/persons_models/persons.model";
-import {Profession} from "../models/persons_models/professions.model";
-import {PersonFilms} from "../models/persons_models/person_films.model";
-import {CreatePersonDto} from "../dto/create_person.dto";
-import {CreateProfessionDto} from "../dto/create_profession.dto";
+
+import {Film, Person, Profession, PersonFilms, CreatePersonDto, CreateProfessionDto} from "@app/common";
+
 
 @Injectable()
 export class PersonService {
@@ -92,12 +89,10 @@ export class PersonService {
         });
     }
 
-    async addFilmForPerson(person: Person, film: Film) {
-        await person.$add('film', film.id)
-    }
-
-    async addProfessionForPerson(person: Person, profession: Profession) {
-        await person.$add('profession', profession.id)
+    async addFilmForPerson(personDto, film: Film) {
+        const person = await this.getPersonByName(personDto.name);
+        await person.$add('film', film.id);
+        return person;
     }
 
     async addProfessionInFilmForPerson(film: Film, person: Person, profession: Profession) {
@@ -116,6 +111,8 @@ export class PersonService {
             filmProfession.professionId = professionId;
             filmProfession.save();
         }
+
+        return filmProfession;
     }
 
     async createProfession(dto: CreateProfessionDto) {
@@ -175,6 +172,6 @@ export class PersonService {
     }
 
     async createPersonFilm(filmId, personId, professionId) {
-        return await this.personFilmsRepository.create({filmId, personId, professionId})
+        return await this.personFilmsRepository.create({filmId: +filmId, personId: +personId, professionId: +professionId})
     }
 }

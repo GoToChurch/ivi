@@ -1,7 +1,8 @@
-import {Controller, Req} from '@nestjs/common';
+import {Controller} from '@nestjs/common';
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 import {CommonService} from "@app/common";
-import {PersonService} from "../services/person.service";
+import {PersonService} from "./person.service";
+
 
 @Controller()
 export class PersonController {
@@ -14,6 +15,14 @@ export class PersonController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.personService.createPerson(payload.createPersonDto);
+    }
+
+    @MessagePattern({ cmd: 'get-or-create-person' })
+    async getOrCreatePerson(@Ctx() context: RmqContext,
+                                @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getOrCreatePerson(payload.dto);
     }
 
     @MessagePattern({ cmd: 'get-all-persons' })
@@ -41,10 +50,34 @@ export class PersonController {
 
     @MessagePattern({ cmd: 'delete-person' })
     async deletePerson(@Ctx() context: RmqContext,
-                           @Payload() payload) {
+                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
         return this.personService.deletePerson(payload.id);
+    }
+
+    @MessagePattern({ cmd: 'get-all-films-by-person' })
+    async getAllPersonsFilms(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getAllPersonsFilms(payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-film-for-person' })
+    async addFilmForPerson(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.addFilmForPerson(payload.person, payload.film);
+    }
+
+    @MessagePattern({ cmd: 'add-profession-in-film-for-person' })
+    async addProfessionInFilmForPerson(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.addProfessionInFilmForPerson(payload.film, payload.person, payload.profession);
     }
 
     @MessagePattern({ cmd: 'create-profession' })
@@ -53,6 +86,14 @@ export class PersonController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.personService.createProfession(payload.createProfessionDto);
+    }
+
+    @MessagePattern({ cmd: 'get-or-create-profession' })
+    async getOrCreateProfession(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getOrCreateProfession(payload.profession);
     }
 
     @MessagePattern({ cmd: 'get-all-professions' })

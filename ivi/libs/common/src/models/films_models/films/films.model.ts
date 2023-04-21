@@ -10,11 +10,11 @@ import {FilmDesigners} from "./film_designers.model";
 import {FilmEditors} from "./film_editors.model";
 import {Genre} from "../../genre_models/genre.model";
 import {FilmGenres} from "../../genre_models/film_genres.model";
-import {Award} from "../../awards/awards.model";
-import {FilmAwards} from "../../awards/film_awards.model";
+import {Award} from "../../award_models/awards.model";
+import {FilmAwards} from "../../award_models/film_awards.model";
 import {Review} from "../reviews/reviews.model";
-import {Country} from "../../countries/country.model";
-import {FilmCountries} from "../../countries/film_country.model";
+import {Country} from "../../country_models/country.model";
+import {FilmCountries} from "../../country_models/film_country.model";
 
 
 interface FilmCreationAttrs {

@@ -1,7 +1,8 @@
 import {Controller} from "@nestjs/common";
 import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {GenreService} from "../services/genre.service";
+import {GenreService} from "./genre.service";
+
 
 @Controller()
 export class GenreController {
@@ -45,5 +46,21 @@ export class GenreController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.genreService.deleteGenre(payload.id);
+    }
+
+    @MessagePattern({cmd: 'get-films-ids-by-genres'})
+    async getFilmsIdsByGenres(@Ctx() context: RmqContext,
+                                 @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.genreService.getFilmsIdsByGenres(payload.genres);
+    }
+
+    @MessagePattern({ cmd: 'get-or-create-genre' })
+    async getOrCreateGenre(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.genreService.getOrCreateGenre(payload.dto);
     }
 }

@@ -7,6 +7,10 @@ import {AppService} from "./app.service";
 @Module({
   imports: [
     CommonModule.registerRmq({name: 'FILM'}),
+    CommonModule.registerRmq({name: 'COUNTRY'}),
+    CommonModule.registerRmq({name: 'AWARD'}),
+    CommonModule.registerRmq({name: 'GENRE'}),
+    CommonModule.registerRmq({name: 'PERSON'}),
   ],
   controllers: [AppController],
   providers: [AppService]

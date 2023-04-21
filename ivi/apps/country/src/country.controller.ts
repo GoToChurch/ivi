@@ -1,7 +1,8 @@
 import {Controller} from "@nestjs/common";
 import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {CountryService} from "../services/country.service";
+import {CountryService} from "./country.service";
+
 
 @Controller()
 export class CountryController {
@@ -32,6 +33,14 @@ export class CountryController {
         return this.countryService.getCountryById(payload.id);
     }
 
+    @MessagePattern({cmd: 'get-or-create-country'})
+    async getCountryByName(@Ctx() context: RmqContext,
+                     @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.countryService.getOrCreateCounty(payload.dto);
+    }
+
     @MessagePattern({cmd: 'edit-country'})
     async editCountry(@Ctx() context: RmqContext,
                       @Payload() payload) {
@@ -46,5 +55,21 @@ export class CountryController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.countryService.deleteCountry(payload.id);
+    }
+
+    @MessagePattern({cmd: 'get-films-ids-by-countries'})
+    async getFilmsIdsByCountries(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.countryService.getFilmsIdsByCountries(payload.countries);
+    }
+
+    @MessagePattern({ cmd: 'get-or-create-country' })
+    async getOrCreateCountry(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.countryService.getOrCreateCounty(payload.dto);
     }
 }

@@ -1,23 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {Film} from "../models/films_models/films/films.model";
-import {CreateFilmDto} from "../dto/create_film.dto";
-import {Op} from "sequelize";
-import {PersonService} from "./person.service";
-import {GenreService} from "./genre.service";
-import {Profession} from "../models/persons_models/professions.model";
-import {CountryService} from "./country.service";
+
+import {Profession, Film, CreateFilmDto, Country, Award} from "@app/common";
 import {countriesMap, genresMap} from "@app/common/maps/maps";
-import {AwardService} from "./award.service";
+import {ClientProxy} from "@nestjs/microservices";
+import {lastValueFrom} from "rxjs";
 
 
 @Injectable()
 export class FilmService {
   constructor(@InjectModel(Film) private filmRepository: typeof Film,
-              private personService: PersonService,
-              private genreService: GenreService,
-              private countryService: CountryService,
-              private awardService: AwardService) {}
+              @Inject('PERSON') private readonly personService: ClientProxy,
+              @Inject('GENRE') private readonly genreService: ClientProxy,
+              @Inject('AWARD') private readonly awardService: ClientProxy,
+              @Inject('COUNTRY') private readonly countryService: ClientProxy,) {}
 
   async createFilm(dto: CreateFilmDto, directors, actors, writers, producers, cinematography, musicians, designers,
                    editors, genres, countries, awards, nominations) {
@@ -80,12 +76,24 @@ export class FilmService {
   }
 
   async filterFilmsByCountries(films, countries) {
-    let filmsIds =  await this.countryService.getFilmsIdsByCountries(countries);
+    let filmsIds =  await lastValueFrom(this.countryService.send({
+              cmd: 'get-or-create-country',
+            },
+            {
+              countries
+            })
+    );
     return films.filter(film => filmsIds.includes(film.id))
   }
 
   async filterFilmsByGenres(films: Film[], genres) {
-    let filmsIds =  await this.genreService.getFilmsIdsByGenres(genres);
+    let filmsIds =  await lastValueFrom(this.genreService.send({
+      cmd: 'get-films-ids-by-genres'
+    },
+        {
+          genres
+        })
+    );
     return films.filter(film => filmsIds.includes(film.id))
   }
 
@@ -106,13 +114,18 @@ export class FilmService {
       return films.filter(film => film.ratingsNumber >= query.ratingsNumber_gte)
   }
 
-  async getFilmsByDirector(director: string) {
-    return await this.personService.getAllPersonsFilms(director);
+  async getFilmsByPerson(name: string) {
+    return await lastValueFrom(this.personService.send({
+      cmd: 'get-all-films-by-person'
+    }, {
+      name
+    })
+    )
   }
 
-  async getFilmsByActor(actor: string) {
-    return await this.personService.getAllPersonsFilms(actor);
-  }
+  // async getFilmsByActor(actor: string) {
+  //   return await this.personService.getAllPersonsFilms(actor);
+  // }
 
   async editFilm(name: string, id: number) {
     await this.filmRepository.update({name: name}, {
@@ -133,7 +146,13 @@ export class FilmService {
   }
 
   async addDirectorsForFilm(film: Film, directors) {
-    const profession = await this.personService.getOrCreateProfession("Режиссер");
+    const profession = await lastValueFrom(this.personService.send({
+      cmd: 'get-or-create-profession'
+    },
+        {
+          profession: "Режиссер"
+        })
+    );
 
     await film.$set('directors', []);
 
@@ -141,7 +160,13 @@ export class FilmService {
   }
 
   async addActorsForFilm(film: Film, actors) {
-    const profession = await this.personService.getOrCreateProfession("Актер");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Актер"
+            })
+    );
 
     await film.$set('actors', []);
 
@@ -149,8 +174,13 @@ export class FilmService {
   }
 
   async addWritersForFilm(film: Film, writers) {
-    const profession = await this.personService.getOrCreateProfession("Сценарист");
-
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Сценарист"
+            })
+    );
 
     await film.$set('writers', []);
 
@@ -158,35 +188,70 @@ export class FilmService {
   }
 
   async addProducersForFilm(film: Film, producers) {
-    const profession = await this.personService.getOrCreateProfession("Продюссер");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Продюссер"
+            })
+    );
+
     await film.$set('producers', []);
 
     await this.addInfoForPesronAndFilm(film, producers, profession, 'producer')
   }
 
   async addCinematographyForFilm(film: Film, cinematography) {
-    const profession = await this.personService.getOrCreateProfession("Оператор");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Оператор"
+            })
+    );
+
     await film.$set('cinematography', []);
 
     await this.addInfoForPesronAndFilm(film, cinematography, profession, 'cinematography')
   }
 
   async addMusiciansForFilm(film: Film, musicians) {
-    const profession = await this.personService.getOrCreateProfession("Композитор");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Композитор"
+            })
+    );
+
     await film.$set('musicians', []);
 
     await this.addInfoForPesronAndFilm(film, musicians, profession, 'musician')
   }
 
   async addDesignersForFilm(film: Film, designers) {
-    const profession = await this.personService.getOrCreateProfession("Художник");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Художник"
+            })
+    );
+
     await film.$set('designers', []);
 
     await this.addInfoForPesronAndFilm(film, designers, profession, 'designer')
   }
 
   async addEditorsForFilm(film: Film, editors) {
-    const profession = await this.personService.getOrCreateProfession("Режиссер монтажа");
+    const profession = await lastValueFrom(this.personService.send({
+              cmd: 'get-or-create-profession'
+            },
+            {
+              profession: "Режиссер монтажа"
+            })
+    );
+
     await film.$set('editors', []);
 
     await this.addInfoForPesronAndFilm(film, editors, profession, 'editor')
@@ -196,12 +261,17 @@ export class FilmService {
     await film.$set('genres', []);
 
     for (const genreName of genres) {
-      let genre = await this.genreService.getGenreByName(genreName);
-      console.log(genreName);
-      if (!genre) {
-        genre = await this.genreService.createGenre({name: genreName, englishName: genresMap.get(genreName)});
-      }
-      // await this.genreService.addFilmsForGenre(film, genre);
+      const genre = await lastValueFrom(this.genreService.send({
+                cmd: 'get-or-create-genre'
+              },
+              {
+                dto: {
+                  name: genreName,
+                  englishName: genresMap.get(genreName)
+                }
+              })
+      );
+
       await film.$add('genre', genre.id);
     }
   }
@@ -210,14 +280,17 @@ export class FilmService {
     await film.$set('countries', []);
 
     for (const countryName of countries) {
-      let country = await this.countryService.getCountryByName(countryName);
+      const dto = {name: countryName, englishName: countriesMap.get(countryName)};
 
-      if (!country) {
-        country = await this.countryService.createCountry({name: countryName, englishName: countriesMap.get(countryName)});
-      }
+      const country = await lastValueFrom(this.countryService.send<Country>({
+        cmd: 'get-or-create-country',
+      },
+          {
+            dto
+          })
+      );
 
-      await this.countryService.addFilmsForCountry(film, country);
-      await film.$add('genre', country.id);
+      await film.$add('country', country.id);
     }
   }
 
@@ -225,24 +298,61 @@ export class FilmService {
     await film.$set('awards', []);
 
     for (const awardDto of awards) {
-      let award = await this.awardService.getOrCreateAward(awardDto);
 
+      let award = await lastValueFrom(this.awardService.send({
+            cmd: 'get-or-create-award'
+              },
+          {
+            awardDto
+          })
+      );
       await film.$add('award', award.id);
-      await this.awardService.addFilmAndNominationsForAward(film, award, nominations);
+
+      let res = await lastValueFrom(this.awardService.send({
+        cmd: 'add-film-and-nominations-for-award'
+          },
+              {
+                film,
+                award,
+                nominations
+              })
+      );
     }
   }
 
   async addInfoForPesronAndFilm(film: Film, persons, profession: Profession, professionName) {
     for (const personName of persons) {
-      let person = await this.personService.getOrCreatePerson({name: personName, photo: "aa"});
+      const person = await lastValueFrom(this.personService.send({
+                cmd: 'get-or-create-person'
+              },
+              {
+                dto: {
+                  name: personName,
+                  photo: "aa"
+                }
+              })
+      );
 
-      await this.personService.addFilmForPerson(person, film);
-      await this.personService.addProfessionForPerson(person, profession);
+      let res = await lastValueFrom(this.personService.send({
+        cmd: 'add-film-for-person'
+      },
+          {
+            person,
+            film
+          })
+      );
 
+      await film.$add(professionName, person.id);
 
-      await film.$add(professionName, person.id)
-
-      await this.personService.addProfessionInFilmForPerson(film, person, profession)
+      res = await lastValueFrom(this.personService.send({
+                cmd: 'add-profession-in-film-for-person'
+              },
+              {
+                film,
+                person,
+                profession
+              })
+      );
     }
   }
 

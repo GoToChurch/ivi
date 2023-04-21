@@ -1,10 +1,9 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Film} from "../models/films_models/films/films.model";
-import {Genre} from "../models/genre_models/genre.model";
-import {FilmGenres} from "../models/genre_models/film_genres.model";
-import {CreateGenreDto} from "../dto/create_genre.dto";
 import {Op} from "sequelize";
+
+import {Film, Genre, FilmGenres, CreateGenreDto} from "@app/common";
+
 
 @Injectable()
 export class GenreService {
@@ -15,6 +14,16 @@ export class GenreService {
     async createGenre(dto: CreateGenreDto) {
         const genre =  await this.genreRepository.create(dto);
         genre.$set('films', [])
+
+        return genre;
+    }
+
+    async getOrCreateGenre(dto) {
+        let genre = await this.getGenreByName(dto.name);
+
+        if (!genre) {
+            genre = await this.createGenre(dto);
+        }
 
         return genre;
     }
