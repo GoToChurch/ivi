@@ -9,6 +9,7 @@ import {
     CreatePersonDto,
     CreateProfessionDto
 } from "@app/common";
+import {CreateReviewDto} from "@app/common/dto/create_review.dto";
 
 
 @Controller()
@@ -184,6 +185,94 @@ export class AppController {
                 query
             },
         );
+    }
+
+    @Post('/films/:filmId')
+    async addReview(@Body() createReviewDto: CreateReviewDto,
+                    @Req() request,
+                    @Param('filmId') filmId: any) {
+      const user = request.user;
+      const userId = user ? user.id : 1;
+
+        return this.filmService.send(
+            {
+                cmd: 'create-review',
+            },
+            {
+                createReviewDto,
+                filmId,
+                userId
+            },
+        );
+    }
+
+    @Post('/films/:filmId/review/:parentId')
+    async addChildReview(@Body() createReviewDto: CreateReviewDto,
+                         @Req() request,
+                         @Param('filmId') filmId: any,
+                         @Param('parentId') parentId: any) {
+        const user = request.user;
+        const userId = user ? user.id : 1;
+
+        return this.filmService.send(
+            {
+                cmd: 'create-review',
+            },
+            {
+                createReviewDto,
+                filmId,
+                userId,
+                parentId
+            },
+        );
+    }
+
+    @Get('/reviews')
+    async getAllReviews() {
+        return this.filmService.send(
+            {
+                cmd: 'get-all-reviews',
+            },
+            {},
+        );
+    }
+
+    @Get('/reviews/:id')
+    async getReview(@Param('id') id: any) {
+        return this.personService.send(
+            {
+                cmd: 'get-review'
+            },
+            {
+                id
+            }
+        )
+    }
+
+    @Put('/reviews/:id')
+    async editReview(@Body() createReviewDto: CreateReviewDto,
+                     @Param('id') id: any) {
+        return this.personService.send(
+            {
+                cmd: 'edit-review'
+            },
+            {
+                createReviewDto,
+                id
+            }
+        )
+    }
+
+    @Delete('/reviews/:id')
+    async deleteReview(@Param('id') id: any) {
+        return this.personService.send(
+            {
+                cmd: 'delete-review'
+            },
+            {
+                id
+            }
+        )
     }
 
     @Post('/persons')

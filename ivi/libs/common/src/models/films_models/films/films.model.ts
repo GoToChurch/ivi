@@ -15,6 +15,7 @@ import {FilmAwards} from "../../award_models/film_awards.model";
 import {Review} from "../reviews/reviews.model";
 import {Country} from "../../country_models/country.model";
 import {FilmCountries} from "../../country_models/film_country.model";
+import {RelatedFilms} from "./related_films.model";
 
 
 interface FilmCreationAttrs {
@@ -93,6 +94,6 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @HasMany(() => Review)
     reviews: Review[];
 
-    // @HasMany(() => Film)
-    // similarFilms: Film[];
+    @BelongsToMany(() => Film, () => RelatedFilms)
+    relatedFilms: Film[];
 }

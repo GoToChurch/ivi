@@ -18,7 +18,7 @@ export class AppService {
     }
 
     getProducers() {
-        return ['Рамзан Кадыров', "Азамат Курчаев"]
+        return ['Харви Вайнштейн', 'Александр Роднянский']
     }
 
     getCinematography() {
@@ -65,5 +65,4 @@ export class AppService {
             }
         }
     }
-
 }

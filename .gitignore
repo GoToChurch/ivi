@@ -3,6 +3,7 @@
 
 /ivi/dist
 /ivi/node_modules
+/ivi/db
 
 # Logs
 /ivi/logs

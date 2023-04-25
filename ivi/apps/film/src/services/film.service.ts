@@ -1,7 +1,7 @@
 import {Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 
-import {Profession, Film, CreateFilmDto, Country, Award} from "@app/common";
+import {Profession, Film, CreateFilmDto, Country, Award, Review} from "@app/common";
 import {countriesMap, genresMap} from "@app/common/maps/maps";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
@@ -30,6 +30,9 @@ export class FilmService {
     await this.addGenresForFilm(film, genres);
     await this.addCountriesForFilm(film, countries);
     await this.addAwardsForFilm(film, awards, nominations);
+
+    film.$set('reviews', []);
+    film.$set('relatedFilms', []);
 
     return film;
   }
@@ -98,7 +101,7 @@ export class FilmService {
   }
 
   filterFilmsBySingleYear(films, year: number) {
-    return films.filter(film => film.year == year);
+    return films.filter(film => year == 1980 ? film.year < year : film.year == year);
   }
 
   filterFilmsByYearInterval(films, interval: string) {
@@ -354,6 +357,10 @@ export class FilmService {
               })
       );
     }
+  }
+
+  async addRelatedFilm (film: Film, relatedFilm: Film) {
+    film.$add('relatedFilm', relatedFilm.id);
   }
 
   handleQuery(films, query) {

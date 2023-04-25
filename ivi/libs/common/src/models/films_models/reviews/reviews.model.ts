@@ -2,11 +2,9 @@ import {BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table} fr
 import {Film} from "../films/films.model";
 
 
-
 interface ReviewCreationAttrs {
     title: string,
     text: string,
-    filmId: number,
 }
 
 @Table({tableName: 'reviews'})
@@ -14,7 +12,7 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
 
-    @Column({type: DataType.INTEGER})
+    @Column({type: DataType.STRING})
     title: string
 
     @Column({type: DataType.TEXT})
@@ -36,4 +34,11 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
 
     @BelongsTo(() => Film)
     film: string
+
+    @ForeignKey(() => Review)
+    @Column({type: DataType.INTEGER})
+    parentId: number;
+
+    @BelongsTo(() => Review, 'parentId')
+    parent: string
 }

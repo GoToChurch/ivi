@@ -21,7 +21,12 @@ export class Person extends Model<Person, PersonCreationAttrs> {
     @Column({type: DataType.STRING})
     photo: string
 
-    @BelongsToMany(() => Film, () => PersonFilms)
+    @BelongsToMany(() => Film, {
+        through: {
+            model: () => PersonFilms,
+            unique: false
+        },
+    })
     films: Film[];
 
     @BelongsToMany(() => Profession, () => PersonProfessions)

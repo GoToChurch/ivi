@@ -95,18 +95,21 @@ export class PersonService {
         return person;
     }
 
-    async addProfessionInFilmForPerson(film: Film, person: Person, profession: Profession) {
+    async addProfessionInFilmForPerson(film: Film, personDto: Person, profession: Profession) {
+        const professionId = profession.id;
+        const person = await this.getPersonById(personDto.id)
+
+        person.$add('profession',professionId);
+
         const filmProfession = await this.personFilmsRepository.findOne({
             where: {
-                personId: person.id,
+                personId: personDto.id,
                 filmId: film.id
             }
-        })
-
-        const professionId = profession.id
+        });
 
         if (filmProfession.professionId) {
-            await this.createPersonFilm(film.id, person.id, professionId)
+            await this.createPersonFilm(film.id, personDto.id, professionId)
         } else {
             filmProfession.professionId = professionId;
             filmProfession.save();

@@ -23,6 +23,7 @@ import {PersonFilms} from "@app/common/models/persons_models/person_films.model"
 import {PersonProfessions} from "@app/common/models/persons_models/person_professions.model";
 import {Country} from "@app/common/models/country_models/country.model";
 import {FilmCountries} from "@app/common/models/country_models/film_country.model";
+import {RelatedFilms} from "@app/common/models/films_models/films/related_films.model";
 
 
 @Module({
@@ -37,8 +38,8 @@ import {FilmCountries} from "@app/common/models/country_models/film_country.mode
                 database: configService.get('POSTGRES_DB'),
                 models: [Award, AwardNominations, FilmAwards, Film, FilmDirectors, FilmEditors,
                     FilmCinematography, FilmMusicians, FilmDesigners, FilmProducers, FilmWriters, FilmActors, FilmGenres,
-                    Nomination, Review, Genre, Person, Profession, PersonFilms, PersonProfessions, Country, FilmCountries],
-                // autoLoadModels: true,
+                    Nomination, Review, Genre, Person, Profession, PersonFilms, PersonProfessions, Country, FilmCountries, RelatedFilms],
+                autoLoadModels: true,
                 synchronize: true
             }),
 

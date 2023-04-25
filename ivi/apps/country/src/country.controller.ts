@@ -34,7 +34,7 @@ export class CountryController {
     }
 
     @MessagePattern({cmd: 'get-or-create-country'})
-    async getCountryByName(@Ctx() context: RmqContext,
+    async getOrCreateCounty(@Ctx() context: RmqContext,
                      @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 

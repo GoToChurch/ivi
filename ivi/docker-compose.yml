@@ -1,0 +1,117 @@
+version: '3'
+services:
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    env_file:
+      - .env
+    volumes:
+      - /var/lib/rabbitmq
+
+  api_gateway:
+    build:
+      context: ./
+      dockerfile: ./apps/api_gateway/Dockerfile
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+      - film
+      - person
+      - award
+      - genre
+      - country
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev api_gateway
+
+  film:
+    build:
+      context: ./
+      dockerfile: ./apps/film/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+      - person
+      - award
+      - genre
+      - country
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev film
+
+  person:
+    build:
+      context: ./
+      dockerfile: ./apps/person/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev person
+
+  award:
+    build:
+      context: ./
+      dockerfile: ./apps/award/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev award
+
+  country:
+    build:
+      context: ./
+      dockerfile: ./apps/country/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev country
+
+  genre:
+    build:
+      context: ./
+      dockerfile: ./apps/genre/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev genre
+
+  postgresDB:
+    image: postgres
+    env_file:
+      - .env
+    ports:
+      - 5432:5432
+    volumes:
+      - ./db/data:/var/lib/postgresql/data
