@@ -80,13 +80,13 @@ export class AppService {
         const {By, until} = require('selenium-webdriver');
         const driver = await this.createDriver();
         await driver.get(`https://www.kinopoisk.ru/film/${id}/`);
-
-        let createFilmData = null
+        let createFilmData = null;
         try {
             createFilmData = await this.getFilmData(driver, By, until);
         } catch (e) {
-
+            console.log(e)
         }
+
 
         const createFilmDto = createFilmData.film;
         const directors = createFilmData.creators.directors;
@@ -192,7 +192,7 @@ export class AppService {
         film.name = (await name.getText()).replace(/\(\d{4}\)/i, '');
 
         try {
-            let originalName = await driver.wait(until.elementLocated(By.xpath(`//span[contains(@class, 'styles_originalTitle__JaNKM')]`)), 5000);
+            let originalName = await driver.wait(until.elementLocated(By.xpath(`//span[contains(@class, 'styles_originalTitle__JaNKM')]`)), 3000);
             film.originalName = (await originalName.getText()).replace(/\(\d{4}\)/i, '');
         } catch (e) {
 
@@ -201,8 +201,12 @@ export class AppService {
         let poster = await driver.wait(until.elementLocated(By.xpath(`//img[contains(@class, 'film-poster')]`)), 20000);
         film.poster = await poster.getAttribute('src');
 
-        let mpaaRating = await driver.wait(until.elementLocated(By.xpath(`//span[@class='styles_ageRate__340KC']`)), 20000);
-        film.mpaaRating = await mpaaRating.getText();
+        try {
+            let mpaaRating = await driver.wait(until.elementLocated(By.xpath(`//span[@class='styles_ageRate__340KC']`)), 3000);
+            film.mpaaRating = await mpaaRating.getText();
+        } catch (e) {
+
+        }
 
         let rating = await driver.wait(until.elementLocated(By.xpath(`//span[contains(@class, 'film-rating-value')]/span`), 20000));
         film.rating = Number(await rating.getText());
@@ -216,7 +220,8 @@ export class AppService {
 
         let duration = await driver.wait(until.elementLocated(By.xpath(`//div[contains(text(), 'Время')]/parent::div/div[2]`)), 20000);
         film.duration = (await duration.getText()).replace(/\d+ мин. \/ /, '');
-        let seasons = (await year.getText()).match(/\d сезон(а)?(ов)?/gi)
+        let seasons = (await year.getText()).match(/\d сезон(а)?(ов)?/gi);
+
         if (seasons) {
             film.duration = seasons[0];
         }
@@ -261,7 +266,6 @@ export class AppService {
 
         let countries = [];
         const countriesElements = await driver.findElements(By.xpath(`//div[contains(@class, 'styles_row__da_RK')][2]//a`));
-        console.log(countriesElements);
 
         const axios = require('axios');
         const cheerio = require('cheerio');
