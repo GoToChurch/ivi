@@ -20,6 +20,7 @@ import {RelatedFilms} from "./related_films.model";
 
 interface FilmCreationAttrs {
     name: string,
+    englishName: string,
     poster: string,
     mpaaRating: string,
     rating: number,
@@ -36,6 +37,9 @@ export class Film extends Model<Film, FilmCreationAttrs> {
 
     @Column({type: DataType.STRING, allowNull: false})
     name: string
+
+    @Column({type: DataType.STRING, allowNull: false})
+    originalName: string
 
     @Column({type: DataType.STRING})
     poster: string

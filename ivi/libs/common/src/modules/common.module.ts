@@ -1,7 +1,7 @@
 import {ConfigModule, ConfigService} from "@nestjs/config";
 
 import {DynamicModule, Module} from "@nestjs/common";
-import {ClientProxyFactory, ClientsModule, Transport} from "@nestjs/microservices";
+import {ClientsModule, Transport} from "@nestjs/microservices";
 import {CommonService} from "@app/common/services/common.service";
 
 

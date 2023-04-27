@@ -7,7 +7,8 @@ import {PersonFilms} from "./person_films.model";
 
 interface PersonCreationAttrs {
     name: string,
-    photo: string
+    photo: string,
+    englishName: string
 }
 
 @Table({tableName: 'persons'})
@@ -17,6 +18,9 @@ export class Person extends Model<Person, PersonCreationAttrs> {
 
     @Column({type: DataType.STRING, allowNull: false})
     name: string
+
+    @Column({type: DataType.STRING, allowNull: false})
+    originalName: string
 
     @Column({type: DataType.STRING})
     photo: string

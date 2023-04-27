@@ -77,7 +77,7 @@ export class CountryService {
     }
 
     async deleteCountry(id: number) {
-        await this.countryRepository.destroy({
+        return await this.countryRepository.destroy({
             where: {
                 id
             }

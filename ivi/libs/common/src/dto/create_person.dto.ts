@@ -6,5 +6,8 @@ export class CreatePersonDto {
     name: string
 
     @IsString({message: 'Должно быть строкой'})
+    originalName: string
+
+    @IsString({message: 'Должно быть строкой'})
     photo: string
 }

@@ -115,8 +115,9 @@ export class AwardService {
     }
 
     async addFilmAndNominationsForAward(film: Film, awardDto, nominations) {
-        for (const nominationName of nominations) {
-            let nomination = await this.getOrCreateNomination({name: nominationName});
+        for (const nominationDto of nominations) {
+            console.log(awardDto, nominationDto)
+            let nomination = await this.getOrCreateNomination(nominationDto);
             const nominationId = nomination.id;
 
             let award = await this.getAwardByName(awardDto.name);

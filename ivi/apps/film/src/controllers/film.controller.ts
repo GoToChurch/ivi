@@ -28,8 +28,7 @@ export class FilmController {
         payload.editors,
         payload.genres,
         payload.countries,
-        payload.awards,
-        payload.nominations,
+        payload.awards
     );
   }
 

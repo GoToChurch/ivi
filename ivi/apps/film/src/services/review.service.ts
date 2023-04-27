@@ -53,7 +53,7 @@ export class ReviewService {
     }
 
     async deleteReview(id: number) {
-        await this.reviewRepository.destroy({
+        return await this.reviewRepository.destroy({
             where: {
                 id
             }

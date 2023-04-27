@@ -36,3 +36,4 @@ export * from './dto/create_genre.dto';
 export * from './dto/create_person.dto';
 export * from './dto/create_nomination.dto';
 export * from './dto/create_profession.dto';
+export * from './dto/create_review.dto';

@@ -16,6 +16,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
 @Module({
   imports: [
     CommonModule,
+    CommonModule.registerRmq({name: 'FILM'}),
     PostgresDBModule,
     SequelizeModule.forFeature(
         [Film, Person, PersonFilms, Profession, PersonProfessions]

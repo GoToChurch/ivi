@@ -1,14 +1,17 @@
-import {Injectable} from "@nestjs/common";
+import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 
 import {Film, Person, Profession, PersonFilms, CreatePersonDto, CreateProfessionDto} from "@app/common";
+import {ClientProxy} from "@nestjs/microservices";
+import {lastValueFrom} from "rxjs";
 
 
 @Injectable()
 export class PersonService {
     constructor(@InjectModel(Person) private personRepository: typeof Person,
                 @InjectModel(Profession) private professionepository: typeof Profession,
-                @InjectModel(PersonFilms) private personFilmsRepository: typeof PersonFilms,) {}
+                @InjectModel(PersonFilms) private personFilmsRepository: typeof PersonFilms,
+                @Inject('FILM') private readonly filmService: ClientProxy) {}
 
     async createPerson(dto: CreatePersonDto) {
         const person = await this.personRepository.create(dto);
@@ -52,23 +55,45 @@ export class PersonService {
         })
     }
 
-    async getAllPersonsFilms(name: string) {
-        const person = await this.getPersonByName(name);
+    async getAllPersonsFilms(id: number) {
+        const person = await this.getPersonById(id);
 
         return person.films;
     }
 
-    async getAllPersonsFilmsByProfession(personsName: string, personsProfession: string) {
-        const profession = await this.getProfessionByName(personsProfession);
-        const person = await this.getPersonByName(personsName);
+    async getAllPersonsFilmsByProfession(personId: number, professionId: number) {
+        const profession = await this.getProfessionById(professionId);
+        const person = await this.getPersonById(personId);
 
-        return await this.personFilmsRepository.findAll({
+        const personFilms = await this.personFilmsRepository.findAll({
             where: {
                 personId: person.id,
                 professionId: profession.id,
             },
-            include: Film,
+            include: {
+                all: true
+            }
         })
+
+        let result = [];
+
+        for (const film of personFilms) {
+            result.push(await lastValueFrom(this.filmService.send({
+                        cmd: 'get-film',
+                    },
+                    {
+                        id: film.filmId,
+                    })
+            ))
+        }
+
+        return result;
+    }
+
+    async getAllPersonsProfessions(id: number) {
+        const person = await this.getPersonById(id);
+
+        return person.professions;
     }
 
     async editPerson(dto: CreatePersonDto, id: number) {
@@ -157,7 +182,7 @@ export class PersonService {
     }
 
     async deleteProfession(id: number) {
-        await this.professionepository.destroy({
+        return await this.professionepository.destroy({
             where: {
                 id
             }
@@ -176,5 +201,12 @@ export class PersonService {
 
     async createPersonFilm(filmId, personId, professionId) {
         return await this.personFilmsRepository.create({filmId: +filmId, personId: +personId, professionId: +professionId})
+    }
+
+    async addProfessionsForPerson(person: Person, professions) {
+        for (const professionName of professions) {
+            const profession = await this.getOrCreateProfession(professionName);
+            person.$add('profession', profession.id)
+        }
     }
 }

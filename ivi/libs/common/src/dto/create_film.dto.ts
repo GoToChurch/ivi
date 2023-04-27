@@ -6,6 +6,9 @@ export class CreateFilmDto {
     name: string
 
     @IsString({message: 'Должно быть строкой'})
+    originalName: string
+
+    @IsString({message: 'Должно быть строкой'})
     poster: string
 
     @IsString({message: 'Должно быть строкой'})
@@ -25,4 +28,17 @@ export class CreateFilmDto {
 
     @IsString({message: 'Должно быть строкой'})
     description: string
+
+    // directors
+    // actors
+    // writers
+    // producers
+    // cinematography
+    // musicians
+    // designers
+    // editors
+    // genres
+    // countries
+    // awards
+    // nominations
 }

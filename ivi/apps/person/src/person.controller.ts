@@ -56,12 +56,28 @@ export class PersonController {
         return this.personService.deletePerson(payload.id);
     }
 
-    @MessagePattern({ cmd: 'get-all-films-by-person' })
+    @MessagePattern({ cmd: 'get-all-persons-films' })
     async getAllPersonsFilms(@Ctx() context: RmqContext,
                              @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.getAllPersonsFilms(payload.name);
+        return this.personService.getAllPersonsFilms(payload.id);
+    }
+
+    @MessagePattern({ cmd: 'get-all-persons-films-by-profession' })
+    async getAllPersonsFilmsByProfession(@Ctx() context: RmqContext,
+                                         @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getAllPersonsFilmsByProfession(payload.id, payload.professionId);
+    }
+
+    @MessagePattern({ cmd: 'get-all-persons-professions' })
+    async getAllPersonsProfessions(@Ctx() context: RmqContext,
+                                   @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getAllPersonsProfessions(payload.id);
     }
 
     @MessagePattern({ cmd: 'add-film-for-person' })
@@ -124,6 +140,14 @@ export class PersonController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.personService.deleteProfession(payload.id);
+    }
+
+    @MessagePattern({ cmd: 'add-profession-for-person' })
+    async addProfessionsForPerson(@Ctx() context: RmqContext,
+                                  @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.addProfessionsForPerson(payload.person, payload.professions);
     }
 
 }

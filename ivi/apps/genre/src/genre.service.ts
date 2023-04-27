@@ -74,15 +74,11 @@ export class GenreService {
     }
 
     async deleteGenre(id: number) {
-        await this.genreRepository.destroy({
+        return await this.genreRepository.destroy({
             where: {
                 id
             }
         });
-    }
-
-    async addFilmsForGenre(film: Film, genre: Genre) {
-        genre.$add('film', film.id)
     }
 
     async getFilmsIdsByGenres(genres) {

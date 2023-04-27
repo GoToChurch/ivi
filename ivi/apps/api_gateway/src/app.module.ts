@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import {CommonModule} from "@app/common";
 import {AppService} from "./app.service";
+import {AppFilmsController} from "./controllers/app_films.controller";
+import {AppAwardsController} from "./controllers/app_awards.controller";
+import {AppCountriesController} from "./controllers/app_countries.controller";
+import {AppGenresController} from "./controllers/app_genres.controller";
+import {AppPersonsController} from "./controllers/app_persons.controller";
+import {AppController} from "./app.controller";
 
 
 @Module({
@@ -12,7 +17,7 @@ import {AppService} from "./app.service";
     CommonModule.registerRmq({name: 'GENRE'}),
     CommonModule.registerRmq({name: 'PERSON'}),
   ],
-  controllers: [AppController],
+  controllers: [AppFilmsController, AppAwardsController, AppCountriesController, AppGenresController, AppPersonsController, AppController],
   providers: [AppService]
 })
 export class AppModule {}
