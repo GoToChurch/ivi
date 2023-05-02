@@ -1,0 +1,106 @@
+import {Controller} from "@nestjs/common";
+import {CommonService} from "@app/common";
+import {AdminService} from "../services/admin.service";
+import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
+
+@Controller()
+export class AdminController {
+    constructor(private readonly adminService: AdminService,
+                private readonly commonService: CommonService) {}
+
+    @MessagePattern({ cmd: 'add-director' })
+    async addDirector(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addDirector(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-actor' })
+    async addActor(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addActor(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-producer' })
+    async addProducer(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addProducer(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-writer' })
+    async addWriter(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addWriter(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-cinematography' })
+    async addCinematography(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addCinematography(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-musician' })
+    async addMusician(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addMusician(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-designer' })
+    async addDesigner(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addDesigner(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-editor' })
+    async addEditor(@Ctx() context: RmqContext,
+                      @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addEditor(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-genre' })
+    async addGenre(@Ctx() context: RmqContext,
+                    @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addGenre(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-country' })
+    async addCountry(@Ctx() context: RmqContext,
+                    @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addCountry(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-award' })
+    async addAward(@Ctx() context: RmqContext,
+                    @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addAward(payload.id, payload.name);
+    }
+
+    @MessagePattern({ cmd: 'add-related-film' })
+    async addRelatedFilm(@Ctx() context: RmqContext,
+                   @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.adminService.addRelatedFilm(payload.id, payload.name);
+    }
+}

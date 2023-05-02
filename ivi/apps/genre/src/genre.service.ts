@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Op} from "sequelize";
 
-import {Film, Genre, FilmGenres, CreateGenreDto} from "@app/common";
+import {Genre, FilmGenres, CreateGenreDto} from "@app/common";
 
 
 @Injectable()
@@ -29,11 +29,7 @@ export class GenreService {
     }
 
     async getAllGenres() {
-        return await this.genreRepository.findAll({
-            include: {
-                all: true
-            }
-        });
+        return await this.genreRepository.findAll();
     }
 
     async getGenreByName(name: string) {

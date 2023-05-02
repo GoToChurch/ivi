@@ -13,7 +13,6 @@ export class CommonService {
                 urls: [this.configService.get<string>('RABBITMQ_URI')],
                 queue,
                 noAck,
-                persistent: true,
                 queueOptions: {
                     durable: true,
                 },

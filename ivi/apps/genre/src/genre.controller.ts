@@ -32,6 +32,14 @@ export class GenreController {
         return this.genreService.getGenreById(payload.id);
     }
 
+    @MessagePattern({ cmd: 'get-genre-by-name' })
+    async getGenreByName(@Ctx() context: RmqContext,
+                         @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.genreService.getGenreByName(payload.name);
+    }
+
     @MessagePattern({ cmd: 'edit-genre' })
     async editGenre(@Ctx() context: RmqContext,
                      @Payload() payload) {

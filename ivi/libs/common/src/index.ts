@@ -5,7 +5,7 @@ export * from './services/common.service';
 export * from './models/films_models/films/film_actors.model';
 export * from './models/films_models/films/film_cinematography.model';
 export * from './models/films_models/films/film_designers.model';
-export * from './models/films_models/films/film_directors.models';
+export * from './models/films_models/films/film_directors.model';
 export * from './models/films_models/films/film_editors.model';
 export * from './models/films_models/films/film_musicians.model';
 export * from './models/films_models/films/film_producers.model';
@@ -14,7 +14,7 @@ export * from './models/films_models/films/films.model';
 export * from './models/films_models/reviews/reviews.model';
 
 export * from './models/award_models/awards.model';
-export * from './models/award_models/award_nominations.models';
+export * from './models/award_models/award_nominations.model';
 export * from './models/award_models/film_awards.model';
 export * from './models/award_models/nominations.model';
 

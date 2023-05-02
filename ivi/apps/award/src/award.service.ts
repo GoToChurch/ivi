@@ -116,12 +116,12 @@ export class AwardService {
 
     async addFilmAndNominationsForAward(film: Film, awardDto, nominations) {
         for (const nominationDto of nominations) {
-            console.log(awardDto, nominationDto)
             let nomination = await this.getOrCreateNomination(nominationDto);
+            console.log("nom")
             const nominationId = nomination.id;
 
             let award = await this.getAwardByName(awardDto.name);
-
+            console.log("awa")
             await award.$add('nomination', nominationId);
 
             let filmAward = await this.filmAwardsRepository.findOne({

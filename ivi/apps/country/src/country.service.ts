@@ -29,11 +29,7 @@ export class CountryService {
     }
 
     async getAllCountries() {
-        return await this.countryRepository.findAll({
-            include: {
-                all: true
-            }
-        });
+        return await this.countryRepository.findAll();
     }
 
     async getCountryByName(name: string) {

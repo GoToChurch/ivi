@@ -1,10 +1,12 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {BadRequestException, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 
-import {Profession, Film, CreateFilmDto, Country, Award, Review} from "@app/common";
-import {countriesMap, genresMap} from "@app/common/maps/maps";
+import {Profession, Film, CreateFilmDto, Country} from "@app/common";
+import {genresMap} from "@app/common/maps/maps";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
+import {Op} from "sequelize";
+
 
 
 @Injectable()
@@ -16,11 +18,12 @@ export class FilmService {
               @Inject('COUNTRY') private readonly countryService: ClientProxy,) {}
 
   async createFilm(dto: CreateFilmDto, directors, actors, writers, producers, cinematography, musicians, designers,
-                   editors, genres, countries, awards) {
+                   editors, genres, countries, awards, relatedFilms) {
     let exists = await this.checkIfExists(dto);
 
     if (!exists) {
       const film = await this.filmRepository.create(dto);
+      film.$set('relatedFilms', []);
 
       await this.addDirectorsForFilm(film, directors);
       await this.addActorsForFilm(film, actors);
@@ -33,9 +36,9 @@ export class FilmService {
       await this.addGenresForFilm(film, genres);
       await this.addCountriesForFilm(film, countries);
       await this.addAwardsForFilm(film, awards);
+      await this.addRelatedFilmsForFilm(film, relatedFilms);
 
       film.$set('reviews', []);
-      film.$set('relatedFilms', []);
 
       return film;
     }
@@ -43,19 +46,48 @@ export class FilmService {
   }
 
   async getAllFilms(query) {
-    let films = await this.filmRepository.findAll({
-      include: {
-        all: true
-      }
-    });
+    let films = await this.filmRepository.findAll();
 
-    films = this.handleQuery(films, query)
+    films = await this.handleQuery(films, query)
 
     return films;
   }
 
   async getFilmById(id: number) {
     return await this.filmRepository.findByPk(id, {
+      include: {
+        all: true
+      }
+    });
+  }
+
+  async getFilmByName(name) {
+    return await this.filmRepository.findOne({
+      where: {
+        name
+      },
+      include: {
+        all: true
+      }
+    });
+  }
+
+  async getFilmsByName(name) {
+    return await this.filmRepository.findAll({
+      where: {
+        [Op.or]: [
+          {
+            name: {
+              [Op.substring]: `${name}`
+            }
+          },
+          {
+            originalName: {
+              [Op.substring]: `${name}`
+            }
+          }
+        ]
+      },
       include: {
         all: true
       }
@@ -85,7 +117,7 @@ export class FilmService {
 
   async filterFilmsByCountries(films, countries) {
     let filmsIds =  await lastValueFrom(this.countryService.send({
-              cmd: 'get-or-create-country',
+              cmd: 'get-countries-ids-by-genres',
             },
             {
               countries
@@ -264,14 +296,14 @@ export class FilmService {
   async addGenresForFilm(film: Film, genres) {
     await film.$set('genres', []);
 
-    for (const genreName of genres) {
+    for (const genreDto of genres) {
       const genre = await lastValueFrom(this.genreService.send({
                 cmd: 'get-or-create-genre'
               },
               {
                 dto: {
-                  name: genreName,
-                  englishName: genresMap.get(genreName)
+                  name: genreDto.name,
+                  englishName: genresMap.get(genreDto.name)
                 }
               })
       );
@@ -284,7 +316,6 @@ export class FilmService {
     await film.$set('countries', []);
 
     for (const countryDto of countries) {
-
       const country = await lastValueFrom(this.countryService.send<Country>({
         cmd: 'get-or-create-country',
       },
@@ -322,6 +353,15 @@ export class FilmService {
                 nominations
               })
       );
+    }
+  }
+
+  async addRelatedFilmsForFilm(film: Film, relatedFilms) {
+    for (const relatedFilmName of relatedFilms) {
+       const relatedFilm = await this.getFilmByName(relatedFilmName);
+       if (relatedFilm) {
+         film.$add('relatedFilm', relatedFilm.id);
+       }
     }
   }
 
@@ -367,11 +407,7 @@ export class FilmService {
     }
   }
 
-  async addRelatedFilm (film: Film, relatedFilm: Film) {
-    film.$add('relatedFilm', relatedFilm.id);
-  }
-
-  handleQuery(films, query) {
+  async handleQuery(films, query) {
     let filteredFilms: Film[] = films;
 
     if (query.rating_gte) {
@@ -379,6 +415,9 @@ export class FilmService {
     }
     if (query.ratingsNumber_gte) {
       filteredFilms = this.filterFilmsByRatingNumber(films, query);
+    }
+    if (query.search_query) {
+      filteredFilms = await this.getFilmsByName(query);
     }
 
     return filteredFilms;
@@ -393,6 +432,6 @@ export class FilmService {
         ratingsNumber: dto.ratingsNumber
       }
     })
-    return Boolean(film);
+    return !!film;
   }
 }

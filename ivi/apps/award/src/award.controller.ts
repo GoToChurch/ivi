@@ -32,6 +32,14 @@ export class AwardController {
         return this.awardService.getAwardById(payload.id);
     }
 
+    @MessagePattern({ cmd: 'get-award-by-name' })
+    async getAwardByName(@Ctx() context: RmqContext,
+                         @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.awardService.getAwardByName(payload.name);
+    }
+
     @MessagePattern({ cmd: 'edit-award' })
     async editAward(@Ctx() context: RmqContext,
                     @Payload() payload) {

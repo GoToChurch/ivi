@@ -32,11 +32,7 @@ export class PersonService {
     }
 
     async getAllPersons() {
-        return await this.personRepository.findAll({
-            include: {
-                all: true
-            },
-        });
+        return await this.personRepository.findAll();
     }
 
     async getPersonById(id: number) {
@@ -148,11 +144,7 @@ export class PersonService {
     }
 
     async getAllProfessions() {
-        return await this.professionepository.findAll({
-            include: {
-                all: true
-            },
-        });
+        return await this.professionepository.findAll();
     }
 
     async getProfessionById(id: number) {

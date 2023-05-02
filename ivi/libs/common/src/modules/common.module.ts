@@ -32,6 +32,8 @@ export class CommonModule {
               options: {
                 urls: [configService.get<string>('RABBITMQ_URI')],
                 queue: configService.get<string>(`RABBITMQ_${name}_QUEUE`),
+                noAck: false,
+                persistent: true,
                 queueOptions: {
                   durable: true, // queue survives broker restart
                 },

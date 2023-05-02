@@ -1,5 +1,5 @@
 import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescript";
-import {AwardNominations} from "./award_nominations.models";
+import {AwardNominations} from "./award_nominations.model";
 import {Nomination} from "./nominations.model";
 
 

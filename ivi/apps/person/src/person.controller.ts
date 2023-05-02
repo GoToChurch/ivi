@@ -40,6 +40,14 @@ export class PersonController {
         return this.personService.getPersonById(payload.id);
     }
 
+    @MessagePattern({ cmd: 'get-person-by-name' })
+    async getPersonByName(@Ctx() context: RmqContext,
+                          @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getPersonByName(payload.name);
+    }
+
     @MessagePattern({ cmd: 'edit-person' })
     async editPerson(@Ctx() context: RmqContext,
                          @Payload() payload) {

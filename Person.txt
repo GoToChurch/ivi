@@ -1,4 +1,0 @@
-- id
-- Имя varchar
-- Фильмы (many-to-many с таблице Film)
-- Профессия (many-to-many с таблице Profession)

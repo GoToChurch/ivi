@@ -28,7 +28,8 @@ export class FilmController {
         payload.editors,
         payload.genres,
         payload.countries,
-        payload.awards
+        payload.awards,
+        payload.relatedFilms
     );
   }
 
@@ -46,6 +47,14 @@ export class FilmController {
     // this.commonService.acknowledgeMessage(context)
 
     return this.filmService.getFilmById(payload.id);
+  }
+
+  @MessagePattern({ cmd: 'get-films-by-name' })
+  async getFilmsByName(@Ctx() context: RmqContext,
+                @Payload() payload) {
+    // this.commonService.acknowledgeMessage(context)
+
+    return this.filmService.getFilmsByName(payload.name);
   }
 
   @MessagePattern({ cmd: 'edit-film' })

@@ -1,5 +1,5 @@
 import {BelongsToMany, Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
-import {FilmDirectors} from "./film_directors.models";
+import {FilmDirectors} from "./film_directors.model";
 import {Person} from "../../persons_models/persons.model";
 import {FilmActors} from "./film_actors.model";
 import {FilmWriters} from "./film_writers.model";
@@ -22,11 +22,12 @@ interface FilmCreationAttrs {
     name: string,
     englishName: string,
     poster: string,
+    trailer: string,
     mpaaRating: string,
     rating: number,
     ratingsNumber: number,
     year: number,
-    duration: string,
+    duration: number,
     description: string,
 }
 
@@ -45,6 +46,9 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     poster: string
 
     @Column({type: DataType.STRING})
+    trailer: string
+
+    @Column({type: DataType.STRING})
     mpaaRating: string
 
     @Column({type: DataType.DECIMAL(2, 1)})
@@ -56,8 +60,8 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @Column({type: DataType.INTEGER, allowNull: false})
     year: number
 
-    @Column({type: DataType.STRING, allowNull: false})
-    duration: string
+    @Column({type: DataType.INTEGER})
+    duration: number
 
     @Column({type: DataType.TEXT})
     description: string

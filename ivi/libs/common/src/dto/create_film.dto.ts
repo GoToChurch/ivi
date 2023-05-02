@@ -12,6 +12,9 @@ export class CreateFilmDto {
     poster: string
 
     @IsString({message: 'Должно быть строкой'})
+    trailer: string
+
+    @IsString({message: 'Должно быть строкой'})
     mpaaRating: string
 
     @IsNumber({}, {message: 'Должно быть числом'})
@@ -23,22 +26,10 @@ export class CreateFilmDto {
     @IsNumber({}, {message: 'Должно быть числом'})
     year: number
 
-    @IsString({message: 'Должно быть строкой'})
-    duration: string
+    @IsNumber({}, {message: 'Должно быть числом'})
+    duration: number
 
     @IsString({message: 'Должно быть строкой'})
     description: string
 
-    // directors
-    // actors
-    // writers
-    // producers
-    // cinematography
-    // musicians
-    // designers
-    // editors
-    // genres
-    // countries
-    // awards
-    // nominations
 }

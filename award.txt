@@ -1,4 +1,0 @@
-- id
-- Название varchar
-- Год number
-- Номинации (many-to-many с таблицей nomination)

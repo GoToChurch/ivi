@@ -14,6 +14,8 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {ReviewController} from "./controllers/review.controller";
 import {ReviewService} from "./services/review.service";
 import {RelatedFilms} from "@app/common/models/films_models/films/related_films.model";
+import {AdminService} from "./services/admin.service";
+import {AdminController} from "./controllers/admin.controller";
 
 
 
@@ -30,7 +32,7 @@ import {RelatedFilms} from "@app/common/models/films_models/films/related_films.
     CommonModule.registerRmq({name: 'GENRE'}),
     CommonModule.registerRmq({name: 'PERSON'}),
   ],
-  controllers: [FilmController, ReviewController],
-  providers: [FilmService, ReviewService],
+  controllers: [FilmController, ReviewController, AdminController],
+  providers: [FilmService, ReviewService, AdminService],
 })
 export class FilmModule {}

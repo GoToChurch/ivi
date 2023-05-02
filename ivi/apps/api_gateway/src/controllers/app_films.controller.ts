@@ -4,7 +4,6 @@ import {AppService} from "../app.service";
 import {CreateFilmDto, CreateReviewDto} from "@app/common";
 
 
-
 @Controller()
 export class AppFilmsController {
     constructor(@Inject('FILM') private readonly filmService: ClientProxy,
@@ -12,35 +11,12 @@ export class AppFilmsController {
 
     @Post('/films')
     async createFilm(@Body() createFilmDto: CreateFilmDto) {
-        const directors = this.appService.getDirectors();
-        const actors = this.appService.getActors();
-        const writers = this.appService.getWriters();
-        const producers = this.appService.getProducers();
-        const cinematography = this.appService.getCinematography();
-        const musicians = this.appService.getMusicians();
-        const designers = this.appService.getDesigners();
-        const editors = this.appService.getEditors();
-        const genres = this.appService.getGenres();
-        const countries = this.appService.getCountries();
-        const awards = this.appService.getAwards();
-
         return this.filmService.send(
             {
                 cmd: 'create-film',
             },
             {
                 createFilmDto,
-                directors,
-                actors,
-                writers,
-                producers,
-                cinematography,
-                musicians,
-                designers,
-                editors,
-                genres,
-                countries,
-                awards
             },
         );
     }
@@ -67,6 +43,18 @@ export class AppFilmsController {
             },
             {
                 id
+            },
+        );
+    }
+
+    @Get('/films/name/:name')
+    async getFilmByName(@Param('name') name: any) {
+        return this.filmService.send(
+            {
+                cmd: 'get-films-by-name',
+            },
+            {
+                name
             },
         );
     }
@@ -260,5 +248,137 @@ export class AppFilmsController {
                 id
             }
         )
+    }
+
+    @Post('/films/:id/add/director')
+    async addDirector(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-director'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/actor')
+    async addActor(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-actor'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/writer')
+    async addWriter(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-writer'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/producer')
+    async addProducer(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-producer'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/cinematography')
+    async addCinematography(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-cinematography'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/musician')
+    async addMusician(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-musician'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/designer')
+    async addDesigner(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-designer'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/editor')
+    async addEditor(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-editor'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/genre')
+    async addGenre(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-genre'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/country')
+    async addCountry(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-country'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/award')
+    async addAward(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-award'
+        }, {
+            id,
+            name
+        })
+    }
+
+    @Post('/films/:id/add/relatedFilm')
+    async addRelatedFilm(@Body() name,
+                      @Param('id') id: any) {
+        return this.filmService.send({
+            cmd: 'add-related-film'
+        }, {
+            id,
+            name
+        })
     }
 }

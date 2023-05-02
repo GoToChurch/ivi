@@ -1,16 +1,14 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Controller, Get, Param, Req} from '@nestjs/common';
 import {AppService} from "./app.service";
-
-
-
 
 @Controller()
 export class AppController {
   constructor(private appService: AppService) {}
 
-    @Get('/parser')
-    async startParser() {
-      return this.appService.fillDataBase();
+    @Get('/parse/')
+    async startParser(@Req() request) {
+      const query = request.query;
+      return this.appService.parseFilms(query);
     }
 
   @Get('/parse/:id')

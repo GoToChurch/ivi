@@ -33,9 +33,18 @@ export class CountryController {
         return this.countryService.getCountryById(payload.id);
     }
 
+    @MessagePattern({cmd: 'get-country-by-name'})
+    async getCountryByName(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.countryService.getCountryByName(payload.name);
+    }
+
+
     @MessagePattern({cmd: 'get-or-create-country'})
     async getOrCreateCounty(@Ctx() context: RmqContext,
-                     @Payload() payload) {
+                            @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
         return this.countryService.getOrCreateCounty(payload.dto);
@@ -63,13 +72,5 @@ export class CountryController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.countryService.getFilmsIdsByCountries(payload.countries);
-    }
-
-    @MessagePattern({ cmd: 'get-or-create-country' })
-    async getOrCreateCountry(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
-        return this.countryService.getOrCreateCounty(payload.dto);
     }
 }
