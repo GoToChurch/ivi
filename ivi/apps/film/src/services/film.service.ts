@@ -72,28 +72,6 @@ export class FilmService {
     });
   }
 
-  async getFilmsByName(name) {
-    return await this.filmRepository.findAll({
-      where: {
-        [Op.or]: [
-          {
-            name: {
-              [Op.substring]: `${name}`
-            }
-          },
-          {
-            originalName: {
-              [Op.substring]: `${name}`
-            }
-          }
-        ]
-      },
-      include: {
-        all: true
-      }
-    });
-  }
-
   async filterFilms(genreFilter, yearFilter, countriesFilter, query) {
     let films: Film[] = await this.getAllFilms(query);
 
@@ -147,11 +125,15 @@ export class FilmService {
   }
 
   filterFilmsByRating(films, query) {
-      return films.filter(film => film.rating >= query.rating_gte)
+      return films.filter(film => film.rating >= query.rating_gte);
   }
 
   filterFilmsByRatingNumber(films, query) {
-      return films.filter(film => film.ratingsNumber >= query.ratingsNumber_gte)
+      return films.filter(film => film.ratingsNumber >= query.ratingsNumber_gte);
+  }
+
+  filterFilmsByName(films, query) {
+    return films.filter(film => film.name.includes(query.search_query) || film.originalName.includes(query.search_query));
   }
 
   async getFilmsByPerson(name: string) {
@@ -179,6 +161,20 @@ export class FilmService {
         id
       }
     })
+  }
+
+  async getAllPersons(id: number) {
+    const film = await this.getFilmById(id);
+    return {
+      directors: film.directors,
+      writers: film.writers,
+      producers: film.producers,
+      cinematography: film.cinematography,
+      musicians: film.musicians,
+      designers: film.designers,
+      editors: film.editors,
+      actors: film.actors,
+    }
   }
 
   async addDirectorsForFilm(film: Film, directors) {
@@ -410,14 +406,17 @@ export class FilmService {
   async handleQuery(films, query) {
     let filteredFilms: Film[] = films;
 
+    if (query.person) {
+      filteredFilms = await this.getFilmsByPerson(query.person);
+    }
+    if (query.search_query) {
+      filteredFilms = this.filterFilmsByName(films, query);
+    }
     if (query.rating_gte) {
       filteredFilms = this.filterFilmsByRating(films, query);
     }
     if (query.ratingsNumber_gte) {
       filteredFilms = this.filterFilmsByRatingNumber(films, query);
-    }
-    if (query.search_query) {
-      filteredFilms = await this.getFilmsByName(query);
     }
 
     return filteredFilms;

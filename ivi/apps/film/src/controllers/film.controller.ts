@@ -49,12 +49,12 @@ export class FilmController {
     return this.filmService.getFilmById(payload.id);
   }
 
-  @MessagePattern({ cmd: 'get-films-by-name' })
-  async getFilmsByName(@Ctx() context: RmqContext,
-                @Payload() payload) {
+  @MessagePattern({ cmd: 'get-all-persons' })
+  async getAllPersons(@Ctx() context: RmqContext,
+                      @Payload() payload) {
     // this.commonService.acknowledgeMessage(context)
 
-    return this.filmService.getFilmsByName(payload.name);
+    return this.filmService.getAllPersons(payload.id);
   }
 
   @MessagePattern({ cmd: 'edit-film' })

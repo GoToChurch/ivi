@@ -1,7 +1,8 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {AppService} from "../app.service";
-import {CreateGenreDto} from "@app/common";
+import {Country, CreateGenreDto, Genre} from "@app/common";
+import {ApiOperation, ApiResponse} from "@nestjs/swagger";
 
 
 @Controller()
@@ -9,6 +10,8 @@ export class AppGenresController {
     constructor(@Inject('GENRE') private readonly genreService: ClientProxy,
                 private appService: AppService) {}
 
+    @ApiOperation({summary: "Создание нового жанра"})
+    @ApiResponse({status: 201, type: Genre})
     @Post('/genres')
     async createGenre(@Body() createGenreDto: CreateGenreDto) {
         return this.genreService.send(
@@ -21,6 +24,8 @@ export class AppGenresController {
         );
     }
 
+    @ApiOperation({summary: "Получение списка всех жанров"})
+    @ApiResponse({status: 200, type: [CreateGenreDto]})
     @Get('/genres')
     async getAllGenres() {
         return this.genreService.send(
@@ -31,6 +36,8 @@ export class AppGenresController {
         );
     }
 
+    @ApiOperation({summary: "Получение жанра по id"})
+    @ApiResponse({status: 200, type: Genre})
     @Get('/genres/:id')
     async getGenre(@Param('id') id: any) {
         return this.genreService.send(
@@ -43,6 +50,8 @@ export class AppGenresController {
         )
     }
 
+    @ApiOperation({summary: "Редактирование жанра по id"})
+    @ApiResponse({status: 201, type: Genre})
     @Put('/genres/:id')
     async editGenre(@Body() createGenreDto: CreateGenreDto,
                     @Param('id') id: any) {
@@ -57,6 +66,8 @@ export class AppGenresController {
         )
     }
 
+    @ApiOperation({summary: "Удаление страны по id"})
+    @ApiResponse({status: 201})
     @Delete('/genres/:id')
     async deleteGenre(@Param('id') id: any) {
         return this.genreService.send(

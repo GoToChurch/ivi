@@ -1,5 +1,5 @@
 import {Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
-import {Film} from "./films.model";
+import {Film} from "@app/common";
 
 
 

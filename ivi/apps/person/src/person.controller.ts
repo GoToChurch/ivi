@@ -19,17 +19,18 @@ export class PersonController {
 
     @MessagePattern({ cmd: 'get-or-create-person' })
     async getOrCreatePerson(@Ctx() context: RmqContext,
-                                @Payload() payload) {
+                            @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
         return this.personService.getOrCreatePerson(payload.dto);
     }
 
     @MessagePattern({ cmd: 'get-all-persons' })
-    async getAllPersons(@Ctx() context: RmqContext) {
+    async getAllPersons(@Ctx() context: RmqContext,
+                        @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.getAllPersons();
+        return this.personService.getAllPersons(payload.query);
     }
 
     @MessagePattern({ cmd: 'get-person' })

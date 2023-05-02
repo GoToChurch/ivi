@@ -4,6 +4,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {Film, Person, Profession, PersonFilms, CreatePersonDto, CreateProfessionDto} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
+import {Op} from "sequelize";
 
 
 @Injectable()
@@ -31,8 +32,14 @@ export class PersonService {
         return person;
     }
 
-    async getAllPersons() {
-        return await this.personRepository.findAll();
+    async getAllPersons(query) {
+        let persons = await this.personRepository.findAll();
+
+        if (query) {
+            persons = this.handleQuery(persons, query)
+        }
+
+        return persons;
     }
 
     async getPersonById(id: number) {
@@ -47,8 +54,15 @@ export class PersonService {
         return await this.personRepository.findOne({
             where: {
                 name
+            },
+            include: {
+                all: true
             }
         })
+    }
+
+    filterPersonsByName(persons, query) {
+        return persons.filter(person => person.name.includes(query.search_query) || person.originalName.includes(query.search_query));
     }
 
     async getAllPersonsFilms(id: number) {
@@ -200,5 +214,15 @@ export class PersonService {
             const profession = await this.getOrCreateProfession(professionName);
             person.$add('profession', profession.id)
         }
+    }
+
+    handleQuery(persons, query) {
+        let filteredPersons: Person[] = persons;
+
+        if (query.search_query) {
+            filteredPersons = this.filterPersonsByName(persons, query);
+        }
+
+        return filteredPersons;
     }
 }

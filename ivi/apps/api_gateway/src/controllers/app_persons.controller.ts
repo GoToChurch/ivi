@@ -1,7 +1,8 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {CreatePersonDto, CreateProfessionDto} from "@app/common";
+import {CreateFilmDto, CreatePersonDto, CreateProfessionDto, Film, Person, Profession} from "@app/common";
 import {AppService} from "../app.service";
+import {ApiOperation, ApiQuery, ApiResponse} from "@nestjs/swagger";
 
 
 @Controller()
@@ -9,6 +10,8 @@ export class AppPersonsController {
     constructor(@Inject('PERSON') private readonly personService: ClientProxy,
                 private appService: AppService) {}
 
+    @ApiOperation({summary: "Создание новой персоны. Лучше этот метод не использовать, а использовать метод parse/:id"})
+    @ApiResponse({status: 201, type: Person})
     @Post('/persons')
     async createPerson(@Body() createPersonDto: CreatePersonDto) {
         return this.personService.send(
@@ -21,16 +24,24 @@ export class AppPersonsController {
         );
     }
 
+    @ApiOperation({summary: "Получение списка всех персон"})
+    @ApiQuery({ name: 'search_query', required: false, example: "Омар", description: "Поиск персоны по имени" +
+            "как на русском, так и на английском языке"})
+    @ApiResponse({status: 200, type: [CreatePersonDto]})
     @Get('/persons')
-    async getAllPersons() {
+    async getAllPersons(@Query() query) {
         return this.personService.send(
             {
                 cmd: 'get-all-persons',
             },
-            {},
+            {
+                query
+            },
         );
     }
 
+    @ApiOperation({summary: "Получение персоны по id"})
+    @ApiResponse({status: 200, type: Person})
     @Get('/persons/:id')
     async getPerson(@Param('id') id: any) {
         return this.personService.send(
@@ -43,6 +54,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Редактирование персоны по id"})
+    @ApiResponse({status: 201, type: Person})
     @Put('/persons/:id')
     async editPerson(@Body() createPersonDto: CreatePersonDto,
                      @Param('id') id: any) {
@@ -57,6 +70,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Получение списка всех фильмов персоны по id"})
+    @ApiResponse({status: 200, type: [CreateFilmDto]})
     @Get('/persons/:id/films')
     async getPersonsFilms(@Param('id') id: any) {
         return this.personService.send(
@@ -69,6 +84,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Получение списка всех профессий персоны по id"})
+    @ApiResponse({status: 200, type: [CreateProfessionDto]})
     @Get('/persons/:id/professions')
     async getPersonsProfessions(@Param('id') id: any) {
         return this.personService.send(
@@ -81,6 +98,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Получение списка всех фильмов персоны по id, в которых она принимала участие в качестве professionId"})
+    @ApiResponse({status: 200, type: [Film]})
     @Get('/persons/:id/films/:professionId')
     async getPersonsFilmsByProfession(@Param('id') id: any,
                                       @Param('professionId') professionId: any) {
@@ -95,6 +114,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Удаление персоны по id"})
+    @ApiResponse({status: 201})
     @Delete('/persons/:id')
     async deletePerson(@Param('id') id: any) {
         return this.personService.send(
@@ -107,6 +128,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Создание новой профессии"})
+    @ApiResponse({status: 201, type: Profession})
     @Post('/professions')
     async createProfession(@Body() createProfessionDto: CreateProfessionDto) {
         return this.personService.send(
@@ -119,6 +142,8 @@ export class AppPersonsController {
         );
     }
 
+    @ApiOperation({summary: "Получение списка всех профессий"})
+    @ApiResponse({status: 200, type: [CreateProfessionDto]})
     @Get('/professions')
     async getAllProfessions() {
         return this.personService.send(
@@ -129,6 +154,8 @@ export class AppPersonsController {
         );
     }
 
+    @ApiOperation({summary: "Получение профессии по id"})
+    @ApiResponse({status: 200, type: Profession})
     @Get('/professions/:id')
     async getProfession(@Param('id') id: any, @Req() req) {
         return this.personService.send(
@@ -141,6 +168,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Редактирование профессии по id"})
+    @ApiResponse({status: 201, type: Profession})
     @Put('/professions/:id')
     async editProfession(@Body() createProfessionDto: CreateProfessionDto,
                          @Param('id') id: any) {
@@ -155,6 +184,8 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Удаление профессии по id"})
+    @ApiResponse({status: 201})
     @Delete('/professions/:id')
     async deleteProfession(@Param('id') id: any) {
         return this.personService.send(

@@ -26,11 +26,7 @@ export class ReviewService {
     }
 
     async getAllReviews() {
-        return await this.reviewRepository.findAll({
-            include: {
-                all: true
-            }
-        });
+        return await this.reviewRepository.findAll();
     }
 
 
