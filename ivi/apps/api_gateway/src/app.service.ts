@@ -31,9 +31,9 @@ export class AppService {
         require('chromedriver');
         const {Builder} = require('selenium-webdriver');
         return await new Builder()
-            .forBrowser('chrome').build();
-            // .usingServer('http://chrome:4444/wd/hub')
-
+            .forBrowser('chrome')
+            .usingServer('http://chrome:4444/wd/hub')
+            .build();
     }
 
     async createFilmInDataBase(filmObject) {
