@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@nestjs/common";
+import {BadRequestException, HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
 import {CreateFilmDto} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
@@ -31,9 +31,9 @@ export class AppService {
         require('chromedriver');
         const {Builder} = require('selenium-webdriver');
         return await new Builder()
-            .forBrowser('chrome')
-            .usingServer('http://chrome:4444/wd/hub')
-            .build();
+            .forBrowser('chrome').build();
+            // .usingServer('http://chrome:4444/wd/hub')
+
     }
 
     async createFilmInDataBase(filmObject) {
@@ -63,7 +63,10 @@ export class AppService {
         const from = query.from ? query.from : 1;
         const to = query.to ? query.to : 2;
         const limit = query.limit ? query.limit : 10;
-        const driver = await this.createDriver();
+        if (![10, 25, 50, 75, 100, 200].includes(limit)) {
+            throw new HttpException("Фильмов на странице может быть только 10, 25, 50, 75, 100, 200", HttpStatus.BAD_REQUEST)
+        }
+
         const api_key = process.env.API_KEY;
 
         for (let i = from; i < to; i++) {
@@ -75,11 +78,10 @@ export class AppService {
             const resp = await f.json();
 
             for (let film of resp.docs) {
+                const driver = await this.createDriver();
                 await this.createFilmInDataBase(await this.parseFilm(film.id, api_key, driver))
             }
         }
-
-        await driver.quit();
 
     }
 
@@ -88,8 +90,6 @@ export class AppService {
         const driver = await this.createDriver();
 
         await this.createFilmInDataBase(await this.parseFilm(id, api_key, driver));
-
-        await driver.quit();
     }
 
     async parseFilm(id, api_key, driver) {
@@ -318,7 +318,7 @@ export class AppService {
         } catch (e) {
 
         } finally {
-            await driver.close();
+            await driver.quit();
         }
         return awards;
     }
