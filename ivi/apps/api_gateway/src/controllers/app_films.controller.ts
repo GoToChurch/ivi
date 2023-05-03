@@ -10,7 +10,7 @@ import {
     Film,
     Review
 } from "@app/common";
-import {ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse} from "@nestjs/swagger";
+import { ApiOperation, ApiParam, ApiQuery, ApiResponse} from "@nestjs/swagger";
 
 
 @Controller()
@@ -41,6 +41,7 @@ export class AppFilmsController {
             "Ищутся фильмы с рейтингом больше или равным указанному"})
     @ApiQuery({ name: 'ratingsNumber_gte', required: false, example: 10000, description: "Фильтрация фильмов по количеству оценок. " +
             "Ищутся фильмы с количеством оценок больше или равным указанному"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
     @Get('/films')
     async getAllFilms(@Query() query) {
@@ -130,6 +131,7 @@ export class AppFilmsController {
             "Ищутся фильмы с рейтингом больше или равным указанному"})
     @ApiQuery({ name: 'ratingsNumber_gte', required: false, example: 10000, description: "Фильтрация фильмов по количеству оценок. " +
             "Ищутся фильмы с количеством оценок больше или равным указанному"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
     @ApiParam({name: "filter1", example: "drama", description: "Первый фильтр"})
     @Get('/films/filter/:filter1')
@@ -169,6 +171,7 @@ export class AppFilmsController {
             "Ищутся фильмы с рейтингом больше или равным указанному"})
     @ApiQuery({ name: 'ratingsNumber_gte', required: false, example: 10000, description: "Фильтрация фильмов по количеству оценок. " +
             "Ищутся фильмы с количеством оценок больше или равным указанному"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
     @ApiParam({name: "filter1", example: "drama", description: "Первый фильтр"})
     @ApiParam({name: "filter2", example: 2010, description: "Второй фильтр"})
     @Get('/films/filter/:filter1/:filter2')
@@ -209,6 +212,7 @@ export class AppFilmsController {
             "Ищутся фильмы с рейтингом больше или равным указанному"})
     @ApiQuery({ name: 'ratingsNumber_gte', required: false, example: 10000, description: "Фильтрация фильмов по количеству оценок. " +
             "Ищутся фильмы с количеством оценок больше или равным указанному"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
     @ApiParam({name: "filter1", example: "drama", description: "Первый фильтр"})
     @ApiParam({name: "filter2", example: 2010, description: "Второй фильтр"})

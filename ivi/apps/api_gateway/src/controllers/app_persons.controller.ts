@@ -27,6 +27,7 @@ export class AppPersonsController {
     @ApiOperation({summary: "Получение списка всех персон"})
     @ApiQuery({ name: 'search_query', required: false, example: "Омар", description: "Поиск персоны по имени" +
             "как на русском, так и на английском языке"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
     @ApiResponse({status: 200, type: [CreatePersonDto]})
     @Get('/persons')
     async getAllPersons(@Query() query) {

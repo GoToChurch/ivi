@@ -71,7 +71,15 @@ export class FilmService {
   }
 
   async getAllFilms(query) {
-    let films = await this.filmRepository.findAll();
+    let films
+
+    if (query.limit) {
+      films = await this.filmRepository.findAll({
+        limit: query.limit
+      });
+    } else {
+      films = await this.filmRepository.findAll();
+    }
 
     films = await this.handleQuery(films, query)
 
