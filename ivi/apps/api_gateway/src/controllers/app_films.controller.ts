@@ -1,8 +1,16 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {AppService} from "../app.service";
-import {CreateFilmDto, CreateReviewDto, Film, Review} from "@app/common";
-import {ApiOperation, ApiParam, ApiQuery, ApiResponse} from "@nestjs/swagger";
+import {
+    AddPersonDto,
+    AddRelatedFilmDto,
+    CreateFilmDto,
+    CreateNominationDto,
+    CreateReviewDto,
+    Film,
+    Review
+} from "@app/common";
+import {ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse} from "@nestjs/swagger";
 
 
 @Controller()
@@ -57,6 +65,21 @@ export class AppFilmsController {
             },
             {
                 id
+            },
+        );
+    }
+
+    @ApiOperation({summary: "Получение списка фильмов с указанным названием. Работает с русским и оригинальным названиями"})
+    @ApiResponse({status: 200, type: Film})
+    @ApiParam({name: "id", example: 1})
+    @Get('/films/name/:name')
+    async getFilmsByName(@Param('name') name: any) {
+        return this.filmService.send(
+            {
+                cmd: 'get-films-by-name',
+            },
+            {
+                name
             },
         );
     }
@@ -325,13 +348,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/director')
-    async addDirector(@Body() name,
+    async addDirector(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-director'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -339,13 +362,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/actor')
-    async addActor(@Body() name,
+    async addActor(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-actor'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -353,13 +376,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/writer')
-    async addWriter(@Body() name,
+    async addWriter(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-writer'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -367,13 +390,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/producer')
-    async addProducer(@Body() name,
+    async addProducer(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-producer'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -381,13 +404,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/cinematography')
-    async addCinematography(@Body() name,
+    async addCinematography(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-cinematography'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -395,13 +418,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/musician')
-    async addMusician(@Body() name,
+    async addMusician(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-musician'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -409,13 +432,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/designer')
-    async addDesigner(@Body() name,
+    async addDesigner(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-designer'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -423,13 +446,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/editor')
-    async addEditor(@Body() name,
+    async addEditor(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-editor'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -437,13 +460,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/genre')
-    async addGenre(@Body() name,
+    async addGenre(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-genre'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -451,13 +474,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/country')
-    async addCountry(@Body() name,
+    async addCountry(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-country'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -465,13 +488,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/award')
-    async addAward(@Body() name,
+    async addAward(@Body() dto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-award'
         }, {
             id,
-            name
+            dto
         })
     }
 
@@ -479,13 +502,13 @@ export class AppFilmsController {
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
     @Post('/films/:id/add/relatedFilm')
-    async addRelatedFilm(@Body() name,
+    async addRelatedFilm(@Body() dto: AddRelatedFilmDto,
                          @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-related-film'
         }, {
             id,
-            name
+            dto
         })
     }
 

@@ -61,6 +61,17 @@ export class PersonService {
         })
     }
 
+    async getPersonsByName(name: string) {
+        return await this.personRepository.findAll({
+            where: {
+                [Op.or]: {
+                    name: name,
+                    originalName: name
+                }
+            },
+        })
+    }
+
     filterPersonsByName(persons, query) {
         return persons.filter(person => person.name.includes(query.search_query) || person.originalName.includes(query.search_query));
     }
@@ -207,6 +218,12 @@ export class PersonService {
 
     async createPersonFilm(filmId, personId, professionId) {
         return await this.personFilmsRepository.create({filmId: +filmId, personId: +personId, professionId: +professionId})
+    }
+
+    async addProfessionForPerson(personId, professionDto) {
+        const person = await this.getPersonById(personId);
+        const profession = await this.getProfessionByName(professionDto.name);
+        await person.$add('profession', profession.id);
     }
 
     async addProfessionsForPerson(person: Person, professions) {

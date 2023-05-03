@@ -1,8 +1,7 @@
-import {BadRequestException, HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
-import {CreateFilmDto} from "@app/common";
+import {HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
+import {CreateFilmDto, Driver} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
-import {spawnSync} from "child_process";
 
 const axios = require('axios');
 const cheerio = require('cheerio');
@@ -27,36 +26,32 @@ export class AppService {
         }
     }
 
-    async createDriver() {
-        require('chromedriver');
-        const {Builder} = require('selenium-webdriver');
-        return await new Builder()
-            .forBrowser('chrome')
-            .usingServer('http://chrome:4444/wd/hub')
-            .build();
-    }
-
     async createFilmInDataBase(filmObject) {
-        let createdFilm = await lastValueFrom(this.filmService.send(
-            {
-                cmd: 'create-film',
-            },
-            {
-                createFilmDto: filmObject.film,
-                directors: filmObject.creators.directors,
-                actors: filmObject.creators.actors,
-                writers: filmObject.creators.writers,
-                producers: filmObject.creators.producers,
-                cinematography: filmObject.creators.cinematography,
-                musicians: filmObject.creators.musicians,
-                designers: filmObject.creators.designers,
-                editors: filmObject.creators.editors,
-                genres: filmObject.genres,
-                countries: filmObject.countries,
-                awards: filmObject.awards,
-                relatedFilms: filmObject.relatedFilms,
-            })
-        );
+        try {
+            let createdFilm = await lastValueFrom(this.filmService.send(
+                {
+                    cmd: 'create-film',
+                },
+                {
+                    createFilmDto: filmObject.film,
+                    directors: filmObject.creators.directors,
+                    actors: filmObject.creators.actors,
+                    writers: filmObject.creators.writers,
+                    producers: filmObject.creators.producers,
+                    cinematography: filmObject.creators.cinematography,
+                    musicians: filmObject.creators.musicians,
+                    designers: filmObject.creators.designers,
+                    editors: filmObject.creators.editors,
+                    genres: filmObject.genres,
+                    countries: filmObject.countries,
+                    awards: filmObject.awards,
+                    relatedFilms: filmObject.relatedFilms,
+                })
+            );
+        } catch (e) {
+            throw new HttpException("Произошла ошибка на сервере при создании фильма", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     async parseFilms(query) {
@@ -64,7 +59,7 @@ export class AppService {
         const to = query.to ? query.to : 2;
         const limit = query.limit ? query.limit : 10;
         if (![10, 25, 50, 75, 100, 200].includes(limit)) {
-            throw new HttpException("Фильмов на странице может быть только 10, 25, 50, 75, 100, 200", HttpStatus.BAD_REQUEST)
+            throw new HttpException("Фильмов на странице может быть только 10, 25, 50, 75, 100, 200", HttpStatus.BAD_REQUEST);
         }
 
         const api_key = process.env.API_KEY;
@@ -76,10 +71,12 @@ export class AppService {
                 headers: {"content-type": "application/json; charset=UTF-8", 'X-API-Key': api_key}
             })
             const resp = await f.json();
+            const driver = await new Driver();
+
 
             for (let film of resp.docs) {
-                const driver = await this.createDriver();
-                await this.createFilmInDataBase(await this.parseFilm(film.id, api_key, driver))
+                await driver.startDriver();
+                await this.createFilmInDataBase(await this.parseFilm(film.id, api_key, driver.getDriver()));
             }
         }
 
@@ -87,34 +84,41 @@ export class AppService {
 
     async parseOneFilm(id) {
         let api_key = process.env.API_KEY;
-        const driver = await this.createDriver();
+        const driver = await new Driver();
+        await driver.startDriver();
 
-        await this.createFilmInDataBase(await this.parseFilm(id, api_key, driver));
+        await this.createFilmInDataBase(await this.parseFilm(id, api_key, driver.getDriver()));
     }
 
     async parseFilm(id, api_key, driver) {
-        let filmUrl = `https://api.kinopoisk.dev/v1.3/movie/${id}`
-        let fetchRes = await fetch(filmUrl,{
-            method: 'GET',
-            headers: {"content-type": "application/json; charset=UTF-8", 'X-API-Key': api_key}
-        })
-        const filmResp = await fetchRes.json();
+        let filmUrl = `https://api.kinopoisk.dev/v1.3/movie/${id}`;
+        let filmResp = null;
 
-        const film = this.parseFilmInfo(filmResp);
+        try {
+            let fetchRes = await fetch(filmUrl,{
+                method: 'GET',
+                headers: {"content-type": "application/json; charset=UTF-8", 'X-API-Key': api_key}
+            })
+            filmResp = await fetchRes.json();
+        } catch (e) {
+            throw new HttpException("Произошла ошибка при попытке запроса к api кинопоиска", HttpStatus.BAD_REQUEST);
+        }
+
+        const film = await this.parseFilmInfo(filmResp, api_key);
 
         const creators = this.parseCreators(filmResp);
 
         const genres = filmResp.genres;
-        const countries = await this.parseCountries(filmResp)
+        const countries = await this.parseCountries(filmResp);
 
 
-        let relatedFilms = []
+        let relatedFilms = [];
 
         for (let relatedFilm of filmResp.similarMovies) {
-            relatedFilms.push(relatedFilm.name)
+            relatedFilms.push({name: relatedFilm.name, originalName: relatedFilm.alternativeName})
         }
 
-        let awards = await this.getAwardsData(driver, `https://www.kinopoisk.ru/film/${filmResp.id}/`)
+        const awards = await this.getAwardsData(driver, `https://www.kinopoisk.ru/film/${filmResp.id}/`);
 
         return {
             film,
@@ -126,7 +130,7 @@ export class AppService {
         }
     }
 
-    parseFilmInfo(filmResp) {
+    async parseFilmInfo(filmResp, api_key) {
         let film: CreateFilmDto = {
             name: "",
             originalName: "",
@@ -186,9 +190,25 @@ export class AppService {
         if (year) {
             film.year = year;
         }
+
         const duration = filmResp.movieLength;
         if (duration) {
             film.duration = duration;
+        } else {
+            let serialUrl = `https://api.kinopoisk.dev/v1/season?page=1&limit=100&movieId=${filmResp.id}`
+            let serialResp = null;
+            try {
+                let fetchRes = await fetch(serialUrl,{
+                    method: 'GET',
+                    headers: {"content-type": "application/json; charset=UTF-8", 'X-API-Key': api_key}
+                })
+                serialResp = await fetchRes.json();
+            } catch (e) {
+                throw new HttpException("Произошла ошибка при попытке запроса к api кинопоиска", HttpStatus.BAD_REQUEST)
+            }
+
+            const docs = serialResp.docs
+            film.duration = docs[docs.length - 1].number;
         }
 
         return film;
@@ -216,8 +236,8 @@ export class AppService {
             const name = person.name
             const originalName = person.enName;
 
-            person.name = name ? name : originalName;
-            person.originalName = originalName ? originalName : name;
+            personDto.name = name ? name : originalName;
+            personDto.originalName = originalName ? originalName : name;
 
             const photo = person.photo;
 
@@ -235,7 +255,9 @@ export class AppService {
             }
             if (person.profession == 'актеры') {
                 personDto.professions.push('Актер');
-                actors.push(personDto);
+                if (actors.length <= 50) {
+                    actors.push(personDto);
+                }
             }
             if (person.profession == 'операторы') {
                 personDto.professions.push('Оператор');
@@ -290,7 +312,7 @@ export class AppService {
         await driver.get(link);
         let awards = [];
         try {
-            await driver.findElement(By.xpath(`//div[contains(@class, 'styles_awards__stpdy')]/a`)).click();
+            await driver.findElement(By.xpath(`//div[contains(@class, 'styles_awards')]/a`)).click();
             const awardsElements = await driver.findElements(By.xpath(`//table//td//table[@class='js-rum-hero']//table[contains(@style, 'background')]`));
             for (let i = 1; i <= awardsElements.length; i++) {
                 let award = {
@@ -304,7 +326,7 @@ export class AppService {
                 award.name = name[0];
                 award.year = Number(name[1].replace(' год', ''));
 
-                const nominatoinsElements = await driver.findElements(By.xpath(`//a[contains(text(),'${name[0]}')]/parent::b/parent::td/parent::tr/parent::tbody//b[text()='Победитель']/ancestor::tr/following-sibling::tr[1]//ul//li`));
+                const nominatoinsElements = await driver.findElements(By.xpath(`//a[contains(text(),'${name[0]}, ${name[1]}')]/parent::b/parent::td/parent::tr/parent::tbody//b[text()='Победитель']/ancestor::tr/following-sibling::tr[1]//ul//li`));
 
                 if (nominatoinsElements.length > 0) {
                     for (let k = 1; k <= nominatoinsElements.length; k++) {
@@ -316,7 +338,8 @@ export class AppService {
                 }
             }
         } catch (e) {
-
+            console.log(e)
+            throw new HttpException("Произошла ошибка при парсинге кинопоиска. Повторите попытку", HttpStatus.INTERNAL_SERVER_ERROR)
         } finally {
             await driver.quit();
         }

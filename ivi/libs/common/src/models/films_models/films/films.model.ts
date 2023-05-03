@@ -70,7 +70,7 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @Column({type: DataType.INTEGER, allowNull: false})
     year: number
 
-    @ApiProperty({example: 120, description: "Продолжительность фильма в минутах"})
+    @ApiProperty({example: 120, description: "Продолжительность фильма в минутах или количество сезонов для сериалов"})
     @Column({type: DataType.INTEGER})
     duration: number
 
@@ -127,6 +127,6 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     reviews: Review[];
 
     @ApiProperty({example: [{}, {}], description: "Список похожих фильмов"})
-    @BelongsToMany(() => Film, () => RelatedFilms)
-    relatedFilms: Film[];
+    @BelongsToMany(() => Film, () => RelatedFilms, 'filmId', 'relatedFilmId')
+    relatedFilms;
 }

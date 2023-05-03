@@ -37,3 +37,7 @@ export * from './dto/create_person.dto';
 export * from './dto/create_nomination.dto';
 export * from './dto/create_profession.dto';
 export * from './dto/create_review.dto';
+export * from './dto/add_person,dto';
+export * from './dto/add_relatedFilm.dto';
+
+export * from './driver'

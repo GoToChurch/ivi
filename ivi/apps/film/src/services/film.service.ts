@@ -1,7 +1,17 @@
 import {BadRequestException, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 
-import {Profession, Film, CreateFilmDto, Country} from "@app/common";
+import {
+  Profession,
+  Film,
+  CreateFilmDto,
+  Country,
+  Person,
+  Genre,
+
+  Review, Award,
+
+} from "@app/common";
 import {genresMap} from "@app/common/maps/maps";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
@@ -11,6 +21,22 @@ import {Op} from "sequelize";
 
 @Injectable()
 export class FilmService {
+  INCLUDE_ARRAY = [
+    {model: Person, as: 'directors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'writers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'producers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'cinematography', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'musicians', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'designers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'editors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Person, as: 'actors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
+    {model: Country, attributes: ['id', 'name', 'englishName'], through: { attributes: [] }},
+    {model: Genre, attributes: ['id', 'name', 'englishName'], through: { attributes: [] }},
+    {model: Film, attributes: ['id', 'name', 'originalName'], through: { attributes: [] }},
+    {model: Award, through: { attributes: [] }},
+    {model: Review}
+  ]
+
   constructor(@InjectModel(Film) private filmRepository: typeof Film,
               @Inject('PERSON') private readonly personService: ClientProxy,
               @Inject('GENRE') private readonly genreService: ClientProxy,
@@ -23,7 +49,6 @@ export class FilmService {
 
     if (!exists) {
       const film = await this.filmRepository.create(dto);
-      film.$set('relatedFilms', []);
 
       await this.addDirectorsForFilm(film, directors);
       await this.addActorsForFilm(film, actors);
@@ -54,21 +79,46 @@ export class FilmService {
   }
 
   async getFilmById(id: number) {
-    return await this.filmRepository.findByPk(id, {
-      include: {
-        all: true
-      }
-    });
+    try {
+      return await this.filmRepository.findByPk(id, {
+        include: this.INCLUDE_ARRAY
+      });
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   async getFilmByName(name) {
+    try {
+      return await this.filmRepository.findOne({
+        where: {
+          name
+        },
+        include: this.INCLUDE_ARRAY
+      });
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  async getFilmsByName(name) {
+    return await this.filmRepository.findAll({
+      where: {
+        [Op.or]: {
+          name: name,
+          originalName: name
+        }
+      },
+    });
+  }
+
+  async getFilmByNameAndOriginalName(name, originalName) {
     return await this.filmRepository.findOne({
       where: {
-        name
+        name,
+        originalName
       },
-      include: {
-        all: true
-      }
+      include: this.INCLUDE_ARRAY
     });
   }
 
@@ -353,10 +403,13 @@ export class FilmService {
   }
 
   async addRelatedFilmsForFilm(film: Film, relatedFilms) {
-    for (const relatedFilmName of relatedFilms) {
-       const relatedFilm = await this.getFilmByName(relatedFilmName);
-       if (relatedFilm) {
-         film.$add('relatedFilm', relatedFilm.id);
+    await film.$set('relatedFilms', []);
+
+    for (const relatedFilmObject of relatedFilms) {
+       const relatedFilm = await this.getFilmByName(relatedFilmObject.name);
+       if (relatedFilm && relatedFilm.originalName !== film.originalName) {
+         await film.$add('relatedFilm', relatedFilm.id);
+         await relatedFilm.$add('relatedFilm', film.id);
        }
     }
   }
@@ -383,7 +436,7 @@ export class FilmService {
       const professions = personDto.professions;
 
       await this.personService.send({
-        cmd: 'add-profession-for-person'
+        cmd: 'add-professions-for-person'
       }, {
         person,
         professions

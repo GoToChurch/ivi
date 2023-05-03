@@ -35,7 +35,7 @@ export class CreateFilmDto {
     @IsNumber({}, {message: 'Должно быть числом'})
     year: number
 
-    @ApiProperty({example: 120, description: "Продолжительность фильма в минутах"})
+    @ApiProperty({example: 120, description: "Продолжительность фильма в минутах или количество сезонов для сериалов"})
     @IsNumber({}, {message: 'Должно быть числом'})
     duration: number
 

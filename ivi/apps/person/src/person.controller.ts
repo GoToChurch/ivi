@@ -49,6 +49,14 @@ export class PersonController {
         return this.personService.getPersonByName(payload.name);
     }
 
+    @MessagePattern({ cmd: 'get-persons-by-name' })
+    async getPersonsByName(@Ctx() context: RmqContext,
+                          @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.getPersonsByName(payload.name);
+    }
+
     @MessagePattern({ cmd: 'edit-person' })
     async editPerson(@Ctx() context: RmqContext,
                          @Payload() payload) {
@@ -152,6 +160,14 @@ export class PersonController {
     }
 
     @MessagePattern({ cmd: 'add-profession-for-person' })
+    async addProfessionForPerson(@Ctx() context: RmqContext,
+                                 @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.personService.addProfessionForPerson(payload.id, payload.dto);
+    }
+
+    @MessagePattern({ cmd: 'add-professions-for-person' })
     async addProfessionsForPerson(@Ctx() context: RmqContext,
                                   @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)

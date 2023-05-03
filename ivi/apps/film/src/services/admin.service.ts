@@ -1,6 +1,6 @@
 import {BadRequestException, Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Film} from "@app/common";
+import {AddPersonDto, AddRelatedFilmDto, Film} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 import {FilmService} from "./film.service";
@@ -15,55 +15,56 @@ export class AdminService {
                 private filmService: FilmService) {
     }
 
-    async addRelatedFilm (id: number, relatedFilmName) {
-        const relatedFilm = await this.filmService.getFilmByName(relatedFilmName);
+    async addRelatedFilm (id: number, relatedFilmDto: AddRelatedFilmDto) {
+        const relatedFilm = await this.filmService.getFilmById(relatedFilmDto.id);
         const film = await this.filmService.getFilmById(id);
 
         if (relatedFilm) {
-            await film.$add('relatedFilm', relatedFilm.id)
+            await film.$add('relatedFilm', relatedFilm.id);
+            await relatedFilm.$add('relatedFilm', film.id);
         } else {
             throw new BadRequestException();
         }
     }
 
-    async addDirector(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'director');
+    async addDirector(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'director');
     }
 
     async addActor(filmId: number, personName) {
         await this.addCreator(filmId, personName, 'actor');
     }
 
-    async addWriter(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'writer');
+    async addWriter(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'writer');
     }
 
-    async addProducer(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'producer');
+    async addProducer(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'producer');
     }
 
-    async addCinematography(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'cinematography');
+    async addCinematography(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'cinematography');
     }
 
-    async addMusician(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'musician');
+    async addMusician(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'musician');
     }
 
-    async addDesigner(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'designer');
+    async addDesigner(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'designer');
     }
 
-    async addEditor(filmId: number, personName) {
-        await this.addCreator(filmId, personName, 'editor');
+    async addEditor(filmId: number, personDto: AddPersonDto) {
+        await this.addCreator(filmId, personDto.id, 'editor');
     }
 
-    async addCreator(filmId: number, personName, professionName) {
+    async addCreator(filmId: number, personId, professionName) {
         const person = await lastValueFrom(this.personService.send({
-                    cmd: 'get-person-by-name'
+                    cmd: 'get-person-by-id'
                 },
                 {
-                    name: personName
+                    id: personId
                 })
         );
 

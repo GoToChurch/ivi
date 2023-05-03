@@ -54,6 +54,20 @@ export class AppPersonsController {
         )
     }
 
+    @ApiOperation({summary: "Получение всех персон с указанным именем. Работает с русским и оригинальным именами"})
+    @ApiResponse({status: 200, type: [Person]})
+    @Get('/persons/name/:name')
+    async getPersonsByName(@Param('name') name: any) {
+        return this.personService.send(
+            {
+                cmd: 'get-persons-by-name'
+            },
+            {
+                name
+            }
+        )
+    }
+
     @ApiOperation({summary: "Редактирование персоны по id"})
     @ApiResponse({status: 201, type: Person})
     @Put('/persons/:id')
@@ -196,5 +210,19 @@ export class AppPersonsController {
                 id
             }
         )
+    }
+
+    @ApiOperation({summary: "Добавление профессии персоне"})
+    @ApiResponse({status: 201, type: Profession})
+    @Post('/person/:id/add/profession')
+    async addProfessionForPerson(@Body() dto: CreateProfessionDto) {
+        return this.personService.send(
+            {
+                cmd: 'add-profession-for-person',
+            },
+            {
+                dto
+            },
+        );
     }
 }
