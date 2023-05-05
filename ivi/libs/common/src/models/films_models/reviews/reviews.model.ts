@@ -21,7 +21,7 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
     title: string
 
     @ApiProperty({example: "Мне понравился фильм.", description: "Текст комментария"})
-    @Column({type: DataType.TEXT})
+    @Column({type: DataType.TEXT, allowNull: false})
     text: string
 
     @ApiProperty({example: 36, description: "Рейтинг комментария"})

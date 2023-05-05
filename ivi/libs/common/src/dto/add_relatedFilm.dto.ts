@@ -1,9 +1,10 @@
-import {IsNumber, IsString} from "class-validator";
+import {IsNumber, IsString, Min} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 
 
 export class AddRelatedFilmDto {
     @ApiProperty({example: 2, description: "id фильма"})
-    @IsString({message: 'Должно быть строкой'})
+    @IsNumber({}, {message: 'Должно быть числом'})
+    @Min(1)
     id: number
 }

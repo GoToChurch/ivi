@@ -1,6 +1,11 @@
 import {Module} from '@nestjs/common';
 import { FilmController } from './controllers/film.controller';
 import { FilmService } from './services/film.service';
+import {SequelizeModule} from "@nestjs/sequelize";
+import {ReviewController} from "./controllers/review.controller";
+import {ReviewService} from "./services/review.service";
+import {AdminService} from "./services/admin.service";
+import {AdminController} from "./controllers/admin.controller";
 import {
   CommonModule,
   Film, FilmActors,
@@ -8,14 +13,8 @@ import {
   FilmDirectors,
   FilmEditors, FilmGenres,
   FilmMusicians, FilmProducers, FilmWriters,
-  PostgresDBModule, Review
+  PostgresDBModule, RelatedFilms, Review
 } from "@app/common";
-import {SequelizeModule} from "@nestjs/sequelize";
-import {ReviewController} from "./controllers/review.controller";
-import {ReviewService} from "./services/review.service";
-import {RelatedFilms} from "@app/common/models/films_models/films/related_films.model";
-import {AdminService} from "./services/admin.service";
-import {AdminController} from "./controllers/admin.controller";
 
 
 

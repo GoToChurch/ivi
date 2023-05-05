@@ -20,7 +20,7 @@ export class ReviewService {
             review.parentId = parentId;
         }
 
-        review.save();
+        await review.save();
 
         return review;
     }

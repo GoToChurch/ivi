@@ -11,6 +11,7 @@ export * from './models/films_models/films/film_musicians.model';
 export * from './models/films_models/films/film_producers.model';
 export * from './models/films_models/films/film_writers.model';
 export * from './models/films_models/films/films.model';
+export * from './models/films_models/films/related_films.model';
 export * from './models/films_models/reviews/reviews.model';
 
 export * from './models/award_models/awards.model';

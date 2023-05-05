@@ -13,7 +13,7 @@ export class GenreService {
 
     async createGenre(dto: CreateGenreDto) {
         const genre =  await this.genreRepository.create(dto);
-        genre.$set('films', [])
+        await genre.$set('films', [])
 
         return genre;
     }

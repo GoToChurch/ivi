@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@nestjs/common";
+import {HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 
 import {Film, Person, Profession, PersonFilms, CreatePersonDto, CreateProfessionDto} from "@app/common";
@@ -15,11 +15,15 @@ export class PersonService {
                 @Inject('FILM') private readonly filmService: ClientProxy) {}
 
     async createPerson(dto: CreatePersonDto) {
-        const person = await this.personRepository.create(dto);
-        await person.$set('films', []);
-        await person.$set('professions', []);
+        try {
+            const person = await this.personRepository.create(dto);
+            await person.$set('films', []);
+            await person.$set('professions', []);
 
-        return person;
+            return person;
+        } catch (e) {
+            throw new HttpException("Произошла ошибка при создании персоны. Проверьте входные данные", HttpStatus.BAD_REQUEST);
+        }
     }
 
     async getOrCreatePerson(dto: CreatePersonDto) {
@@ -32,17 +36,17 @@ export class PersonService {
         return person;
     }
 
-    async getAllPersons(query) {
-        let persons
-        if (query.limit) {
-            persons = await this.personRepository.findAll({
-                limit: query.limit
-            });
-        } else {
-            persons = await this.personRepository.findAll();
-        }
+    async getAllPersons(query?) {
+        let persons;
 
         if (query) {
+            if (query.limit) {
+                persons = await this.personRepository.findAll({
+                    limit: query.limit
+                });
+            } else {
+                persons = await this.personRepository.findAll();
+            }
             persons = this.handleQuery(persons, query)
         }
 
@@ -125,13 +129,17 @@ export class PersonService {
     }
 
     async editPerson(dto: CreatePersonDto, id: number) {
-        await this.personRepository.update({...dto}, {
-            where: {
-                id
-            }
-        });
+        try {
+            await this.personRepository.update({...dto}, {
+                where: {
+                    id
+                }
+            });
 
-        return this.getPersonById(id);
+            return this.getPersonById(id);
+        } catch (e) {
+            throw new HttpException("Произошла ошибка при редактировании персоны. Проверьте входные данные", HttpStatus.BAD_REQUEST)
+        }
     }
 
     async deletePerson(id: number) {
@@ -152,7 +160,7 @@ export class PersonService {
         const professionId = profession.id;
         const person = await this.getPersonById(personDto.id)
 
-        person.$add('profession',professionId);
+        await person.$add('profession',professionId);
 
         const filmProfession = await this.personFilmsRepository.findOne({
             where: {
@@ -165,14 +173,18 @@ export class PersonService {
             await this.createPersonFilm(film.id, personDto.id, professionId)
         } else {
             filmProfession.professionId = professionId;
-            filmProfession.save();
+            await filmProfession.save();
         }
 
         return filmProfession;
     }
 
     async createProfession(dto: CreateProfessionDto) {
-        return await this.professionepository.create(dto);
+        try {
+            return await this.professionepository.create(dto);
+        } catch (e) {
+            throw new HttpException("Произошла ошибка при создании профессии. Проверьте входные данные", HttpStatus.BAD_REQUEST);
+        }
     }
 
     async getAllProfessions() {
@@ -196,13 +208,17 @@ export class PersonService {
     }
 
     async editProfession(dto: CreateProfessionDto, id: number) {
-        await this.professionepository.update({...dto}, {
-            where: {
-                id
-            }
-        });
+        try {
+            await this.professionepository.update({...dto}, {
+                where: {
+                    id
+                }
+            });
 
-        return this.getProfessionById(id);
+            return this.getProfessionById(id);
+        } catch (e) {
+            throw new HttpException("Произошла ошибка при редактировании профессии. Проверьте входные данные", HttpStatus.BAD_REQUEST);
+        }
     }
 
     async deleteProfession(id: number) {
@@ -236,7 +252,7 @@ export class PersonService {
     async addProfessionsForPerson(person: Person, professions) {
         for (const professionName of professions) {
             const profession = await this.getOrCreateProfession(professionName);
-            person.$add('profession', profession.id)
+            await person.$add('profession', profession.id)
         }
     }
 

@@ -75,8 +75,12 @@ export class AppService {
 
 
             for (let film of resp.docs) {
-                await driver.startDriver();
-                await this.createFilmInDataBase(await this.parseFilm(film.id, api_key, driver.getDriver()));
+                try {
+                    await driver.startDriver();
+                    await this.createFilmInDataBase(await this.parseFilm(film.id, api_key, driver.getDriver()));
+                } catch (e) {
+                    continue
+                }
             }
         }
 
@@ -339,7 +343,7 @@ export class AppService {
             }
         } catch (e) {
             console.log(e)
-            throw new HttpException("Произошла ошибка при парсинге кинопоиска. Повторите попытку", HttpStatus.INTERNAL_SERVER_ERROR)
+            throw new HttpException("Произошла ошибка при парсинге кинопоиска. Повторите попытку позже", HttpStatus.INTERNAL_SERVER_ERROR)
         } finally {
             await driver.quit();
         }

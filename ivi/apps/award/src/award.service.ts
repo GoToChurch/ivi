@@ -135,7 +135,7 @@ export class AwardService {
                 filmAward.nominationId = nominationId
             }
 
-            filmAward.save();
+            await filmAward.save();
         }
 
         return film;

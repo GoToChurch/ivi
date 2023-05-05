@@ -19,11 +19,11 @@ export class Person extends Model<Person, PersonCreationAttrs> {
     id: number
 
     @ApiProperty({example: "Омар Си", description: "Полное имя персоны"})
-    @Column({type: DataType.STRING})
+    @Column({type: DataType.STRING, allowNull: false})
     name: string
 
     @ApiProperty({example: "Omar cy", description: "Полное имя персоны на оригальном языке"})
-    @Column({type: DataType.STRING})
+    @Column({type: DataType.STRING, allowNull: false})
     originalName: string
 
     @ApiProperty({example: "http://example.com/photo", description: "Ссылка на фото персоны"})

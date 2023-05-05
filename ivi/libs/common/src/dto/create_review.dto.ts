@@ -9,5 +9,6 @@ export class CreateReviewDto {
 
     @ApiProperty({example: "Мне понравился фильм.", description: "Текст комментария"})
     @IsString({message: 'Должно быть строкой'})
+    @Length(1)
     text: string
 }
