@@ -37,16 +37,9 @@ export class PersonService {
     }
 
     async getAllPersons(query?) {
-        let persons;
+        let persons = await this.personRepository.findAll();
 
         if (query) {
-            if (query.limit) {
-                persons = await this.personRepository.findAll({
-                    limit: query.limit
-                });
-            } else {
-                persons = await this.personRepository.findAll();
-            }
             persons = this.handleQuery(persons, query)
         }
 
@@ -262,7 +255,9 @@ export class PersonService {
         if (query.search_query) {
             filteredPersons = this.filterPersonsByName(persons, query);
         }
-
+        if (query.limit) {
+            filteredPersons = filteredPersons.slice(0, query.limit + 1);
+        }
         return filteredPersons;
     }
 }

@@ -76,17 +76,9 @@ export class FilmService {
   }
 
   async getAllFilms(query?) {
-    let films;
+    let films = await this.filmRepository.findAll();
 
     if (query) {
-      if (query.limit) {
-        films = await this.filmRepository.findAll({
-          limit: query.limit
-        });
-      } else {
-        films = await this.filmRepository.findAll();
-      }
-
       films = await this.handleQuery(films, query)
     }
 
@@ -519,7 +511,9 @@ export class FilmService {
     if (query.ratingsNumber_gte) {
       filteredFilms = this.filterFilmsByRatingNumber(filteredFilms, query);
     }
-
+    if (query.limit) {
+      filteredFilms = filteredFilms.slice(0, query.limit + 1);
+    }
     return filteredFilms;
   }
 

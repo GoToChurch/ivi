@@ -12,7 +12,7 @@ export const genresMap = new Map([
     ['военный', 'military'],
     ['документальный', 'documentary'],
     ['криминал', 'criminal'],
-    ['музыкальный', 'music'],
+    ['музыка', 'music'],
     ['спорт', 'sport'],
     ['фантастика', 'fantastic'],
     ['детектив', 'detective'],
@@ -25,11 +25,5 @@ export const genresMap = new Map([
     ['фильм-нуар', 'noir'],
     ['семейный', 'forFamily'],
     ['мультфильм', 'cartoon'],
-    ]
-)
-
-export const countriesMap = new Map([
-        ['США', 'us'],
-        ['Россия', 'ru']
     ]
 )
