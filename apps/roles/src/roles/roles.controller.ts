@@ -1,7 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller} from '@nestjs/common';
 import { RolesService } from './roles.service';
-import {Ctx, EventPattern, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {CreateRoleGTO} from "../ROLES_DTO/role_create_dto";
+import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 
 @Controller('/api/v1/roles')
 export class RolesController {

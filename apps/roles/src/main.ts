@@ -1,14 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import {AppModule} from "./app.module";
 import {ConfigService} from "@nestjs/config";
-import {GlobalService} from "@lib/global";
+import {CommonService} from "@app/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
-  const globalService = app.get(GlobalService);
-  const queue = 'ROLES'
+  const globalService = app.get(CommonService);
+  const queue = configService.get('RABBITMQ_ROLES_QUEUE')//'ROLES'
 
   app.connectMicroservice(globalService.getRmqOptions(queue, true));
   await app.startAllMicroservices()

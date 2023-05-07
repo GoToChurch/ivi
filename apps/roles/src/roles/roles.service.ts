@@ -1,15 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {Role} from "@lib/global";
-import {CreateRoleGTO} from "../ROLES_DTO/role_create_dto";
+import {Role} from "@app/common";
+import {CreateRoleGTO} from "@app/common";
 
 @Injectable()
 export class RolesService {
   constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {
   }
   async create_role(dto: CreateRoleGTO) {
-    const new_role = await this.roleRepository.create(dto);
-    return new_role;
+    const existing_role = await this.getRoleByValue(dto.value);
+    if(!existing_role) {
+      const new_role = await this.roleRepository.create(dto);
+      return new_role;
+    }
+    throw new HttpException('Такая роль уже существует', HttpStatus.BAD_REQUEST)
   }
 
   async getAllRoles() {

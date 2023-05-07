@@ -1,18 +1,19 @@
 import {NestFactory} from '@nestjs/core';
-import {AppModule} from "./app.module";
+import {AppAuthModule} from "./app.auth.module";
 import {ConfigService} from "@nestjs/config";
-import {GlobalService} from "@lib/global";
+import {CommonService} from "@app/common";
 import * as session from "express-session";
 import * as passport from "passport";
 
 
+
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppAuthModule);
 
     const configService = app.get(ConfigService);
-    const globalService = app.get(GlobalService);
-    const queue_1 = 'USERS'
-    const queue_2 = 'AUTH'
+    const commonService = app.get(CommonService);
+    const queue_1 = configService.get('RABBITMQ_USERS_QUEUE'); //'USERS'
+    const queue_2 = configService.get('RABBITMQ_AUTH_QUEUE');//'AUTH'
 
     app.use(session({
         cookie: {
@@ -27,8 +28,8 @@ async function bootstrap() {
     app.use(passport.session())
     app.setGlobalPrefix('api')
 
-    app.connectMicroservice(globalService.getRmqOptions(queue_1, true));
-    app.connectMicroservice(globalService.getRmqOptions(queue_2, true));
+    app.connectMicroservice(commonService.getRmqOptions(queue_1, true));
+    app.connectMicroservice(commonService.getRmqOptions(queue_2, true));
 
     await app.startAllMicroservices();
 

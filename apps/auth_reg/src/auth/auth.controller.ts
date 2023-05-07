@@ -1,45 +1,41 @@
 import {Controller, Get, Req, Session, UseGuards} from '@nestjs/common';
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {GlobalService} from "@lib/global";
 import {AuthService} from "./auth.service";
-import {GoogleAuthenticatedGuard, GoogleAuthGuard} from "@lib/global/guards/google.guard";
-
-
+import {GoogleAuthenticatedGuard} from "@app/common";
+import {VkAuthGuard} from "@app/common";
 
 
 @Controller("/auth")
 export class AuthController {
-    constructor(private readonly authService: AuthService,
-                private readonly globalService: GlobalService) {
+    constructor(private readonly authService: AuthService) {
     }
 
     @MessagePattern({cmd: "login"})
     async login(@Ctx() context: RmqContext,
-                       @Payload() payload) {
+                @Payload() payload) {
         console.log(payload)
-        //this.globalService.acknowledgeMessage(context)
         return await this.authService.login(payload)
     }
 
     @MessagePattern({cmd: "google_login"})
     async google_login(@Ctx() context: RmqContext,
-                @Payload() payload) {
+                       @Payload() payload) {
         console.log(payload)
         await this.authService.validateUserByGoogleEmail(payload)
         return {msg: "OK"}
     }
 
+    //@UseGuards(GoogleAuthGuard)
+    //@Get("google/redirect")
+    //handleRedirect() {
+    //    return {msg: "Google auth - success"}
+    //}
 
-    @UseGuards(GoogleAuthGuard)
-    @Get("google/login")
-    handleLogin() {
-        return {msg: "Google auth"}
-    }
+    @UseGuards(VkAuthGuard)
+    @Get("vk/redirect")
+    vkRedirect() {
+        return {msg: "VK auth - success"}
 
-    @UseGuards(GoogleAuthGuard)
-    @Get("google/redirect")
-    handleRedirect() {
-        return {msg: "OK"}
     }
 
     @Get()
@@ -53,8 +49,7 @@ export class AuthController {
     @UseGuards(GoogleAuthenticatedGuard)
     @Get('status')
     async getAuthUser(@Req() req: Request) {
-        console.log(req)
+        //console.log(req.json())
         return {Hello: "hi"}
     }
-
 }

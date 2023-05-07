@@ -3,14 +3,15 @@ import {UsersModule} from "../users/users.module";
 import {AuthService} from "./auth.service";
 import {forwardRef, Module} from "@nestjs/common";
 import {AuthController} from "./auth.controller";
-import {GlobalService} from "@lib/global";
-import {GoogleStrategy} from "./utils/googleStrategy";
+import {CommonService} from "@app/common";
 import {SessionSerializer} from "./utils/sessionSerializer";
 import {VkStrategy} from "./utils/vkStrategy";
+import {GoogleStrategy} from "./utils/googleStrategy";
+
 
 @Module({
     controllers: [AuthController],
-    providers: [AuthService, GlobalService, GoogleStrategy, SessionSerializer, VkStrategy],
+    providers: [AuthService, CommonService, VkStrategy, GoogleStrategy],
     exports: [AuthService, JwtModule],
     imports: [
         JwtModule.register({

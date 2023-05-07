@@ -1,12 +1,13 @@
 import {PassportStrategy} from "@nestjs/passport";
 import {Profile, Strategy} from "passport-google-oauth20";
 import {Injectable} from "@nestjs/common";
-import {UserService} from "../../users/user.service";
+
+
 
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy){
-    constructor(private readonly userService: UserService) {
+    constructor() {
         super({
             clientID: "826217952571-3fb4j2n58chc41ans1tnms76bnmclucp.apps.googleusercontent.com",
             clientSecret: "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",
@@ -16,13 +17,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy){
     }
 
     async validate(accessToken: string, refreshToken: string, profile: Profile) {
-        console.log(accessToken)
-        console.log(refreshToken)
-        console.log(profile.emails[0].value)
+        //console.log(accessToken)
+        //console.log(refreshToken)
+        //console.log(profile.emails[0].value)
         //return this.authClient.send({cmd: "google_login"}, {profile: profile.emails[0].value})
-        const user = await this.userService.getUserByEmail(profile.emails[0].value);
-        console.log(user)
-        return user
+        //const user = await this.userService.getUserByEmail(profile.emails[0].value);
+
+        return {profile: profile.emails}
 
     }
 }
