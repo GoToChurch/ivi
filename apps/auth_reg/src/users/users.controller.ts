@@ -7,17 +7,18 @@ import {ClientProxy, Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/mic
 @Controller()
 export class UsersController {
     constructor(private readonly userService: UserService,
-                @Inject("ROLES") private readonly rolesClient: ClientProxy) {
+                @Inject("ROLES") private readonly rolesClient: ClientProxy,
+                @Inject("REVIEWS") private readonly reviewsClient: ClientProxy
+                ) {
     }
 
-    // Соединиться с микросервисом roles и получить роль user
     @MessagePattern({cmd: "user_registration"})
     async registration(@Ctx() context: RmqContext, @Payload() payload) {
-        return await this.userService.user_registration(payload.dto, payload.role);
+        return await this.userService.userRegistration(payload.dto, payload.role);
     }
 
     @MessagePattern({cmd: "get_all_users"})
-    async get_all_users() {
+    async getAllUsers() {
         const users = await this.userService.getAllUsers();
         return users;
     }
@@ -33,8 +34,35 @@ export class UsersController {
     async getUserByEmail(@Ctx() context: RmqContext,
                          @Payload() payload) {
         console.log(payload)
-        const user = await this.userService.getUserByEmail(payload.email.email);
+        const user = await this.userService.getUserByEmail(payload.email);
         return user;
+    }
+
+    @MessagePattern({cmd: "get_user_by_phone"})
+    async getUserByPhone(@Ctx() context: RmqContext,
+                         @Payload() payload) {
+        const user = await this.userService.getUserByPhone(payload.number);
+        return user;
+    }
+
+    @MessagePattern({cmd: "get_users_by_role"})
+    async getUsersByRole(@Ctx() context: RmqContext,
+                         @Payload() payload) {
+        console.log(payload)
+        const users = await this.userService.getUsersByRole(payload.role);
+        return users;
+    }
+
+    @MessagePattern({cmd: "get_users_by_params"})
+    async userCountryAndAgeFilters(@Ctx() context: RmqContext,
+                               @Payload() payload) {
+        return await this.userService.UserCountryAndAgeFilters(payload.value1, payload.value2)
+    }
+
+    @MessagePattern({cmd: "get_users_by_param"})
+    async userCountryOrAgeFilter(@Ctx() context: RmqContext,
+                                   @Payload() payload) {
+        return await this.userService.UserCountryOrAgeFilter(payload.value)
     }
 
     @MessagePattern({cmd: "update_user"})
@@ -67,6 +95,7 @@ export class UsersController {
         return {message: `Роли ${role_value} нет или она уже есть у данного пользователя`}
     }
 
+
     @MessagePattern({cmd: "delete_role_from_user"})
     async deleteRoleFromUser(@Ctx() context: RmqContext,
                              @Payload() payload) {
@@ -76,5 +105,30 @@ export class UsersController {
         return user;
     }
 
+    @MessagePattern({cmd: "add_review_to_user"})
+    async addReviewToUser(@Ctx() context: RmqContext,
+                        @Payload() payload) {
+        const token_user = await this.userService.InspectUserToken(payload["token"]);
+        if (payload['parent_id']) {
+            console.log('c parent')
+            const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'],
+                payload['film_id'], payload['parent_id']);
+            await this.userService.addReviewToUser(token_user["id"], review.id);
+            return this.reviewsClient.send({cmd: "create_review"}, {review});
+        }
+        console.log('без parent')
+        const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'], payload['film_id']);
+        console.log(review)
+        await this.userService.addReviewToUser(token_user["id"], review.id);
+        return this.reviewsClient.send({cmd: "create_review"}, {review});
+    }
 
+    @MessagePattern({cmd: "delete_review_from_user"})
+    async deleteReviewToUser(@Ctx() context: RmqContext,
+                          @Payload() payload) {
+        console.log(payload['review_id'])
+        const id = payload['review_id'];
+        await this.userService.deleteReviewFromUser(payload['id'], payload['review_id']);
+        return this.reviewsClient.send({cmd: "delete-review"}, {id});
+    }
 }
