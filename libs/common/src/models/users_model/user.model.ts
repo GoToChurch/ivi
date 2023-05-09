@@ -57,5 +57,4 @@ export class User extends Model<User, UserCreationAttrs> {
     @ApiProperty({example: '1', description: 'Id обзора из микросервиса reviews'})
     @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false, defaultValue:[]})
     reviews: [string];
-
 }

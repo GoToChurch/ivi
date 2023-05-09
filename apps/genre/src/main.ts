@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { GenreModule } from './genre.module';
 import {ConfigService} from "@nestjs/config";
-import {CommonService, Genre} from "@app/common";
+import {CommonService} from "@app/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(GenreModule);

@@ -10,7 +10,7 @@ export class ReviewController {
                 private readonly commonService: CommonService) {
     }
 
-    @MessagePattern({cmd: 'create_review'})
+    @MessagePattern({cmd: 'create-review'})
     async createReview(@Ctx() context: RmqContext,
                        @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)

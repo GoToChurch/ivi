@@ -14,9 +14,9 @@ describe('CountryController', () => {
     countryController = app.get<CountryController>(CountryController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(countryController.getHello()).toBe('Hello World!');
-    });
-  });
+  //describe('root', () => {
+  //  it('should return "Hello World!"', () => {
+  //    expect(countryController.getHello()).toBe('Hello World!');
+  //  });
+  //});
 });

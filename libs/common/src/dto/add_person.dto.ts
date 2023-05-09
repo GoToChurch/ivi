@@ -1,4 +1,4 @@
-import {IsNumber, IsString, Min, MIN} from "class-validator";
+import {IsNumber, Min} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 
 

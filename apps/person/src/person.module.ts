@@ -11,9 +11,6 @@ import {
   Profession
 } from "@app/common";
 import {SequelizeModule} from "@nestjs/sequelize";
-import {PassportModule} from "@nestjs/passport";
-import {JwtModule} from "@nestjs/jwt";
-import {ConfigService} from "@nestjs/config";
 
 
 @Module({

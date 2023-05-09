@@ -20,22 +20,23 @@ export class AppUsersController {
     ) {
     }
 
-    @ApiOperation({summary: 'Создание пользователя'})
+    @ApiOperation({summary: 'Создание пользователя. Первый зарегистрированный пользователь получает' +
+            ' роль супер пользователя(SUPERUSER), все последующие пользователи при регистрации получают' +
+            ' роль пользователя(USER)'})
     @ApiResponse({status: 201, type: User})
     @Post()
     async createUser(@Body() dto: RegistrationDto) {
         const role = ['USER']
-        return this.usersClient.send({cmd: "user_registration"}, {dto, role});
+        return this.usersClient.send({cmd: "user-registration"}, {dto, role});
     };
 
     @ApiOperation({summary: 'Получить всех пользователей. Необходима роль Администратора'})
     @ApiResponse({status: 200, type: [User]})
-    //@Roles('ADMIN', 'SUPERUSER')
-    //@UseGuards(RolesGuard)
-    @UseGuards(Jwt_auth_guard)
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Get()
     async getAllUsers() {
-        return this.usersClient.send({cmd: "get_all_users"}, {});
+        return this.usersClient.send({cmd: "get-all-users"}, {});
     };
 
     @ApiOperation({
@@ -47,7 +48,7 @@ export class AppUsersController {
     @UseGuards(Current_user_or_admin_guard)
     @Get(":id")
     async getUserById(@Param("id") id: string) {
-        return this.usersClient.send({cmd: "get_user_by_id"}, {id});
+        return this.usersClient.send({cmd: "get-user-by-id"}, {id});
 
     };
 
@@ -60,7 +61,7 @@ export class AppUsersController {
     @ApiParam({name: "email", example: "ivanov@gmail.com"})
     @Get("email/:email")
     async getUserByEmail(@Param("email") email: string) {
-        return this.usersClient.send({cmd: "get_user_by_email"}, {email});
+        return this.usersClient.send({cmd: "get-user-by-email"}, {email});
     };
 
     @ApiOperation({
@@ -72,7 +73,7 @@ export class AppUsersController {
     @UseGuards(Current_user_or_admin_guard)
     @Get("phone/:number")
     async getUserByPhone(@Param("number") number: string) {
-        return this.usersClient.send({cmd: "get_user_by_phone"}, {number});
+        return this.usersClient.send({cmd: "get-user-by-phone"}, {number});
     };
 
     @ApiOperation({
@@ -90,7 +91,7 @@ export class AppUsersController {
                                    @Param("value2") value2?: string,
                                    @Query() query?) {
 
-        return this.usersClient.send({cmd: "get_users_by_params"}, {value1, value2, query});
+        return this.usersClient.send({cmd: "get-users-by-params"}, {value1, value2, query});
     };
 
     @ApiOperation({
@@ -104,7 +105,7 @@ export class AppUsersController {
     @Get("filter/:value")
     async UserCountryOrAgeFilter(@Param("value") value: string,
                                  @Query() query?) {
-        return this.usersClient.send({cmd: "get_users_by_param"}, {value, query});
+        return this.usersClient.send({cmd: "get-users-by-param"}, {value, query});
     };
 
     @ApiOperation({
@@ -117,7 +118,7 @@ export class AppUsersController {
     @UseGuards(RolesGuard)
     @Get("role/:role")
     async getUsersByRole(@Param("role") role: string,) {
-        return this.usersClient.send({cmd: "get_users_by_role"}, {role});
+        return this.usersClient.send({cmd: "get-users-by-role"}, {role});
     };
 
     @ApiOperation({
@@ -129,7 +130,7 @@ export class AppUsersController {
     @UseGuards(Current_user_or_admin_guard)
     @Put(":id")
     async updateUser(@Param("id") id: string, @Body() dto: UserUpdateDto) {
-        return this.usersClient.send({cmd: "update_user"}, {dto, id});
+        return this.usersClient.send({cmd: "update-user"}, {dto, id});
     };
 
 
@@ -142,7 +143,7 @@ export class AppUsersController {
     @UseGuards(Current_user_or_admin_guard)
     @Delete(":id")
     async deleteUser(@Param("id") id: string) {
-        return this.usersClient.send({cmd: "delete_user"}, {id});
+        return this.usersClient.send({cmd: "delete-user"}, {id});
     };
 
 
@@ -156,7 +157,7 @@ export class AppUsersController {
     @Post("role/add")
     async addRoleToUser(@Body() dto: AddRoleToUserDTO) {
         try {
-            return this.usersClient.send({cmd: "add_role_to_user"}, {dto});
+            return this.usersClient.send({cmd: "add-role-to-user"}, {dto});
         } catch (err) {
             return {message: `Такой роли нет или она уже есть у данного пользователя`}
         }
@@ -172,7 +173,7 @@ export class AppUsersController {
     @Post("role/delete")
     async deleteRoleFromUser(@Body() dto: AddRoleToUserDTO) {
         try {
-            return this.usersClient.send({cmd: "delete_role_from_user"}, {dto});
+            return this.usersClient.send({cmd: "delete-role-from-user"}, {dto});
         } catch (err) {
             return {message: `Такой роли нет или её нет у данного пользователя`}
         }
@@ -194,7 +195,7 @@ export class AppUsersController {
                                     @Param("parent_id") parent_id: string) {
         const token = req.headers["authorization"].split(' ')[1]
         try {
-            return this.usersClient.send({cmd: "add_review_to_user"}, {dto, token, film_id, parent_id});
+            return this.usersClient.send({cmd: "add-review-to-user"}, {dto, token, film_id, parent_id});
 
         } catch (err) {
             return {message: `Такой обзор уже есть у данного пользователя`}
@@ -214,7 +215,7 @@ export class AppUsersController {
                           @Param("film_id") film_id: string) {
         const token = req.headers["authorization"].split(' ')[1]
         try {
-            return this.usersClient.send({cmd: "add_review_to_user"}, {dto, token, film_id});
+            return this.usersClient.send({cmd: "add-review-to-user"}, {dto, token, film_id});
         } catch (err) {
             return {message: `Такой обзор уже есть у данного пользователя`}
         }
@@ -232,7 +233,7 @@ export class AppUsersController {
     @Delete("reviews/delete/:id/:review_id")
     async deleteReviewFromUser(@Param('id') id: string, @Param('review_id') review_id: string) {
         try {
-            return this.usersClient.send({cmd: "delete_review_from_user"}, {id, review_id});
+            return this.usersClient.send({cmd: "delete-review-from-user"}, {id, review_id});
         } catch (err) {
             return {message: `Такого обзора нет у данного пользователя`}
         }

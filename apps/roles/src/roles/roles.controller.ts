@@ -6,18 +6,18 @@ import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
-  @MessagePattern({cmd: "role_registration"})
+  @MessagePattern({cmd: "role-registration"})
   async create_role(@Ctx() context: RmqContext, @Payload() payload) {
     return await this.rolesService.create_role(payload.dto);
   }
 
-  @MessagePattern({cmd: "get_all_roles"})
+  @MessagePattern({cmd: "get-all-roles"})
   async getAllRoles() {
     const roles = await this.rolesService.getAllRoles();
     return roles;
   }
 
-  @MessagePattern({cmd: "get_role_by_value"})
+  @MessagePattern({cmd: "get-role-by-value"})
   async getRoleByValue(@Ctx() context: RmqContext, @Payload() payload) {
     console.log(payload)
     const value = payload['role_value']
@@ -28,19 +28,19 @@ export class RolesController {
     return {message: `Роли ${value} не существует`}
   }
 
-  @MessagePattern({cmd: "get_role_by_id"})
+  @MessagePattern({cmd: "get-role-by-id"})
   async getRoleById(@Ctx() context: RmqContext, @Payload() payload) {
     const role = await this.rolesService.getRoleById(payload.id);
     return role;
   }
 
-  @MessagePattern({cmd: "update_role"})
+  @MessagePattern({cmd: "update-role"})
   async update_role(@Ctx() context: RmqContext, @Payload() payload) {
     const role = await this.rolesService.updateRole(payload.dto, payload.id);
     return role;
   }
 
-  @MessagePattern({cmd: "delete_role"})
+  @MessagePattern({cmd: "delete-role"})
   async delete_role(@Ctx() context: RmqContext, @Payload() payload) {
     const role = await this.rolesService.deleteRole(payload.id);
     return role;

@@ -16,9 +16,7 @@ import {ReviewService} from "./services/review.service";
 import {RelatedFilms} from "@app/common/models/films_models/films/related_films.model";
 import {AdminService} from "./services/admin.service";
 import {AdminController} from "./controllers/admin.controller";
-import {PassportModule} from "@nestjs/passport";
-import {JwtModule} from "@nestjs/jwt";
-import {ConfigService} from "@nestjs/config";
+
 
 
 

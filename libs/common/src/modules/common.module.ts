@@ -3,8 +3,6 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import {DynamicModule, Module} from "@nestjs/common";
 import {ClientsModule, Transport} from "@nestjs/microservices";
 import {CommonService} from "@app/common/services/common.service";
-import {PassportModule} from "@nestjs/passport";
-import {JwtModule} from "@nestjs/jwt";
 
 
 interface CommonModuleOptions {
@@ -37,7 +35,7 @@ export class CommonModule {
                 noAck: false,
                 persistent: true,
                 queueOptions: {
-                  durable: true, // queue survives broker restart
+                  durable: true,
                 },
               },
             }),

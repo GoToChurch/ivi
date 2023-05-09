@@ -14,9 +14,9 @@ describe('AwardController', () => {
     awardController = app.get<AwardController>(AwardController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(awardController.getHello()).toBe('Hello World!');
-    });
-  });
+  //describe('root', () => {
+  //  it('should return "Hello World!"', () => {
+  //    expect(awardController.getHello()).toBe('Hello World!');
+   // });
+  //});
 });

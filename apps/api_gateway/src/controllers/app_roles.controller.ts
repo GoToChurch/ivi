@@ -18,7 +18,7 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Post()
     async createRoles(@Body() dto: CreateRoleGTO) {
-        return this.rolesClient.send({cmd: "role_registration"}, {dto});
+        return this.rolesClient.send({cmd: "role-registration"}, {dto});
     };
 
     @ApiOperation({summary: 'Получить все роли. Необходима роль Администратора.'})
@@ -27,7 +27,7 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Get()
     async getAllRoles() {
-        return this.rolesClient.send({cmd: "get_all_roles"}, {});
+        return this.rolesClient.send({cmd: "get-all-roles"}, {});
     };
 
     @ApiOperation({summary: 'Получить роль по id роли. Необходима роль Администратора.'})
@@ -36,7 +36,7 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Get(":id")
     async getRoleById(@Param("id") id: string) {
-        return this.rolesClient.send({cmd: "get_role_by_id"}, {id});
+        return this.rolesClient.send({cmd: "get-role-by-id"}, {id});
 
     };
 
@@ -46,7 +46,7 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Post("/value")
     async getRoleByValue(@Body() value: string) {
-        return this.rolesClient.send({cmd: "get_role_by_value"}, {value});
+        return this.rolesClient.send({cmd: "get-role-by-value"}, {value});
     };
 
     @ApiOperation({summary: 'Изменить роль по id. Необходима роль Администратора.'})
@@ -55,7 +55,7 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Put(":id")
     async updateRole(@Param("id") id: string, @Body() dto: CreateRoleGTO) {
-        return this.rolesClient.send({cmd: "update_role"}, {dto, id});
+        return this.rolesClient.send({cmd: "update-role"}, {dto, id});
     };
 
     @ApiOperation({summary: 'Удалить роль по id. Необходима роль Администратора.'})
@@ -64,6 +64,6 @@ export class AppRolesController {
     @UseGuards(RolesGuard)
     @Delete(":id")
     async deleteRole(@Param("id") id: string) {
-        return this.rolesClient.send({cmd: "delete_role"}, {id});
+        return this.rolesClient.send({cmd: "delete-role"}, {id});
     };
 }
