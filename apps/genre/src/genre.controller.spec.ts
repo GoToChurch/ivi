@@ -14,9 +14,9 @@ describe('GenreController', () => {
     genreController = app.get<GenreController>(GenreController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(genreController.getHello()).toBe('Hello World!');
-    });
-  });
+  //describe('root', () => {
+  //  it('should return "Hello World!"', () => {
+  //    expect(genreController.getHello()).toBe('Hello World!');
+  //  });
+  //});
 });

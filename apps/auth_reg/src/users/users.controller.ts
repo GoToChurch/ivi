@@ -12,25 +12,25 @@ export class UsersController {
                 ) {
     }
 
-    @MessagePattern({cmd: "user_registration"})
+    @MessagePattern({cmd: "user-registration"})
     async registration(@Ctx() context: RmqContext, @Payload() payload) {
         return await this.userService.userRegistration(payload.dto, payload.role);
     }
 
-    @MessagePattern({cmd: "get_all_users"})
+    @MessagePattern({cmd: "get-all-users"})
     async getAllUsers() {
         const users = await this.userService.getAllUsers();
         return users;
     }
 
-    @MessagePattern({cmd: "get_user_by_id"})
+    @MessagePattern({cmd: "get-user-by-id"})
     async getUserById(@Ctx() context: RmqContext,
                       @Payload() payload) {
         const user = await this.userService.getUserById(payload.id);
         return user;
     }
 
-    @MessagePattern({cmd: "get_user_by_email"})
+    @MessagePattern({cmd: "get-user-by-email"})
     async getUserByEmail(@Ctx() context: RmqContext,
                          @Payload() payload) {
         console.log(payload)
@@ -38,14 +38,14 @@ export class UsersController {
         return user;
     }
 
-    @MessagePattern({cmd: "get_user_by_phone"})
+    @MessagePattern({cmd: "get-user-by-phone"})
     async getUserByPhone(@Ctx() context: RmqContext,
                          @Payload() payload) {
         const user = await this.userService.getUserByPhone(payload.number);
         return user;
     }
 
-    @MessagePattern({cmd: "get_users_by_role"})
+    @MessagePattern({cmd: "get-users-by-role"})
     async getUsersByRole(@Ctx() context: RmqContext,
                          @Payload() payload) {
         console.log(payload)
@@ -53,19 +53,19 @@ export class UsersController {
         return users;
     }
 
-    @MessagePattern({cmd: "get_users_by_params"})
+    @MessagePattern({cmd: "get-users-by-params"})
     async userCountryAndAgeFilters(@Ctx() context: RmqContext,
                                @Payload() payload) {
         return await this.userService.UserCountryAndAgeFilters(payload.value1, payload.value2)
     }
 
-    @MessagePattern({cmd: "get_users_by_param"})
+    @MessagePattern({cmd: "get-users-by-param"})
     async userCountryOrAgeFilter(@Ctx() context: RmqContext,
                                    @Payload() payload) {
         return await this.userService.UserCountryOrAgeFilter(payload.value)
     }
 
-    @MessagePattern({cmd: "update_user"})
+    @MessagePattern({cmd: "update-user"})
     async updateUser(@Ctx() context: RmqContext,
                      @Payload() payload) {
         //this.globalService.acknowledgeMessage(context)
@@ -73,7 +73,7 @@ export class UsersController {
         return user;
     }
 
-    @MessagePattern({cmd: "delete_user"})
+    @MessagePattern({cmd: "delete-user"})
     async deleteUser(@Ctx() context: RmqContext,
                      @Payload() payload) {
         //this.globalService.acknowledgeMessage(context)
@@ -81,11 +81,11 @@ export class UsersController {
         return user;
     }
 
-    @MessagePattern({cmd: "add_role_to_user"})
+    @MessagePattern({cmd: "add-role-to-user"})
     async addRoleToUser(@Ctx() context: RmqContext,
                         @Payload() payload) {
         const role_value = payload['dto']['value'];
-        const result = await this.rolesClient.send({cmd: "get_role_by_value"}, {role_value});
+        const result = await this.rolesClient.send({cmd: "get-role-by-value"}, {role_value});
         if (result) {
             result.subscribe(async (v) => {
                 await this.userService.addRoleToUser(payload['dto']['user_id'], v.value);
@@ -96,7 +96,7 @@ export class UsersController {
     }
 
 
-    @MessagePattern({cmd: "delete_role_from_user"})
+    @MessagePattern({cmd: "delete-role-from-user"})
     async deleteRoleFromUser(@Ctx() context: RmqContext,
                              @Payload() payload) {
         const role_value = payload['dto']['value'];
@@ -105,7 +105,7 @@ export class UsersController {
         return user;
     }
 
-    @MessagePattern({cmd: "add_review_to_user"})
+    @MessagePattern({cmd: "add-review-to-user"})
     async addReviewToUser(@Ctx() context: RmqContext,
                         @Payload() payload) {
         const token_user = await this.userService.InspectUserToken(payload["token"]);
@@ -114,16 +114,16 @@ export class UsersController {
             const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'],
                 payload['film_id'], payload['parent_id']);
             await this.userService.addReviewToUser(token_user["id"], review.id);
-            return this.reviewsClient.send({cmd: "create_review"}, {review});
+            return this.reviewsClient.send({cmd: "create-review"}, {review});
         }
         console.log('без parent')
         const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'], payload['film_id']);
         console.log(review)
         await this.userService.addReviewToUser(token_user["id"], review.id);
-        return this.reviewsClient.send({cmd: "create_review"}, {review});
+        return this.reviewsClient.send({cmd: "create-review"}, {review});
     }
 
-    @MessagePattern({cmd: "delete_review_from_user"})
+    @MessagePattern({cmd: "delete-review-from-user"})
     async deleteReviewToUser(@Ctx() context: RmqContext,
                           @Payload() payload) {
         console.log(payload['review_id'])

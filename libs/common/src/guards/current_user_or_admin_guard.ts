@@ -8,7 +8,6 @@ export class Current_user_or_admin_guard implements CanActivate {
 
     constructor(private jwtService: JwtService) {
     }
-
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const req = context.switchToHttp().getRequest()
         try {
@@ -28,8 +27,6 @@ export class Current_user_or_admin_guard implements CanActivate {
                     return true;
                 }
             }
-            //const roles = req.user.roles.map(role => role.value);
-            //const admin = roles.filter(role => role === "ADMIN" || role === "SUPERUSER")
             if (req.user.id === +req.params['id'] || req.user.email === req.params['email'] ||
                 req.user.phone === req.params['phone']) {
                 return true;

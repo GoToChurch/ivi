@@ -7,7 +7,7 @@ import * as session from "express-session";
 
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {cors: true});
     const configService = app.get(ConfigService);
     app.use(session({
         cookie: {
