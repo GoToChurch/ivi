@@ -1,24 +1,26 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {AppService} from "../app.service";
-import {Country, CreateCountryDto} from "@app/common";
-import {ApiOperation, ApiResponse} from "@nestjs/swagger";
+import {Country, CreateCountryDto, JwtAuthGuard, UpdateCountryDto} from "@app/common";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {Roles} from "@app/common";
+import {RolesGuard} from "@app/common";
 
 
+@ApiTags('Страны')
 @Controller()
 export class AppCountriesController {
-    constructor(@Inject('COUNTRY') private readonly countryService: ClientProxy,
-                private appService: AppService) {}
+    constructor(@Inject('COUNTRY') private readonly countryService: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой страны. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Country})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/countries')
     async createCountry(@Body() createCountryDto: CreateCountryDto) {
         return this.countryService.send(
             {
                 cmd: 'create-country',
-            },
-            {
+            }, {
                 createCountryDto
             },
         );
@@ -31,8 +33,9 @@ export class AppCountriesController {
         return this.countryService.send(
             {
                 cmd: 'get-all-countries',
+            }, {
+
             },
-            {},
         );
     }
 
@@ -43,8 +46,7 @@ export class AppCountriesController {
         return this.countryService.send(
             {
                 cmd: 'get-country'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -52,15 +54,16 @@ export class AppCountriesController {
 
     @ApiOperation({summary: "Редактирование страны по id"})
     @ApiResponse({status: 201, type: Country})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Put('/countries/:id')
-    async editCountry(@Body() createCountryDto: CreateCountryDto,
+    async editCountry(@Body() updateCountryDto: UpdateCountryDto,
                       @Param('id') id: any) {
         return this.countryService.send(
             {
                 cmd: 'edit-country'
-            },
-            {
-                createCountryDto,
+            }, {
+                updateCountryDto,
                 id
             }
         )
@@ -68,13 +71,14 @@ export class AppCountriesController {
 
     @ApiOperation({summary: "Удаление страны по id"})
     @ApiResponse({status: 201})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Delete('/countries/:id')
     async deleteCountry(@Param('id') id: any) {
         return this.countryService.send(
             {
                 cmd: 'delete-country'
-            },
-            {
+            }, {
                 id
             }
         )

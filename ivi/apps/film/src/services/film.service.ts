@@ -1,22 +1,20 @@
-import {HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-
 import {
-  Profession,
-  Film,
-  CreateFilmDto,
-  Country,
-  Person,
-  Genre,
+    Profession,
+    Film,
+    CreateFilmDto,
+    Country,
+    Person,
+    Genre,
 
-  Review, Award,
+    Review, Award, UpdateFilmDto,
 
 } from "@app/common";
 import {genresMap} from "@app/common/maps/maps";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 import {Op} from "sequelize";
-
 
 
 @Injectable()
@@ -45,34 +43,30 @@ export class FilmService {
 
   async createFilm(dto: CreateFilmDto, directors?, actors?, writers?, producers?, cinematography?, musicians?, designers?,
                    editors?, genres?, countries?, awards?, relatedFilms?) {
-    try {
       let exists = await this.checkIfExists(dto);
 
       if (!exists) {
-        const film = await this.filmRepository.create(dto);
+          const film = await this.filmRepository.create(dto);
 
-        await this.addDirectorsForFilm(film, directors);
-        await this.addActorsForFilm(film, actors);
-        await this.addWritersForFilm(film, writers);
-        await this.addProducersForFilm(film, producers);
-        await this.addDesignersForFilm(film, designers);
-        await this.addCinematographyForFilm(film, cinematography);
-        await this.addMusiciansForFilm(film, musicians);
-        await this.addEditorsForFilm(film, editors);
-        await this.addGenresForFilm(film, genres);
-        await this.addCountriesForFilm(film, countries);
-        await this.addAwardsForFilm(film, awards);
-        await this.addRelatedFilmsForFilm(film, relatedFilms);
+          await this.addDirectorsForFilm(film, directors);
+          await this.addActorsForFilm(film, actors);
+          await this.addWritersForFilm(film, writers);
+          await this.addProducersForFilm(film, producers);
+          await this.addDesignersForFilm(film, designers);
+          await this.addCinematographyForFilm(film, cinematography);
+          await this.addMusiciansForFilm(film, musicians);
+          await this.addEditorsForFilm(film, editors);
+          await this.addGenresForFilm(film, genres);
+          await this.addCountriesForFilm(film, countries);
+          await this.addAwardsForFilm(film, awards);
+          await this.addRelatedFilmsForFilm(film, relatedFilms);
 
-        await film.$set('reviews', []);
+          await film.$set('reviews', []);
 
-        return film;
+          return film;
       }
-    } catch (e) {
-      throw new HttpException("Произошла ошибка при создании фильма. Проверьте входные данные", HttpStatus.BAD_REQUEST)
-    }
 
-    return null;
+      return null;
   }
 
   async getAllFilms(query?) {
@@ -86,30 +80,21 @@ export class FilmService {
   }
 
   async getFilmById(id: number) {
-    try {
       return await this.filmRepository.findByPk(id, {
         include: this.INCLUDE_ARRAY
       });
-    } catch (e) {
-      console.log(e)
-    }
   }
 
   async getFilmByName(name) {
-    try {
       return await this.filmRepository.findOne({
         where: {
           name
         },
         include: this.INCLUDE_ARRAY
       });
-    } catch (e) {
-      console.log(e)
-    }
   }
 
   async getFilmsByName(name) {
-    try {
       return await this.filmRepository.findAll({
         where: {
           [Op.or]: {
@@ -118,9 +103,6 @@ export class FilmService {
           }
         },
       });
-    } catch (e) {
-      throw new HttpException('Поле "name" не может быть пустым', HttpStatus.BAD_REQUEST)
-    }
 
   }
 
@@ -207,18 +189,14 @@ export class FilmService {
     )
   }
 
-  async editFilm(name: string, id: number) {
-    try {
-      await this.filmRepository.update({name: name}, {
+  async editFilm(updateFilmDto: UpdateFilmDto, id: number) {
+      await this.filmRepository.update({...updateFilmDto}, {
         where: {
           id
         }
       })
 
       return this.getFilmById(id);
-    } catch (e) {
-      throw new HttpException("Произошла ошибка при редактировании фильма. Проверьте входные данные", HttpStatus.BAD_REQUEST)
-    }
   }
 
   async deleteFilm(id: number) {
@@ -358,14 +336,14 @@ export class FilmService {
   async addEditorsForFilm(film: Film, editors) {
     if (editors) {
       const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
+                cmd: "get-or-create-profession"
               },
               {
                 profession: "Монтажер"
               })
       );
 
-      await film.$set('editors', []);
+      await film.$set("editors", []);
 
       await this.addInfoForPesronAndFilm(film, editors, profession, 'editor');
     }
@@ -373,14 +351,14 @@ export class FilmService {
 
   async addGenresForFilm(film: Film, genres) {
     if (genres) {
-      await film.$set('genres', []);
+      await film.$set("genres", []);
 
       for (const genreDto of genres) {
         const genre = await lastValueFrom(this.genreService.send({
-                  cmd: 'get-or-create-genre'
+                  cmd: "get-or-create-genre"
                 },
                 {
-                  dto: {
+                  createGenreDto: {
                     name: genreDto.name,
                     englishName: genresMap.get(genreDto.name)
                   }
@@ -394,41 +372,40 @@ export class FilmService {
 
   async addCountriesForFilm(film: Film, countries) {
     if (countries) {
-      await film.$set('countries', []);
+      await film.$set("countries", []);
 
       for (const countryDto of countries) {
         const country = await lastValueFrom(this.countryService.send<Country>({
-                  cmd: 'get-or-create-country',
+                  cmd: "get-or-create-country",
                 },
                 {
-                  dto: countryDto
+                  createCountryDto: countryDto
                 })
         );
 
-        await film.$add('country', country.id);
+        await film.$add("country", country.id);
       }
     }
   }
 
   async addAwardsForFilm(film: Film, awards) {
     if (awards) {
-      await film.$set('awards', []);
+      await film.$set("awards", []);
 
       for (const awardDto of awards) {
-
         let award = await lastValueFrom(this.awardService.send({
-                  cmd: 'get-or-create-award'
+                  cmd: "get-or-create-award"
                 },
                 {
-                  awardDto
+                  createAwardDto: awardDto
                 })
         );
-        await film.$add('award', award.id);
+        await film.$add("award", award.id);
 
         const nominations = awardDto.nominations
 
         let res = await lastValueFrom(this.awardService.send({
-                  cmd: 'add-film-and-nominations-for-award'
+                  cmd: "add-film-and-nominations-for-award"
                 },
                 {
                   film,
@@ -442,13 +419,14 @@ export class FilmService {
 
   async addRelatedFilmsForFilm(film: Film, relatedFilms) {
     if (relatedFilms) {
-      await film.$set('relatedFilms', []);
+      await film.$set("relatedFilms", []);
 
       for (const relatedFilmObject of relatedFilms) {
         const relatedFilm = await this.getFilmByName(relatedFilmObject.name);
+
         if (relatedFilm && relatedFilm.originalName !== film.originalName) {
-          await film.$add('relatedFilm', relatedFilm.id);
-          await relatedFilm.$add('relatedFilm', film.id);
+          await film.$add("relatedFilm", relatedFilm.id);
+          await relatedFilm.$add("relatedFilm", film.id);
         }
       }
     }
@@ -457,15 +435,15 @@ export class FilmService {
   async addInfoForPesronAndFilm(film: Film, persons, profession: Profession, professionName) {
     for (const personDto of persons) {
       const person = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-person'
+                cmd: "get-or-create-person"
               },
               {
-                dto: personDto
+                createPersonDto: personDto
               })
       );
 
       let res = await lastValueFrom(this.personService.send({
-        cmd: 'add-film-for-person'
+        cmd: "add-film-for-person"
       },
           {
             person,
@@ -476,7 +454,7 @@ export class FilmService {
       const professions = personDto.professions;
 
       await this.personService.send({
-        cmd: 'add-professions-for-person'
+        cmd: "add-professions-for-person"
       }, {
         person,
         professions
@@ -485,7 +463,7 @@ export class FilmService {
       await film.$add(professionName, person.id);
 
       res = await lastValueFrom(this.personService.send({
-                cmd: 'add-profession-in-film-for-person'
+                cmd: "add-profession-in-film-for-person"
               },
               {
                 film,
@@ -512,18 +490,18 @@ export class FilmService {
       filteredFilms = this.filterFilmsByRatingNumber(filteredFilms, query);
     }
     if (query.limit) {
-      filteredFilms = filteredFilms.slice(0, query.limit + 1);
+      filteredFilms = filteredFilms.slice(0, query.limit);
     }
     return filteredFilms;
   }
 
-  private async checkIfExists(dto: CreateFilmDto) {
+  private async checkIfExists(createFilmDto: CreateFilmDto) {
     let film = await this.filmRepository.findOne({
       where: {
-        name: dto.name,
-        year: dto.year,
-        rating: dto.rating,
-        ratingsNumber: dto.ratingsNumber
+        name: createFilmDto.name,
+        year: createFilmDto.year,
+        rating: createFilmDto.rating,
+        ratingsNumber: createFilmDto.ratingsNumber
       }
     })
     return !!film;

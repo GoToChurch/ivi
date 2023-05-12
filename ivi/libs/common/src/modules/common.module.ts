@@ -35,7 +35,7 @@ export class CommonModule {
                 noAck: false,
                 persistent: true,
                 queueOptions: {
-                  durable: true, // queue survives broker restart
+                  durable: true,
                 },
               },
             }),

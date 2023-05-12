@@ -1,7 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {Award, CreateAwardDto, CreateNominationDto, Film, FilmAwards, Nomination} from "@app/common";
-
+import {Award, CreateAwardDto, CreateNominationDto, Film, FilmAwards, Nomination, UpdateAwardDto} from "@app/common";
 
 
 @Injectable()
@@ -11,18 +10,19 @@ export class AwardService {
                 @InjectModel(Nomination) private nominationRepository: typeof Nomination,
                 ) {}
 
-    async createAward(dto: CreateAwardDto) {
-        const award = await this.awardRepository.create(dto);
-        await award.$set('nominations', []);
+    async createAward(createAwardDto: CreateAwardDto) {
+        const award = await this.awardRepository.create(createAwardDto);
+        await award.$set("nominations", []);
 
         return award;
+
     }
 
-    async getOrCreateAward(dto: CreateAwardDto) {
-        let award = await this.getAwardByName(dto.name)
+    async getOrCreateAward(createAwardDto: CreateAwardDto) {
+        let award = await this.getAwardByNameAndYear(createAwardDto.name, createAwardDto.year)
 
         if (!award) {
-            award = await this.createAward(dto);
+            award = await this.createAward(createAwardDto);
         }
 
         return award;
@@ -40,18 +40,19 @@ export class AwardService {
         });
     }
 
-    async getAwardByName(name: string) {
+    async getAwardByNameAndYear(name: string, year: number) {
         return await this.awardRepository.findOne({
             where: {
-                name
+                name,
+                year
             }
         });
     }
 
-    async editAward(dto: CreateAwardDto, id: number) {
-        await this.awardRepository.update({...dto}, {
+    async editAward(updateAwardDto: UpdateAwardDto, id: number) {
+        await this.awardRepository.update({...updateAwardDto}, {
             where: {
-                id: id
+                id
             }
         });
 
@@ -61,13 +62,13 @@ export class AwardService {
     async deleteAward(id: number) {
         return await this.awardRepository.destroy({
             where: {
-                id: id
+                id
             }
         });
     }
 
-    async createNomination(dto: CreateNominationDto) {
-        return await this.nominationRepository.create(dto);
+    async createNomination(createNominationDto: CreateNominationDto) {
+        return await this.nominationRepository.create(createNominationDto);
     }
 
     async getOrCreateNomination(dto: CreateNominationDto) {
@@ -96,10 +97,10 @@ export class AwardService {
         });
     }
 
-    async editNomination(dto: CreateNominationDto, id: number) {
-        await this.nominationRepository.update({...dto}, {
+    async editNomination(createNominationDto: CreateNominationDto, id: number) {
+        await this.nominationRepository.update({...createNominationDto}, {
             where: {
-                id: id
+                id
             }
         });
 
@@ -117,12 +118,10 @@ export class AwardService {
     async addFilmAndNominationsForAward(film: Film, awardDto, nominations) {
         for (const nominationDto of nominations) {
             let nomination = await this.getOrCreateNomination(nominationDto);
-            console.log("nom")
             const nominationId = nomination.id;
 
-            let award = await this.getAwardByName(awardDto.name);
-            console.log("awa")
-            await award.$add('nomination', nominationId);
+            let award = await this.getAwardByNameAndYear(awardDto.name, awardDto.year);
+            await award.$add("nomination", nominationId);
 
             let filmAward = await this.filmAwardsRepository.findOne({
                 where: {
@@ -138,7 +137,6 @@ export class AwardService {
             await filmAward.save();
         }
 
-        return film;
+        return await this.getAwardByNameAndYear(awardDto.name, awardDto.year);
     }
-
 }

@@ -1,18 +1,21 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {AppService} from "../app.service";
 import {
+    AddAwardDto,
+    AddCountryDto,
+    AddGenreDto,
     AddPersonDto,
     AddRelatedFilmDto,
-    CreateFilmDto,
-    CreateNominationDto,
-    CreateReviewDto,
-    Film,
-    Review
+    CreateFilmDto, CreateReviewDto, CurrentUserOrAdminGuard,
+    Film, GoogleAuthenticatedGuard, JwtAuthGuard, Review,
 } from "@app/common";
-import { ApiOperation, ApiParam, ApiQuery, ApiResponse} from "@nestjs/swagger";
+import {ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {Roles} from "@app/common";
+import {RolesGuard} from "@app/common";
 
 
+@ApiTags('Фильмы')
 @Controller()
 export class AppFilmsController {
     constructor(@Inject('FILM') private readonly filmService: ClientProxy,
@@ -20,13 +23,14 @@ export class AppFilmsController {
 
     @ApiOperation({summary: "Создание нового фильма. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Film})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films')
     async createFilm(@Body() createFilmDto: CreateFilmDto) {
         return this.filmService.send(
             {
                 cmd: 'create-film',
-            },
-            {
+            }, {
                 createFilmDto,
             },
         );
@@ -48,75 +52,11 @@ export class AppFilmsController {
         return this.filmService.send(
             {
                 cmd: 'get-all-films',
-            },
-            {
+            }, {
                 query
             },
         );
     }
-
-    @ApiOperation({summary: "Получение фильма по id"})
-    @ApiResponse({status: 200, type: Film})
-    @ApiParam({name: "id", example: 1})
-    @Get('/films/:id')
-    async getFilm(@Param('id') id: any) {
-        return this.filmService.send(
-            {
-                cmd: 'get-film',
-            },
-            {
-                id
-            },
-        );
-    }
-
-    @ApiOperation({summary: "Получение списка фильмов с указанным названием. Работает с русским и оригинальным названиями"})
-    @ApiResponse({status: 200, type: Film})
-    @ApiParam({name: "id", example: 1})
-    @Get('/films/name/:name')
-    async getFilmsByName(@Param('name') name: any) {
-        return this.filmService.send(
-            {
-                cmd: 'get-films-by-name',
-            },
-            {
-                name
-            },
-        );
-    }
-
-    @ApiOperation({summary: "Редактирование фильма по id, можно редактировать только название"})
-    @ApiResponse({status: 201, type: Film})
-    @ApiParam({name: "id", example: 1})
-    @Put('/films/:id')
-    async editFilm(@Body() name: string,
-                   @Param('id') id: any) {
-        return this.filmService.send(
-            {
-                cmd: 'edit-film',
-            },
-            {
-                name,
-                id
-            },
-        );
-    }
-
-    @ApiOperation({summary: "Удаление фильма по id"})
-    @ApiResponse({status: 201})
-    @ApiParam({name: "id", example: 1})
-    @Delete('/films/:id')
-    async deleteFilm(@Param('id') id: any) {
-        return this.filmService.send(
-            {
-                cmd: 'delete-film',
-            },
-            {
-                id
-            },
-        );
-    }
-
     @ApiOperation({summary: `Фильтрация фильма по одному из фильтров: по жанру, по году, по стране. 
     Список доступных жанров можно посмотреть в файле libs/common/src/maps/maps.ts. Год может быть в виде числа, например '2011',
     или в виде числового интервала '2011-2020'. Страна принимает вид домена страны без точки, узнать который можно по ссылке 
@@ -148,8 +88,7 @@ export class AppFilmsController {
         return this.filmService.send(
             {
                 cmd: 'filter-films',
-            },
-            {
+            }, {
                 filterObject,
                 query
             },
@@ -190,8 +129,7 @@ export class AppFilmsController {
         return this.filmService.send(
             {
                 cmd: 'filter-films',
-            },
-            {
+            }, {
                 filterObject,
                 query
             },
@@ -235,284 +173,265 @@ export class AppFilmsController {
         return this.filmService.send(
             {
                 cmd: 'filter-films',
-            },
-            {
+            }, {
                 filterObject,
                 query
             },
         );
     }
 
-    @ApiOperation({summary: "Добавление комментария к фильму с указанным filmId"})
-    @ApiResponse({status: 201, type: Review})
-    @ApiParam({name: "filmId", example: 1, description: "id фильма"})
-    @Post('/films/:filmId')
-    async addReview(@Body() createReviewDto: CreateReviewDto,
-                    @Req() request,
-                    @Param('filmId') filmId: any) {
-        const user = request.user;
-        const userId = user ? user.id : 1;
-
-        return this.filmService.send(
-            {
-                cmd: 'create-review',
-            },
-            {
-                createReviewDto,
-                filmId,
-                userId
-            },
-        );
-    }
-    @ApiOperation({summary: "Добавление комментария к комментарию с указанным parentId к фильму с указанным filmId"})
-    @ApiResponse({status: 201, type: Review})
-    @ApiParam({name: "filmId", example: 1, description: "id фильма"})
-    @ApiParam({name: "parentId", example: 1, description: "id родительского комментария"})
-    @Post('/films/:filmId/review/:parentId')
-    async addChildReview(@Body() createReviewDto: CreateReviewDto,
-                         @Req() request,
-                         @Param('filmId') filmId: any,
-                         @Param('parentId') parentId: any) {
-        const user = request.user;
-        const userId = user ? user.id : 1;
-
-        return this.filmService.send(
-            {
-                cmd: 'create-review',
-            },
-            {
-                createReviewDto,
-                filmId,
-                userId,
-                parentId
-            },
-        );
-    }
-
-    @ApiOperation({summary: "Получение списка всех комментариев"})
-    @ApiResponse({status: 200, type: [CreateReviewDto]})
-    @Get('/reviews')
-    async getAllReviews() {
-        return this.filmService.send(
-            {
-                cmd: 'get-all-reviews',
-            },
-            {},
-        );
-    }
-
-    @ApiOperation({summary: "Получение списка комментария по id"})
-    @ApiResponse({status: 200, type: Review})
+    @ApiOperation({summary: "Получение фильма по id"})
+    @ApiResponse({status: 200, type: Film})
     @ApiParam({name: "id", example: 1})
-    @Get('/reviews/:id')
-    async getReview(@Param('id') id: any) {
+    @Get('/films/:id')
+    async getFilm(@Param('id') id: any) {
         return this.filmService.send(
             {
-                cmd: 'get-review'
-            },
-            {
+                cmd: 'get-film',
+            }, {
                 id
-            }
-        )
+            },
+        );
     }
 
-    @ApiOperation({summary: "Редактирование комментария с указанным id"})
-    @ApiResponse({status: 201, type: Review})
+    @ApiOperation({summary: "Получение списка фильмов с указанным названием. Работает с русским и оригинальным названиями"})
+    @ApiResponse({status: 200, type: Film})
     @ApiParam({name: "id", example: 1})
-    @Put('/reviews/:id')
-    async editReview(@Body() createReviewDto: CreateReviewDto,
-                     @Param('id') id: any) {
+    @Get('/films/name/:name')
+    async getFilmsByName(@Param('name') name: any) {
         return this.filmService.send(
             {
-                cmd: 'edit-review'
+                cmd: 'get-films-by-name',
             },
             {
-                createReviewDto,
-                id
-            }
-        )
+                name
+            },
+        );
     }
 
-    @ApiOperation({summary: "Удаление комментария с указанным id"})
+    @ApiOperation({summary: "Редактирование фильма по id, можно редактировать только название"})
+    @ApiResponse({status: 201, type: Film})
+    @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
+    @Put('/films/:id')
+    async editFilm(@Body() name: string,
+                   @Param('id') id: any) {
+        return this.filmService.send(
+            {
+                cmd: 'edit-film',
+            }, {
+                name,
+                id
+            },
+        );
+    }
+
+    @ApiOperation({summary: "Удаление фильма по id"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
-    @Delete('/reviews/:id')
-    async deleteReview(@Param('id') id: any) {
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
+    @Delete('/films/:id')
+    async deleteFilm(@Param('id') id: any) {
         return this.filmService.send(
             {
-                cmd: 'delete-review'
-            },
-            {
+                cmd: 'delete-film',
+            }, {
                 id
-            }
-        )
+            },
+        );
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id режиссера"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/director')
-    async addDirector(@Body() dto: AddPersonDto,
+    async addDirector(@Body() addPersonDto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-director'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id актера"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/actor')
-    async addActor(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addActor(@Body() addPersonDto: AddPersonDto,
+                   @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-actor'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id сценариста"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/writer')
-    async addWriter(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addWriter(@Body() addPersonDto: AddPersonDto,
+                    @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-writer'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id продюсера"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/producer')
-    async addProducer(@Body() dto: AddPersonDto,
+    async addProducer(@Body() addPersonDto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-producer'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id оператора"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/cinematography')
-    async addCinematography(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addCinematography(@Body() addPersonDto: AddPersonDto,
+                            @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-cinematography'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id композитора"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/musician')
-    async addMusician(@Body() dto: AddPersonDto,
+    async addMusician(@Body() addPersonDto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-musician'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id художника"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/designer')
-    async addDesigner(@Body() dto: AddPersonDto,
+    async addDesigner(@Body() addPersonDto: AddPersonDto,
                       @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-designer'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id монтажера"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/editor')
-    async addEditor(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addEditor(@Body() addPersonDto: AddPersonDto,
+                    @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-editor'
         }, {
             id,
-            dto
+            addPersonDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id жанра"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/genre')
-    async addGenre(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addGenre(@Body() addGenreDto: AddGenreDto,
+                   @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-genre'
         }, {
             id,
-            dto
+            addGenreDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id страны"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/country')
-    async addCountry(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addCountry(@Body() addCountryDto: AddCountryDto,
+                     @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-country'
         }, {
             id,
-            dto
+            addCountryDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id награды"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/award')
-    async addAward(@Body() dto: AddPersonDto,
-                      @Param('id') id: any) {
+    async addAward(@Body() addAwardDto: AddAwardDto,
+                   @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-award'
         }, {
             id,
-            dto
+            addAwardDto
         })
     }
 
     @ApiOperation({summary: "Добавление фильму с указанным id связанного фильма"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/films/:id/add/relatedFilm')
-    async addRelatedFilm(@Body() dto: AddRelatedFilmDto,
+    async addRelatedFilm(@Body() addRelatedFilmDto: AddRelatedFilmDto,
                          @Param('id') id: any) {
         return this.filmService.send({
             cmd: 'add-related-film'
         }, {
             id,
-            dto
+            addRelatedFilmDto
         })
     }
 
@@ -526,5 +445,111 @@ export class AppFilmsController {
         }, {
             id,
         })
+    }
+
+
+    @ApiOperation({summary: "Добавление комментария к фильму с указанным filmId"})
+    @ApiResponse({status: 201, type: Review})
+    @ApiParam({name: "filmId", example: 1, description: "id фильма"})
+    @UseGuards(JwtAuthGuard || GoogleAuthenticatedGuard)
+    @Post('/films/:filmId')
+    async addReview(@Body() createReviewDto: CreateReviewDto,
+                   @Req() request,
+                   @Param('filmId') filmId: any) {
+       const user = request.user;
+       const userId = user.id;
+
+       return this.filmService.send(
+           {
+               cmd: 'create-review',
+           }, {
+               createReviewDto,
+               filmId,
+               userId
+           },
+       );
+    }
+    @ApiOperation({summary: "Добавление комментария к комментарию с указанным parentId к фильму с указанным filmId"})
+    @ApiResponse({status: 201, type: Review})
+    @ApiParam({name: "filmId", example: 1, description: "id фильма"})
+    @ApiParam({name: "parentId", example: 1, description: "id родительского комментария"})
+    @UseGuards(JwtAuthGuard || GoogleAuthenticatedGuard)
+    @Post('/films/:filmId/review/:parentId')
+    async addChildReview(@Body() createReviewDto: CreateReviewDto,
+                        @Req() request,
+                        @Param('filmId') filmId: any,
+                        @Param('parentId') parentId: any) {
+       const user = request.user;
+        const userId = user.id;
+
+       return this.filmService.send(
+           {
+               cmd: 'create-review',
+           }, {
+               createReviewDto,
+               filmId,
+               userId,
+               parentId
+           },
+       );
+    }
+
+    @ApiOperation({summary: "Получение списка всех комментариев"})
+    @ApiResponse({status: 200, type: [CreateReviewDto]})
+    @Get('/reviews')
+    async getAllReviews() {
+       return this.filmService.send(
+           {
+               cmd: 'get-all-reviews',
+           }, {
+
+           },
+       );
+    }
+
+    @ApiOperation({summary: "Получение списка комментария по id"})
+    @ApiResponse({status: 200, type: Review})
+    @ApiParam({name: "id", example: 1})
+    @Get('/reviews/:id')
+    async getReview(@Param('id') id: any) {
+       return this.filmService.send(
+           {
+               cmd: 'get-review'
+           }, {
+               id
+           }
+       )
+    }
+
+    @ApiOperation({summary: "Редактирование комментария с указанным id"})
+    @ApiResponse({status: 201, type: Review})
+    @ApiParam({name: "id", example: 1})
+    @UseGuards(CurrentUserOrAdminGuard)
+    @Put('/reviews/:id')
+    async editReview(@Body() createReviewDto: CreateReviewDto,
+                    @Param('id') id: any) {
+       return this.filmService.send(
+           {
+               cmd: 'edit-review'
+           }, {
+               createReviewDto,
+               id
+           }
+       )
+    }
+
+    @ApiOperation({summary: "Удаление комментария с указанным id"})
+    @ApiResponse({status: 201})
+    @ApiParam({name: "id", example: 1})
+    @UseGuards(CurrentUserOrAdminGuard)
+    @Delete('/reviews/:id')
+    async deleteReview(@Param('id') id: any) {
+       return this.filmService.send(
+           {
+               cmd: 'delete-review'
+           }, {
+               id
+           }
+       )
     }
 }

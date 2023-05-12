@@ -1,10 +1,21 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {CreateFilmDto, CreatePersonDto, CreateProfessionDto, Film, Person, Profession} from "@app/common";
+import {
+    CreateFilmDto,
+    CreatePersonDto,
+    CreateProfessionDto,
+    Film,
+    JwtAuthGuard,
+    Person,
+    Profession,
+    UpdatePersonDto, UpdateProfessionDto
+} from "@app/common";
 import {AppService} from "../app.service";
-import {ApiOperation, ApiQuery, ApiResponse} from "@nestjs/swagger";
+import {ApiOperation, ApiQuery, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {Roles} from "@app/common";
+import {RolesGuard} from "@app/common";
 
-
+@ApiTags('Личности, участвующие в производстве фильмов')
 @Controller()
 export class AppPersonsController {
     constructor(@Inject('PERSON') private readonly personService: ClientProxy,
@@ -12,13 +23,14 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Создание новой персоны. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Person})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/persons')
     async createPerson(@Body() createPersonDto: CreatePersonDto) {
         return this.personService.send(
             {
                 cmd: 'create-person',
-            },
-            {
+            }, {
                 createPersonDto,
             },
         );
@@ -34,8 +46,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-all-persons',
-            },
-            {
+            }, {
                 query
             },
         );
@@ -48,8 +59,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-person'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -62,8 +72,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-persons-by-name'
-            },
-            {
+            }, {
                 name
             }
         )
@@ -71,15 +80,16 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Редактирование персоны по id"})
     @ApiResponse({status: 201, type: Person})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Put('/persons/:id')
-    async editPerson(@Body() createPersonDto: CreatePersonDto,
+    async editPerson(@Body() updatePersonDto: UpdatePersonDto,
                      @Param('id') id: any) {
         return this.personService.send(
             {
                 cmd: 'edit-person'
-            },
-            {
-                createPersonDto,
+            }, {
+                updatePersonDto,
                 id
             }
         )
@@ -92,8 +102,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-all-persons-films'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -106,8 +115,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-all-persons-professions'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -121,8 +129,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-all-persons-films-by-profession'
-            },
-            {
+            }, {
                 id,
                 professionId
             }
@@ -131,13 +138,14 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Удаление персоны по id"})
     @ApiResponse({status: 201})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Delete('/persons/:id')
     async deletePerson(@Param('id') id: any) {
         return this.personService.send(
             {
                 cmd: 'delete-person'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -145,13 +153,14 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Создание новой профессии"})
     @ApiResponse({status: 201, type: Profession})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/professions')
     async createProfession(@Body() createProfessionDto: CreateProfessionDto) {
         return this.personService.send(
             {
                 cmd: 'create-profession',
-            },
-            {
+            }, {
                 createProfessionDto
             },
         );
@@ -164,8 +173,9 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-all-professions',
+            }, {
+
             },
-            {},
         );
     }
 
@@ -176,8 +186,7 @@ export class AppPersonsController {
         return this.personService.send(
             {
                 cmd: 'get-profession'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -185,15 +194,16 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Редактирование профессии по id"})
     @ApiResponse({status: 201, type: Profession})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Put('/professions/:id')
-    async editProfession(@Body() createProfessionDto: CreateProfessionDto,
+    async editProfession(@Body() updateProfessionDto: UpdateProfessionDto,
                          @Param('id') id: any) {
         return this.personService.send(
             {
                 cmd: 'edit-profession'
-            },
-            {
-                createProfessionDto,
+            }, {
+                updateProfessionDto,
                 id
             }
         )
@@ -201,13 +211,14 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Удаление профессии по id"})
     @ApiResponse({status: 201})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Delete('/professions/:id')
     async deleteProfession(@Param('id') id: any) {
         return this.personService.send(
             {
                 cmd: 'delete-profession'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -215,13 +226,14 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Добавление профессии персоне"})
     @ApiResponse({status: 201, type: Profession})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/person/:id/add/profession')
     async addProfessionForPerson(@Body() dto: CreateProfessionDto) {
         return this.personService.send(
             {
                 cmd: 'add-profession-for-person',
-            },
-            {
+            }, {
                 dto
             },
         );

@@ -1,10 +1,12 @@
-import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {AppService} from "../app.service";
-import {Country, CreateGenreDto, Genre} from "@app/common";
-import {ApiOperation, ApiResponse} from "@nestjs/swagger";
+import {CreateGenreDto, Genre, JwtAuthGuard, UpdateGenreDto} from "@app/common";
+import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {Roles} from "@app/common";
+import {RolesGuard} from "@app/common";
 
-
+@ApiTags('Жанры фильмов')
 @Controller()
 export class AppGenresController {
     constructor(@Inject('GENRE') private readonly genreService: ClientProxy,
@@ -12,13 +14,14 @@ export class AppGenresController {
 
     @ApiOperation({summary: "Создание нового жанра"})
     @ApiResponse({status: 201, type: Genre})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Post('/genres')
     async createGenre(@Body() createGenreDto: CreateGenreDto) {
         return this.genreService.send(
             {
                 cmd: 'create-genre',
-            },
-            {
+            }, {
                 createGenreDto
             },
         );
@@ -31,8 +34,9 @@ export class AppGenresController {
         return this.genreService.send(
             {
                 cmd: 'get-all-genres',
+            }, {
+
             },
-            {},
         );
     }
 
@@ -43,8 +47,7 @@ export class AppGenresController {
         return this.genreService.send(
             {
                 cmd: 'get-genre'
-            },
-            {
+            }, {
                 id
             }
         )
@@ -52,15 +55,16 @@ export class AppGenresController {
 
     @ApiOperation({summary: "Редактирование жанра по id"})
     @ApiResponse({status: 201, type: Genre})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Put('/genres/:id')
-    async editGenre(@Body() createGenreDto: CreateGenreDto,
+    async editGenre(@Body() updateGenreDto: UpdateGenreDto,
                     @Param('id') id: any) {
         return this.genreService.send(
             {
                 cmd: 'edit-genre'
-            },
-            {
-                createGenreDto,
+            }, {
+                updateGenreDto,
                 id
             }
         )
@@ -68,13 +72,14 @@ export class AppGenresController {
 
     @ApiOperation({summary: "Удаление страны по id"})
     @ApiResponse({status: 201})
+    @Roles('ADMIN', 'SUPERUSER')
+    @UseGuards(RolesGuard)
     @Delete('/genres/:id')
     async deleteGenre(@Param('id') id: any) {
         return this.genreService.send(
             {
                 cmd: 'delete-genre'
-            },
-            {
+            }, {
                 id
             }
         )

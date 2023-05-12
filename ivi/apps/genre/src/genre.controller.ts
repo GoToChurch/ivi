@@ -17,6 +17,14 @@ export class GenreController {
         return this.genreService.createGenre(payload.createGenreDto);
     }
 
+    @MessagePattern({ cmd: 'get-or-create-genre' })
+    async getOrCreateGenre(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+
+        return this.genreService.getOrCreateGenre(payload.createGenreDto);
+    }
+
     @MessagePattern({ cmd: 'get-all-genres' })
     async getAllGenres(@Ctx() context: RmqContext) {
         // this.commonService.acknowledgeMessage(context)
@@ -45,7 +53,7 @@ export class GenreController {
                      @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.genreService.editGenre(payload.createGenreDto, payload.id);
+        return this.genreService.editGenre(payload.updateGenreDto, payload.id);
     }
 
     @MessagePattern({ cmd: 'delete-genre' })
@@ -64,11 +72,11 @@ export class GenreController {
         return this.genreService.getFilmsIdsByGenres(payload.genres);
     }
 
-    @MessagePattern({ cmd: 'get-or-create-genre' })
-    async getOrCreateGenre(@Ctx() context: RmqContext,
-                             @Payload() payload) {
+    @MessagePattern({cmd: 'add-genre-in-map'})
+    async addGenreInMap(@Ctx() context: RmqContext,
+                              @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.genreService.getOrCreateGenre(payload.dto);
+        return this.genreService.addGenreInMap(payload.createGenreDto);
     }
 }

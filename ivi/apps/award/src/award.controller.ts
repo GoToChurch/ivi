@@ -17,6 +17,13 @@ export class AwardController {
         return this.awardService.createAward(payload.createAwardDto);
     }
 
+    @MessagePattern({ cmd: 'get-or-create-award' })
+    async getOrCreateAward(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        // this.commonService.acknowledgeMessage(context)
+        return this.awardService.getOrCreateAward(payload.createAwardDto);
+    }
+
     @MessagePattern({ cmd: 'get-all-awards' })
     async getAllAwards(@Ctx() context: RmqContext) {
         // this.commonService.acknowledgeMessage(context)
@@ -32,12 +39,12 @@ export class AwardController {
         return this.awardService.getAwardById(payload.id);
     }
 
-    @MessagePattern({ cmd: 'get-award-by-name' })
-    async getAwardByName(@Ctx() context: RmqContext,
-                         @Payload() payload) {
+    @MessagePattern({ cmd: 'get-award-by-name-and-year' })
+    async getAwardByNameAndYear(@Ctx() context: RmqContext,
+                                @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.awardService.getAwardByName(payload.name);
+        return this.awardService.getAwardByNameAndYear(payload.name, payload.year);
     }
 
     @MessagePattern({ cmd: 'edit-award' })
@@ -45,7 +52,7 @@ export class AwardController {
                     @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.awardService.editAward(payload.createAwardDto, payload.id);
+        return this.awardService.editAward(payload.updateAwardDto, payload.id);
     }
 
     @MessagePattern({ cmd: 'delete-award' })
@@ -93,13 +100,6 @@ export class AwardController {
         // this.commonService.acknowledgeMessage(context)
 
         return this.awardService.deleteNomination(payload.id);
-    }
-
-    @MessagePattern({ cmd: 'get-or-create-award' })
-    async getOrCreateAward(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-        return this.awardService.getOrCreateAward(payload.awardDto);
     }
 
     @MessagePattern({ cmd: 'add-film-and-nominations-for-award' })

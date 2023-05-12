@@ -8,11 +8,9 @@ interface NominationCreationAttrs {
 
 @Table({tableName: 'nominations'})
 export class Nomination extends Model<Nomination, NominationCreationAttrs> {
-    @ApiProperty({example: 1, description: "Уникальный идентификатор"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
 
-    @ApiProperty({example: "Лучший фильм", description: "Название номинации"})
     @Column({type: DataType.STRING, allowNull: false})
     name: string
 }

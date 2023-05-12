@@ -37,10 +37,10 @@ export class ReviewController {
 
     @MessagePattern({cmd: 'edit-review'})
     async editReview(@Ctx() context: RmqContext,
-                      @Payload() payload) {
+                     @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.reviewService.editReview(payload.createReviewDto, payload.id);
+        return this.reviewService.editReview(payload.updateReviewDto, payload.id);
     }
 
     @MessagePattern({cmd: 'delete-review'})

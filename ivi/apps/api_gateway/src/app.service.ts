@@ -343,10 +343,14 @@ export class AppService {
             }
         } catch (e) {
             console.log(e)
-            throw new HttpException("Произошла ошибка при парсинге кинопоиска. Повторите попытку позже", HttpStatus.INTERNAL_SERVER_ERROR)
         } finally {
             await driver.quit();
         }
         return awards;
     }
+
+    // async getUserByEmail(email: string) {
+    //     const user = await this.usersRep.findOne({where: {email: email}, include: {all: true}});
+    //     return user;
+    // };
 }

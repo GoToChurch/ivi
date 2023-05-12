@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Op} from "sequelize";
 
-import {Country, FilmCountries, CreateCountryDto} from "@app/common";
+import {Country, FilmCountries, CreateCountryDto, UpdateCountryDto} from "@app/common";
 
 
 @Injectable()
@@ -13,16 +13,16 @@ export class CountryService {
 
     async createCountry(dto: CreateCountryDto) {
         const country = await this.countryRepository.create(dto);
-        await country.$set('films', []);
+        await country.$set("films", []);
 
         return country;
     }
 
-    async getOrCreateCounty(dto: CreateCountryDto) {
-        let country = await this.getCountryByName(dto.name);
+    async getOrCreateCounty(createCountryDto: CreateCountryDto) {
+        let country = await this.getCountryByName(createCountryDto.name);
 
         if (!country) {
-            country = await this.createCountry(dto);
+            country = await this.createCountry(createCountryDto);
         }
 
         return country;
@@ -62,8 +62,8 @@ export class CountryService {
         });
     }
 
-    async editCountry(dto: CreateCountryDto, id: number) {
-        await this.countryRepository.update({...dto}, {
+    async editCountry(updateCountryDto: UpdateCountryDto, id: number) {
+        await this.countryRepository.update({...updateCountryDto}, {
             where: {
                 id
             }

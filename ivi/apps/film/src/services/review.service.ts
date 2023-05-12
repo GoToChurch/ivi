@@ -1,20 +1,18 @@
 import {Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 
-import {Review} from "@app/common";
-import {CreateReviewDto} from "@app/common/dto/create_review.dto";
+import {CreateReviewDto, Review, UpdateReviewDto} from "@app/common";
 
 
 @Injectable()
 export class ReviewService {
     constructor(@InjectModel(Review) private reviewRepository: typeof Review) {}
 
-    async createReview(dto: CreateReviewDto, filmId, userId, parentId?) {
-        console.log(dto)
-        const review = await this.reviewRepository.create(dto);
+    async createReview(createReviewDto: CreateReviewDto, filmId, userId, parentId?) {
+        const review = await this.reviewRepository.create(createReviewDto);
 
         review.filmId = filmId;
-        // review.userId = userId
+        review.userId = userId
 
         if (parentId) {
             review.parentId = parentId;
@@ -38,8 +36,8 @@ export class ReviewService {
         });
     }
 
-    async editReview(dto: CreateReviewDto, id: number) {
-        await this.reviewRepository.update({...dto}, {
+    async editReview(updateReviewDto: UpdateReviewDto, id: number) {
+        await this.reviewRepository.update({...updateReviewDto}, {
             where: {
                 id
             }

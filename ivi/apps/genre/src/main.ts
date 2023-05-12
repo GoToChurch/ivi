@@ -1,10 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { GenreModule } from './genre.module';
 import {ConfigService} from "@nestjs/config";
-import {CommonService, Genre} from "@app/common";
+import {CommonService, Genre, ValidationPipe} from "@app/common";
 
 async function bootstrap() {
   const app = await NestFactory.create(GenreModule);
+  app.useGlobalPipes(new ValidationPipe());
 
   const configService = app.get(ConfigService);
   const commonService = app.get(CommonService);

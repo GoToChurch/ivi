@@ -7,8 +7,7 @@ import {CountryService} from "./country.service";
 @Controller()
 export class CountryController {
     constructor(private readonly countryService: CountryService,
-                private readonly commonService: CommonService) {
-    }
+                private readonly commonService: CommonService) {}
 
     @MessagePattern({cmd: 'create-country'})
     async createCountry(@Ctx() context: RmqContext,
@@ -47,7 +46,7 @@ export class CountryController {
                             @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.countryService.getOrCreateCounty(payload.dto);
+        return this.countryService.getOrCreateCounty(payload.createCountryDto);
     }
 
     @MessagePattern({cmd: 'edit-country'})
@@ -55,7 +54,7 @@ export class CountryController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.countryService.editCountry(payload.createCountryDto, payload.id);
+        return this.countryService.editCountry(payload.updateCountryDto, payload.id);
     }
 
     @MessagePattern({cmd: 'delete-country'})

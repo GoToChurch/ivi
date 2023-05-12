@@ -70,7 +70,7 @@ export class FilmController {
                  @Payload() payload) {
     // this.commonService.acknowledgeMessage(context)
 
-    return this.filmService.editFilm(payload.name, payload.id);
+    return this.filmService.editFilm(payload.updateFilmDto, payload.id);
   }
 
   @MessagePattern({ cmd: 'delete-film' })

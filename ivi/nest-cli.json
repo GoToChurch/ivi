@@ -19,6 +19,33 @@
         "tsConfigPath": "apps/api_gateway/tsconfig.app.json"
       }
     },
+    "users_and_auth": {
+      "type": "application",
+      "root": "apps/auth_reg",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth_reg/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth_reg/tsconfig.app.json"
+      }
+    },
+    "roles": {
+      "type": "application",
+      "root": "apps/roles",
+      "entryFile": "main",
+      "sourceRoot": "apps/roles/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/roles/tsconfig.app.json"
+      }
+    },
+    "auth": {
+      "type": "application",
+      "root": "apps/auth",
+      "entryFile": "main",
+      "sourceRoot": "apps/auth/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/auth/tsconfig.app.json"
+      }
+    },
     "film": {
       "type": "application",
       "root": "apps/film",

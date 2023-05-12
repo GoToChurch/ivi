@@ -22,7 +22,7 @@ export class PersonController {
                             @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.getOrCreatePerson(payload.dto);
+        return this.personService.getOrCreatePerson(payload.createPersonDto);
     }
 
     @MessagePattern({ cmd: 'get-all-persons' })
@@ -62,7 +62,7 @@ export class PersonController {
                          @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.editPerson(payload.createPersonDto, payload.id);
+        return this.personService.editPerson(payload.updatePersonDto, payload.id);
     }
 
     @MessagePattern({ cmd: 'delete-person' })
@@ -148,7 +148,7 @@ export class PersonController {
                         @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.editProfession(payload.createProfessionDto, payload.id);
+        return this.personService.editProfession(payload.updateProfessionDto, payload.id);
     }
 
     @MessagePattern({ cmd: 'delete-profession' })

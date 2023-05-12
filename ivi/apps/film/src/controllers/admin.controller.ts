@@ -13,7 +13,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addDirector(payload.id, payload.dto);
+        return this.adminService.addDirector(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-actor' })
@@ -21,7 +21,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addActor(payload.id, payload.dto);
+        return this.adminService.addActor(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-producer' })
@@ -29,7 +29,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addProducer(payload.id, payload.dto);
+        return this.adminService.addProducer(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-writer' })
@@ -37,7 +37,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addWriter(payload.id, payload.dto);
+        return this.adminService.addWriter(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-cinematography' })
@@ -45,7 +45,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addCinematography(payload.id, payload.dto);
+        return this.adminService.addCinematography(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-musician' })
@@ -53,7 +53,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addMusician(payload.id, payload.dto);
+        return this.adminService.addMusician(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-designer' })
@@ -61,7 +61,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addDesigner(payload.id, payload.dto);
+        return this.adminService.addDesigner(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-editor' })
@@ -69,7 +69,7 @@ export class AdminController {
                       @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addEditor(payload.id, payload.dto);
+        return this.adminService.addEditor(payload.id, payload.addPersonDto);
     }
 
     @MessagePattern({ cmd: 'add-genre' })
@@ -77,7 +77,7 @@ export class AdminController {
                     @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addGenre(payload.id, payload.dto);
+        return this.adminService.addGenre(payload.id, payload.addGenreDto);
     }
 
     @MessagePattern({ cmd: 'add-country' })
@@ -85,7 +85,7 @@ export class AdminController {
                     @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addCountry(payload.id, payload.dto);
+        return this.adminService.addCountry(payload.id, payload.addCountryDto);
     }
 
     @MessagePattern({ cmd: 'add-award' })
@@ -93,7 +93,7 @@ export class AdminController {
                     @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addAward(payload.id, payload.dto);
+        return this.adminService.addAward(payload.id, payload.addAwardDto);
     }
 
     @MessagePattern({ cmd: 'add-related-film' })
@@ -101,6 +101,6 @@ export class AdminController {
                          @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.adminService.addRelatedFilm(payload.id, payload.name);
+        return this.adminService.addRelatedFilm(payload.id, payload.addRelatedFilmDto);
     }
 }

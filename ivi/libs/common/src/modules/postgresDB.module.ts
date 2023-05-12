@@ -24,21 +24,25 @@ import {PersonProfessions} from "@app/common/models/persons_models/person_profes
 import {Country} from "@app/common/models/country_models/country.model";
 import {FilmCountries} from "@app/common/models/country_models/film_country.model";
 import {RelatedFilms} from "@app/common/models/films_models/films/related_films.model";
+import {User} from "@app/common/models/users_model/user.model";
+import {Role} from "@app/common/models/roles_model/role.model";
+import {UserRoles} from "@app/common/models/users_model/user_roles.model";
 
 
 @Module({
     imports: [
         SequelizeModule.forRootAsync({
             useFactory: (configService: ConfigService) => ({
-                dialect: 'postgres',
-                host: configService.get('POSTGRES_HOST'),
-                port: +configService.get('POSTGRES_PORT'),
-                username: configService.get('POSTGRES_USER'),
-                password: configService.get('POSTGRES_PASSWORD'),
-                database: configService.get('POSTGRES_DB'),
+                dialect: "postgres",
+                host: configService.get("POSTGRES_HOST"),
+                port: +configService.get("POSTGRES_PORT"),
+                username: configService.get("POSTGRES_USER"),
+                password: configService.get("POSTGRES_PASSWORD"),
+                database: configService.get("POSTGRES_DB"),
                 models: [Award, AwardNominations, FilmAwards, Film, FilmDirectors, FilmEditors,
                     FilmCinematography, FilmMusicians, FilmDesigners, FilmProducers, FilmWriters, FilmActors, FilmGenres,
-                    Nomination, Review, Genre, Person, Profession, PersonFilms, PersonProfessions, Country, FilmCountries, RelatedFilms],
+                    Nomination, Review, Genre, Person, Profession, PersonFilms, PersonProfessions, Country, FilmCountries,
+                    RelatedFilms, User, Role, UserRoles],
                 autoLoadModels: true,
                 synchronize: true
             }),
