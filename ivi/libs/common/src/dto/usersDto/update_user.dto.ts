@@ -34,4 +34,8 @@ export class UpdateUserDto {
     @ApiProperty({example: 'Россия', description: 'Страна'})
     @IsString({message: "Должна быть строка"})
     country?: string;
+    
+    @ApiProperty({example: 'fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt', description: 'refreshToken'})
+    @IsString({message: "Должна быть строка"})
+    readonly refreshToken?: string;
 }
