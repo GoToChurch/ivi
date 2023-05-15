@@ -1,10 +1,5 @@
-import {Column, DataType, Table, Model, BelongsToMany, HasMany} from "sequelize-typescript";
+import {Column, DataType, Table, Model} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
-import {Profession} from "@app/common/models/persons_models/professions.model";
-import {PersonProfessions} from "@app/common/models/persons_models/person_professions.model";
-import {Role} from "@app/common/models/roles_model/role.model";
-import {Review} from "@app/common/models/films_models/reviews/reviews.model";
-import {UserRoles} from "@app/common/models/users_model/user_roles.model";
 
 
 interface UserCreationAttrs {
@@ -54,11 +49,16 @@ export class User extends Model<User, UserCreationAttrs> {
     @Column({type: DataType.STRING, allowNull: true})
     country: string;
 
-    @ApiProperty({example: [{}], description: 'Список ролей пользователя'})
-    @BelongsToMany(() => Role, () => UserRoles)
-    roles: [];
 
-    @ApiProperty({example: [{}], description: 'Список комментариев пользователя'})
-    @HasMany(() => Review)
-    reviews: [];
+    @ApiProperty({example: 'ADMIN', description: 'Значение роли из микросервиса roles'})
+    @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false})
+    roles: [string];
+
+    @ApiProperty({example: '1', description: 'Id обзора из микросервиса reviews'})
+    @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false, defaultValue:[]})
+    reviews: [string];
+
+    @ApiProperty({example: 'fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt', description: 'refreshToken'})
+    @Column({type: DataType.STRING, allowNull: true})
+    refreshToken: string;
 }
