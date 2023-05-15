@@ -1,13 +1,11 @@
 import {Controller} from "@nestjs/common";
-import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 import {ReviewService} from "../services/review.service";
 
 
 @Controller()
 export class ReviewController {
-    constructor(private readonly reviewService: ReviewService,
-                private readonly commonService: CommonService) {
+    constructor(private readonly reviewService: ReviewService) {
     }
 
     @MessagePattern({cmd: 'create-review'})

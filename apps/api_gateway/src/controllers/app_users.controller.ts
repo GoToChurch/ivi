@@ -88,10 +88,9 @@ export class AppUsersController {
     @UseGuards(RolesGuard)
     @Get("filter/:value1/:value2")
     async UserCountryAndAgeFilters(@Param("value1") value1: string,
-                                   @Param("value2") value2?: string,
-                                   @Query() query?) {
+                                   @Param("value2") value2: string) {
 
-        return this.usersClient.send({cmd: "get-users-by-params"}, {value1, value2, query});
+        return this.usersClient.send({cmd: "get-users-by-params"}, {value1, value2});
     };
 
     @ApiOperation({
@@ -103,9 +102,8 @@ export class AppUsersController {
     @Roles('ADMIN', 'SUPERUSER')
     @UseGuards(RolesGuard)
     @Get("filter/:value")
-    async UserCountryOrAgeFilter(@Param("value") value: string,
-                                 @Query() query?) {
-        return this.usersClient.send({cmd: "get-users-by-param"}, {value, query});
+    async UserCountryOrAgeFilter(@Param("value") value: string) {
+        return this.usersClient.send({cmd: "get-users-by-param"}, {value});
     };
 
     @ApiOperation({

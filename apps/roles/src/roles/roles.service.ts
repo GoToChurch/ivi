@@ -7,7 +7,7 @@ import {CreateRoleGTO} from "@app/common";
 export class RolesService {
   constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {
   }
-  async create_role(dto: CreateRoleGTO) {
+  async createRole(dto: CreateRoleGTO) {
     const existing_role = await this.getRoleByValue(dto.value);
     if(!existing_role) {
       const new_role = await this.roleRepository.create(dto);

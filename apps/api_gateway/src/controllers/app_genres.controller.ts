@@ -1,6 +1,5 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {AppService} from "../app.service";
 import {CreateGenreDto, Genre} from "@app/common";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {Roles} from "@app/common";
@@ -9,8 +8,7 @@ import {RolesGuard} from "@app/common";
 @ApiTags('Жанры фильмов')
 @Controller()
 export class AppGenresController {
-    constructor(@Inject('GENRE') private readonly genreService: ClientProxy,
-                private appService: AppService) {}
+    constructor(@Inject('GENRE') private readonly genreService: ClientProxy) {}
 
     @ApiOperation({summary: "Создание нового жанра"})
     @ApiResponse({status: 201, type: Genre})

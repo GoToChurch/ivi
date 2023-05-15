@@ -6,8 +6,7 @@ import {GenreService} from "./genre.service";
 
 @Controller()
 export class GenreController {
-    constructor(private readonly genreService: GenreService,
-                private readonly commonService: CommonService) {}
+    constructor(private readonly genreService: GenreService) {}
 
     @MessagePattern({ cmd: 'create-genre' })
     async createGenre(@Ctx() context: RmqContext,

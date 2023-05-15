@@ -9,8 +9,7 @@ import {RolesGuard} from "@app/common";
 @ApiTags('Личности, участвующие в производстве фильмов')
 @Controller()
 export class AppPersonsController {
-    constructor(@Inject('PERSON') private readonly personService: ClientProxy,
-                private appService: AppService) {}
+    constructor(@Inject('PERSON') private readonly personService: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой персоны. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Person})

@@ -50,11 +50,15 @@ export class User extends Model<User, UserCreationAttrs> {
     country: string;
 
 
-    @ApiProperty({example: 'AMDIN', description: 'Значение роли из микросервиса roles'})
+    @ApiProperty({example: 'ADMIN', description: 'Значение роли из микросервиса roles'})
     @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false})
     roles: [string];
 
     @ApiProperty({example: '1', description: 'Id обзора из микросервиса reviews'})
     @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false, defaultValue:[]})
     reviews: [string];
+
+    @ApiProperty({example: 'fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt', description: 'refreshToken'})
+    @Column({type: DataType.STRING, allowNull: true})
+    refreshToken: string;
 }

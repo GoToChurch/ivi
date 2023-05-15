@@ -17,9 +17,9 @@ export class Current_user_guard implements CanActivate {
             if (bearer !== 'Bearer' || !token) {
                 throw new UnauthorizedException({message: 'Пользователь не авторизован!!!!!'})
             }
-            const user = this.jwtService.verify(token);
+            const user = this.jwtService.decode(token);
             req.user = user;
-            if (req.user.id === req.body.id) {
+            if (req.user['sub'] === req.body.id) {
                 return true;
             }
             throw new UnauthorizedException({message: 'У Вас нет прав на взаимодействие с этим пользователем'})

@@ -1,13 +1,11 @@
 import {Controller} from "@nestjs/common";
-import {CommonService} from "@app/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 import {AwardService} from "./award.service";
 
 
 @Controller()
 export class AwardController {
-    constructor(private readonly awardService: AwardService,
-                private readonly commonService: CommonService) {}
+    constructor(private readonly awardService: AwardService) {}
 
     @MessagePattern({ cmd: 'create-award' })
     async createAward(@Ctx() context: RmqContext,

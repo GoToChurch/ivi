@@ -56,13 +56,13 @@ export class UsersController {
     @MessagePattern({cmd: "get-users-by-params"})
     async userCountryAndAgeFilters(@Ctx() context: RmqContext,
                                @Payload() payload) {
-        return await this.userService.UserCountryAndAgeFilters(payload.value1, payload.value2)
+        return await this.userService.userCountryAndAgeFilters(payload.value1, payload.value2)
     }
 
     @MessagePattern({cmd: "get-users-by-param"})
     async userCountryOrAgeFilter(@Ctx() context: RmqContext,
                                    @Payload() payload) {
-        return await this.userService.UserCountryOrAgeFilter(payload.value)
+        return await this.userService.userCountryOrAgeFilter(payload.value)
     }
 
     @MessagePattern({cmd: "update-user"})
@@ -110,15 +110,12 @@ export class UsersController {
                         @Payload() payload) {
         const token_user = await this.userService.InspectUserToken(payload["token"]);
         if (payload['parent_id']) {
-            console.log('c parent')
             const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'],
                 payload['film_id'], payload['parent_id']);
             await this.userService.addReviewToUser(token_user["id"], review.id);
             return this.reviewsClient.send({cmd: "create-review"}, {review});
         }
-        console.log('без parent')
         const review = await this.userService.createIdToUserReview(payload['dto'], token_user['id'], payload['film_id']);
-        console.log(review)
         await this.userService.addReviewToUser(token_user["id"], review.id);
         return this.reviewsClient.send({cmd: "create-review"}, {review});
     }
@@ -126,7 +123,6 @@ export class UsersController {
     @MessagePattern({cmd: "delete-review-from-user"})
     async deleteReviewToUser(@Ctx() context: RmqContext,
                           @Payload() payload) {
-        console.log(payload['review_id'])
         const id = payload['review_id'];
         await this.userService.deleteReviewFromUser(payload['id'], payload['review_id']);
         return this.reviewsClient.send({cmd: "delete-review"}, {id});

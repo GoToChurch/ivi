@@ -13,15 +13,17 @@ import {AuthModule} from "../auth/auth.module";
     controllers: [UsersController],
     providers: [UserService],
     imports: [
-        JwtModule.registerAsync({
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get('JWT_SECRET'),
-                signOptions: {
-                    expiresIn: '24h'
-                },
-            }),
-            inject: [ConfigService],
-        }),
+        JwtModule.register({}),
+        //JwtModule.registerAsync(//{
+            //useFactory: (configService: ConfigService) => ({
+            //    secret: configService.get('JWT_SECRET'),
+            //    signOptions: {
+            //        expiresIn: '24h'
+            //    },
+            //}),
+            //inject: [ConfigService],
+        //}),
+
         CommonModule.registerRmq({name: "ROLES"}),
         CommonModule.registerRmq({name: "REVIEWS"}),
         SequelizeModule.forFeature([User]),

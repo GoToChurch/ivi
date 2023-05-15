@@ -6,8 +6,7 @@ import {CommonService} from "@app/common";
 
 @Controller()
 export class FilmController {
-    constructor(private readonly filmService: FilmService,
-                private readonly commonService: CommonService) {
+    constructor(private readonly filmService: FilmService) {
     }
 
     @MessagePattern({cmd: 'create-film'})

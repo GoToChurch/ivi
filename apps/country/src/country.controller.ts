@@ -6,8 +6,7 @@ import {CountryService} from "./country.service";
 
 @Controller()
 export class CountryController {
-    constructor(private readonly countryService: CountryService,
-                private readonly commonService: CommonService) {
+    constructor(private readonly countryService: CountryService) {
     }
 
     @MessagePattern({cmd: 'create-country'})

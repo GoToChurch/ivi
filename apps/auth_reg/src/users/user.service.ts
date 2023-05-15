@@ -32,7 +32,7 @@ export class UserService {
     };
 
     async getAllUsers() {
-        const users = await this.userRepository.findAll({include:{all:true}})
+        const users = await this.userRepository.findAll({include: {all: true}})
         return users
     }
 
@@ -65,7 +65,7 @@ export class UserService {
     };
 
 
-    async UserCountryAndAgeFilters(param1: string, param2: string) {
+    async userCountryAndAgeFilters(param1: string, param2: string) {
         const users: User[] = await this.getAllUsers()
         //const users: User[] = await this.userRepository.findAll({include: {all: true}});
         const first_param = await this.identifyRequestString(param1, users);
@@ -74,7 +74,7 @@ export class UserService {
     };
 
 
-    async UserCountryOrAgeFilter(param1: string) {
+    async userCountryOrAgeFilter(param1: string) {
         const users: User[] = await this.getAllUsers()
         //const users: User[] = await this.userRepository.findAll();
         return await this.identifyRequestString(param1, users);
@@ -91,8 +91,12 @@ export class UserService {
 
 
     async updateUser(dto: UserUpdateDto, id) {
-        const hash_password = await bcrypt.hash(dto.password, 5);
-        const user = await this.userRepository.update({...dto, password: hash_password}, {where: {id: +id}});
+        if (dto.password) {
+            const hash_password = await bcrypt.hash(dto.password, 5);
+            const user = await this.userRepository.update({...dto, password: hash_password}, {where: {id: +id}});
+            return user;
+        }
+        const user = await this.userRepository.update({...dto}, {where: {id: +id}});
         return user;
     };
 

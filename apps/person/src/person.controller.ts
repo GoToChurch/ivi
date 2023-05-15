@@ -6,8 +6,7 @@ import {PersonService} from "./person.service";
 
 @Controller()
 export class PersonController {
-    constructor(private readonly personService: PersonService,
-                private readonly commonService: CommonService) {}
+    constructor(private readonly personService: PersonService) {}
 
     @MessagePattern({ cmd: 'create-person' })
     async createPerson(@Ctx() context: RmqContext,

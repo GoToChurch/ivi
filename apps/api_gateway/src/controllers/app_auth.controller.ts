@@ -28,7 +28,7 @@ export class AppAuthController {
     @ApiResponse({status: 200, type: String})
     @UseGuards(GoogleAuthGuard)
     @Get("google/login")
-    handleLogin() {
+    googleLogin() {
         return {msg: "Google auth - success"}
     };
 
@@ -41,7 +41,7 @@ export class AppAuthController {
 
     @UseGuards(GoogleAuthGuard)
     @Get("google/redirect")
-    handleRedirect() {
+    googleRedirect() {
         return {msg: "Google auth - success"}
     };
 
@@ -50,10 +50,4 @@ export class AppAuthController {
     vkRedirect() {
         return {msg: "VK auth - success"}
     };
-
-    //@UseGuards(Current_user_or_admin_guard)
-    //@Get('status/:id')
-    //async getAuthUser(@Req() req: Request, @Param('id') id: string) {
-    //    return {Hello: "hi"}
-    //}
 }

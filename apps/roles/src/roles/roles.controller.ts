@@ -7,8 +7,8 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @MessagePattern({cmd: "role-registration"})
-  async create_role(@Ctx() context: RmqContext, @Payload() payload) {
-    return await this.rolesService.create_role(payload.dto);
+  async createRole(@Ctx() context: RmqContext, @Payload() payload) {
+    return await this.rolesService.createRole(payload.dto);
   }
 
   @MessagePattern({cmd: "get-all-roles"})
@@ -35,13 +35,13 @@ export class RolesController {
   }
 
   @MessagePattern({cmd: "update-role"})
-  async update_role(@Ctx() context: RmqContext, @Payload() payload) {
+  async updateRole(@Ctx() context: RmqContext, @Payload() payload) {
     const role = await this.rolesService.updateRole(payload.dto, payload.id);
     return role;
   }
 
   @MessagePattern({cmd: "delete-role"})
-  async delete_role(@Ctx() context: RmqContext, @Payload() payload) {
+  async deleteRole(@Ctx() context: RmqContext, @Payload() payload) {
     const role = await this.rolesService.deleteRole(payload.id);
     return role;
   }

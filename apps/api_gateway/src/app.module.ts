@@ -41,10 +41,10 @@ import {ConfigService} from "@nestjs/config";
         }),
         SequelizeModule.forFeature([User]),
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'SECRET',
-            signOptions: {
-                expiresIn: '24h'
-            }
+            //secret: process.env.JWT_SECRET || 'SECRET',
+            //signOptions: {
+            //    expiresIn: '24h'
+            //}
         }),
         PassportModule.register({session: true}),
         CommonModule.registerRmq({name: "USERS"}),
