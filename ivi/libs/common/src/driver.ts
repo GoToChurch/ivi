@@ -16,8 +16,9 @@ export class Driver {
     async startDriver() {
         this.driver = await new Builder()
             .forBrowser("chrome")
+            .usingServer('http://chrome:4444/wd/hub')
             .build();
-    // .usingServer('http://chrome:4444/wd/hub')
+    //
     }
 
     getDriver() {
