@@ -1,9 +1,8 @@
 import {HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {AddRoleDto, CreateReviewDto, RegistrationDto, UpdateUserDto, User, UserRoles} from "@app/common";
+import {AddRoleDto, CreateReviewDto, RegistrationDto, Review, UpdateUserDto, User, UserRoles} from "@app/common";
 import * as bcrypt from "bcryptjs";
 import {JwtService} from "@nestjs/jwt";
-import {v4 as uuidv4} from 'uuid';
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 
@@ -23,7 +22,7 @@ export class UserService {
             const hash_password = await bcrypt.hash(registrationDto.password, 5);
             const user = await this.userRepository.create({...registrationDto, password: hash_password});
 
-            user.$set("roles", []);
+            await user.$set("roles", []);
             await this.addRoleToUser({userId: user.id, value: role});
 
             return user;
@@ -32,7 +31,7 @@ export class UserService {
             const hash_password = await bcrypt.hash(registrationDto.password, 5);
             const user = await this.userRepository.create({...registrationDto, password: hash_password});
 
-            user.$set("roles", []);
+            await user.$set("roles", []);
             await this.addRoleToUser({userId: user.id, value: role});
 
             return user;
@@ -167,14 +166,28 @@ export class UserService {
         })
     };
 
-    async InspectUserToken(token: string) {
+    async inspectUserToken(token: string) {
         return await this.jwtService.verify(token);
     };
 
+    async addReviewToUser(review: Review, id: number) {
+        const user = await this.getUserById(id);
+        user.reviews.push(review);
+        const arr = user.reviews;
+
+        return await this.updateUser({...user.dataValues, reviews: arr}, user.id);
+    }
+
+    async deleteReviewFromUser(reviewId: number, id: number) {
+        const user = await this.getUserById(id);
+        const arr = (await this.getAllUsersReviews(id)).filter(review => review.id != reviewId);
+
+        return await this.updateUser({...user.dataValues, reviews: arr}, user.id);
+    }
+
     async getAllUsersReviews(id: number) {
         const user = await this.getUserById(id);
-
-        return user.reviews;
+        return user.reviews.map(review => JSON.parse(String(review)));
     }
 }
 

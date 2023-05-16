@@ -37,6 +37,8 @@ export class AppFilmsController {
     }
 
     @ApiOperation({summary: "Получение списка всех фильмов"})
+    @ApiQuery({ name: 'db_limit', required: false, example: 200, description: `Ограничение на количество 
+    выводимых данных из бд. Если присутствует, всегда выполняется в первую очередь`})
     @ApiQuery({ name: 'person', description: "Поиск фильма по имени персоны как на русском, " +
             "так и на английском языке", example: "Мартин", required: false})
     @ApiQuery({ name: 'search_query', required: false, example: "Inception", description: "Поиск фильма по названию" +
@@ -63,6 +65,8 @@ export class AppFilmsController {
     https://ru.wikipedia.org/wiki/Список_доменов_верхнего_уровня. Например для Франции это будет 'fr'.
     Имеется возможность фильтрации по нескольким жанрам или странам. В таком случае жанры или страны перечисляются через '+'.
     Примеры запроса: localhost:3000/films/filter/fr, localhost:3000/films/filter/drama+romance`})
+    @ApiQuery({ name: 'db_limit', required: false, example: 200, description: `Ограничение на количество 
+    выводимых данных из бд. Если присутствует, всегда выполняется в первую очередь`})
     @ApiQuery({ name: 'person', description: "Поиск фильма по имени персоны как на русском, " +
             "так и на английском языке", example: "Мартин", required: false})
     @ApiQuery({ name: 'search_query', required: false, example: "Inception", description: "Поиск фильма по названию" +
@@ -71,7 +75,8 @@ export class AppFilmsController {
             "Ищутся фильмы с рейтингом больше или равным указанному"})
     @ApiQuery({ name: 'ratingsNumber_gte', required: false, example: 10000, description: "Фильтрация фильмов по количеству оценок. " +
             "Ищутся фильмы с количеством оценок больше или равным указанному"})
-    @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
+    @ApiQuery({ name: 'limit', required: false, example: 200, description: `Ограничение на количество выводимых 
+    результирующих данных после всех фильтров. Если присутствует, всегда выполняется в последнюю очередь`})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
     @ApiParam({name: "filter1", example: "drama", description: "Первый фильтр"})
     @Get('/films/filter/:filter1')
@@ -102,6 +107,8 @@ export class AppFilmsController {
     Имеется возможность фильтрации по нескольким жанрам или странам. В таком случае жанры или страны перечисляются через '+'. 
     Порядок расположения фильтров: жанр -> год -> страна. Пример запроса: localhost:3000/films/filter/adventure/2010`})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
+    @ApiQuery({ name: 'db_limit', required: false, example: 200, description: `Ограничение на количество 
+    выводимых данных из бд. Если присутствует, всегда выполняется в первую очередь`})
     @ApiQuery({ name: 'person', description: "Поиск фильма по имени персоны как на русском, " +
             "так и на английском языке", example: "Мартин", required: false})
     @ApiQuery({ name: 'search_query', required: false, example: "Inception", description: "Поиск фильма по названию" +
@@ -142,6 +149,8 @@ export class AppFilmsController {
     https://ru.wikipedia.org/wiki/Список_доменов_верхнего_уровня. Например для Франции это будет 'fr'.
     Имеется возможность фильтрации по нескольким жанрам или странам. В таком случае жанры или страны перечисляются через '+'. 
     Порядок расположения фильтров: жанр -> год -> страна. Пример запроса: localhost:3000/films/filter/horror/2000-2005/us+ru`})
+    @ApiQuery({ name: 'db_limit', required: false, example: 200, description: `Ограничение на количество 
+    выводимых данных из бд. Если присутствует, всегда выполняется в первую очередь`})
     @ApiQuery({ name: 'person', description: "Поиск фильма по имени персоны как на русском, " +
             "так и на английском языке", example: "Мартин", required: false})
     @ApiQuery({ name: 'search_query', required: false, example: "Inception", description: "Поиск фильма по названию" +
@@ -543,12 +552,14 @@ export class AppFilmsController {
     @ApiParam({name: "id", example: 1})
     @UseGuards(CurrentUserOrAdminGuard)
     @Delete('/reviews/:id')
-    async deleteReview(@Param('id') id: any) {
+    async deleteReview(@Param('id') id: any,
+                       @Req() request) {
        return this.filmService.send(
            {
                cmd: 'delete-review'
            }, {
-               id
+               id,
+               userId: request.user.id
            }
        )
     }

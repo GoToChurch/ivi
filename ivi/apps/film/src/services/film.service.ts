@@ -7,9 +7,9 @@ import {
     Country,
     Person,
     Genre,
-
-    Review, Award, UpdateFilmDto,
-
+    Review,
+    Award,
+    UpdateFilmDto,
 } from "@app/common";
 import {genresMap} from "@app/common/maps/maps";
 import {ClientProxy} from "@nestjs/microservices";
@@ -70,13 +70,21 @@ export class FilmService {
   }
 
   async getAllFilms(query?) {
-    let films = await this.filmRepository.findAll();
+      let films;
 
-    if (query) {
-      films = await this.handleQuery(films, query)
-    }
+      if (query.db_limit) {
+          films = await this.filmRepository.findAll({
+              limit: query.db_limit
+          });
+      } else {
+          films = await this.filmRepository.findAll();
+      }
 
-    return films;
+      if (query) {
+          films = await this.handleQuery(films, query)
+      }
+
+      return films;
   }
 
   async getFilmById(id: number) {
@@ -139,7 +147,7 @@ export class FilmService {
 
   async filterFilmsByCountries(films, countries) {
     let filmsIds =  await lastValueFrom(this.countryService.send({
-              cmd: 'get-countries-ids-by-genres',
+              cmd: 'get-films-ids-by-countries',
             },
             {
               countries

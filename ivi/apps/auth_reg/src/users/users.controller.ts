@@ -80,4 +80,22 @@ export class UsersController {
                              @Payload() payload) {
         return await this.userService.deleteRoleFromUser(payload.addRoleDto);
     }
+
+    @MessagePattern({cmd: "add-review-to-user"})
+    async addReviewToUser(@Ctx() context: RmqContext,
+                        @Payload() payload) {
+        return await this.userService.addReviewToUser(payload.review, payload.id);
+    }
+
+    @MessagePattern({cmd: "get-all-users-reviews"})
+    async getAllUsersReviews(@Ctx() context: RmqContext,
+                          @Payload() payload) {
+        return await this.userService.getAllUsersReviews(payload.id);
+    }
+
+    @MessagePattern({cmd: "delete-review-from-user"})
+    async deleteReviewFromUser(@Ctx() context: RmqContext,
+                             @Payload() payload) {
+        return await this.userService.deleteReviewFromUser(payload.reviewId, payload.id);
+    }
 }

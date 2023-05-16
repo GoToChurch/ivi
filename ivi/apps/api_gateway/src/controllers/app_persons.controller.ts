@@ -37,6 +37,8 @@ export class AppPersonsController {
     }
 
     @ApiOperation({summary: "Получение списка всех персон"})
+    @ApiQuery({ name: 'db_limit', required: false, example: 200, description: `Ограничение на количество 
+    выводимых данных из бд. Если присутствует, всегда выполняется в первую очередь`})
     @ApiQuery({ name: 'search_query', required: false, example: "Омар", description: "Поиск персоны по имени" +
             "как на русском, так и на английском языке"})
     @ApiQuery({ name: 'limit', required: false, example: 200, description: "Ограничение на количество выводимых данных"})
@@ -54,7 +56,7 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Получение персоны по id"})
     @ApiResponse({status: 200, type: Person})
-    @Get('/persons/:id')
+    @Get('/person/:id')
     async getPerson(@Param('id') id: any) {
         return this.personService.send(
             {
@@ -65,15 +67,19 @@ export class AppPersonsController {
         )
     }
 
-    @ApiOperation({summary: "Получение всех персон с указанным именем. Работает с русским и оригинальным именами"})
+    @ApiOperation({summary: "Получение всех персон с указанным именем и/или профессией"})
+    @ApiQuery({ name: 'name', required: false, example: "Омар", description: `Имя персоны на русском или английском 
+    языке. Может быть неполным`})
+    @ApiQuery({ name: 'profession', required: false, example: "Актер", description: `Професссия персоны на 
+    русском языке. Должно быть полным`})
     @ApiResponse({status: 200, type: [Person]})
-    @Get('/persons/name/:name')
-    async getPersonsByName(@Param('name') name: any) {
+    @Get('/persons/search')
+    async searchPersons(@Query() query) {
         return this.personService.send(
             {
-                cmd: 'get-persons-by-name'
+                cmd: 'search-persons'
             }, {
-                name
+                query
             }
         )
     }
@@ -82,7 +88,7 @@ export class AppPersonsController {
     @ApiResponse({status: 201, type: Person})
     @Roles('ADMIN', 'SUPERUSER')
     @UseGuards(RolesGuard)
-    @Put('/persons/:id')
+    @Put('/person/:id')
     async editPerson(@Body() updatePersonDto: UpdatePersonDto,
                      @Param('id') id: any) {
         return this.personService.send(
@@ -97,7 +103,7 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Получение списка всех фильмов персоны по id"})
     @ApiResponse({status: 200, type: [CreateFilmDto]})
-    @Get('/persons/:id/films')
+    @Get('/person/:id/films')
     async getPersonsFilms(@Param('id') id: any) {
         return this.personService.send(
             {
@@ -110,7 +116,7 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Получение списка всех профессий персоны по id"})
     @ApiResponse({status: 200, type: [CreateProfessionDto]})
-    @Get('/persons/:id/professions')
+    @Get('/person/:id/professions')
     async getPersonsProfessions(@Param('id') id: any) {
         return this.personService.send(
             {
@@ -123,7 +129,7 @@ export class AppPersonsController {
 
     @ApiOperation({summary: "Получение списка всех фильмов персоны по id, в которых она принимала участие в качестве professionId"})
     @ApiResponse({status: 200, type: [Film]})
-    @Get('/persons/:id/films/:professionId')
+    @Get('/person/:id/films/:professionId')
     async getPersonsFilmsByProfession(@Param('id') id: any,
                                       @Param('professionId') professionId: any) {
         return this.personService.send(
@@ -140,7 +146,7 @@ export class AppPersonsController {
     @ApiResponse({status: 201})
     @Roles('ADMIN', 'SUPERUSER')
     @UseGuards(RolesGuard)
-    @Delete('/persons/:id')
+    @Delete('/person/:id')
     async deletePerson(@Param('id') id: any) {
         return this.personService.send(
             {

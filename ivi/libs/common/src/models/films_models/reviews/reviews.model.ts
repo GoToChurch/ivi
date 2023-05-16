@@ -22,10 +22,6 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
     @Column({type: DataType.INTEGER, defaultValue: 36})
     rating: number
 
-    @BelongsTo(() => User)
-    user: string
-
-    @ForeignKey(() => User)
     @Column({type: DataType.INTEGER})
     userId: number;
 

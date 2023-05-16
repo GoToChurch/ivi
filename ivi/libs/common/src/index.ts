@@ -1,5 +1,6 @@
 export * from './modules/common.module';
-export * from './modules/postgresDB.module';
+export * from './modules/postgresFilmDb.module';
+export * from './modules/postgresUserDb.module';
 export * from './services/common.service';
 
 export * from './models/films_models/films/film_actors.model';

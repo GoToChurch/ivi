@@ -48,7 +48,7 @@ export class ReviewController {
                         @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.reviewService.deleteReview(payload.id);
+        return this.reviewService.deleteReview(payload.id, payload.userId);
     }
 
 }

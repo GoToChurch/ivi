@@ -132,8 +132,8 @@ export class AppUsersController {
     @Get("role/:role")
     async getUsersByRole(@Param("role") role: string,) {
         return this.userService.send({
-            cmd: "get-users-by-role"}
-            , {
+            cmd: "get-users-by-role"
+            }, {
             role
         });
     };
@@ -179,6 +179,7 @@ export class AppUsersController {
         });
     };
 
+
     @ApiOperation({summary: `Удалить роль пользователя по id пользователя и значению роли(value). 
     Необходима роль Администратора`})
     @ApiResponse({status: 201, type: User})
@@ -190,6 +191,19 @@ export class AppUsersController {
             cmd: "delete-role-from-user"
         }, {
             addRoleDto
+        });
+    };
+
+    @ApiOperation({summary: `Получить все комментарии пользователя по id. 
+    Необходима быть зарегестрированным пользователем`})
+    @ApiResponse({status: 200, type: User})
+    @UseGuards(JwtAuthGuard)
+    @Get("/:id/reviews")
+    async getAllUsersReviews(@Param("id") id: string) {
+        return this.userService.send({
+            cmd: "get-all-users-reviews"
+        }, {
+            id
         });
     };
 }

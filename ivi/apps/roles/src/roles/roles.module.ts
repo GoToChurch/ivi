@@ -2,13 +2,13 @@ import {Module} from '@nestjs/common';
 import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
 import {SequelizeModule} from "@nestjs/sequelize";
-import {PostgresDBModule, Role} from "@app/common";
+import {PostgresUserDbModule, Role} from "@app/common";
 
 
 @Module({
   imports: [
     SequelizeModule.forFeature([Role]),
-    PostgresDBModule
+    PostgresUserDbModule
   ],
   controllers: [RolesController],
   providers: [RolesService],

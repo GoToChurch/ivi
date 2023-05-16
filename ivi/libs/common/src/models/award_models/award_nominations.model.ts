@@ -3,7 +3,6 @@ import {Award} from "./awards.model";
 import {Nomination} from "./nominations.model";
 
 
-
 @Table({tableName: 'award_nominations'})
 export class AwardNominations extends Model<AwardNominations> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})

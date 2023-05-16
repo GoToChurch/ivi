@@ -147,6 +147,7 @@ export class AppService {
             duration: 0,
             description: ""
         };
+
         const name = filmResp.name;
         if (name) {
             film.name = name;

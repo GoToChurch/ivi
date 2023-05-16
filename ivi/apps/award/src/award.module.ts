@@ -3,13 +3,13 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {AwardController} from "./award.controller";
 import {AwardService} from "./award.service";
 
-import {Award, CommonModule, Film, FilmAwards, Nomination, PostgresDBModule} from "@app/common";
+import {Award, CommonModule, Film, FilmAwards, Nomination, PostgresFilmDbModule} from "@app/common";
 
 
 @Module({
   imports: [
     CommonModule,
-    PostgresDBModule,
+    PostgresFilmDbModule,
     SequelizeModule.forFeature(
         [Film, Award, FilmAwards, Nomination]
     ),

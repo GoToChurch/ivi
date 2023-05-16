@@ -59,6 +59,6 @@ export class User extends Model<User, UserCreationAttrs> {
     roles: [];
 
     @ApiProperty({example: [{}], description: 'Список комментариев пользователя'})
-    @HasMany(() => Review)
-    reviews: [];
+    @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false, defaultValue:[]})
+    reviews: Review[];
 }

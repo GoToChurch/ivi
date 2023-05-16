@@ -13,7 +13,7 @@ import {
   FilmDirectors,
   FilmEditors, FilmGenres,
   FilmMusicians, FilmProducers, FilmWriters,
-  PostgresDBModule, RelatedFilms, Review
+  PostgresFilmDbModule, PostgresUserDbModule, RelatedFilms, Review
 } from "@app/common";
 
 
@@ -21,7 +21,7 @@ import {
 @Module({
   imports: [
     CommonModule,
-    PostgresDBModule,
+    PostgresFilmDbModule,
     SequelizeModule.forFeature(
         [Film, FilmDirectors, FilmEditors, FilmCinematography, FilmMusicians, FilmDesigners, FilmProducers,
           FilmWriters, FilmActors, FilmGenres, Review, RelatedFilms]
@@ -30,6 +30,7 @@ import {
     CommonModule.registerRmq({name: 'AWARD'}),
     CommonModule.registerRmq({name: 'GENRE'}),
     CommonModule.registerRmq({name: 'PERSON'}),
+    CommonModule.registerRmq({name: "USERS"}),
   ],
   controllers: [FilmController, ReviewController, AdminController],
   providers: [FilmService, ReviewService, AdminService],

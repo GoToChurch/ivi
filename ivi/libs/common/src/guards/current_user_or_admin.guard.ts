@@ -34,7 +34,8 @@ export class CurrentUserOrAdminGuard implements CanActivate {
                 return true;
             }
         } catch (err) {
-            throw new UnauthorizedException({message: 'Вы не можете удалить этого пользователя'})
+            console.log(err)
+            throw new UnauthorizedException({message: "У вас нет прав на взаимодействие с этим пользователем"})
         }
     }
 }

@@ -30,8 +30,7 @@ export class PersonService {
     }
 
     async getOrCreatePerson(createPersonDto: CreatePersonDto) {
-        let person = await this.getPersonByName(createPersonDto.name)
-
+        let person = await this.getPersonByName(createPersonDto.name);
         if (!person) {
             person = await this.createPerson(createPersonDto);
         }
@@ -40,7 +39,15 @@ export class PersonService {
     }
 
     async getAllPersons(query?) {
-        let persons = await this.personRepository.findAll();
+        let persons;
+
+        if (query.db_limit) {
+            persons = await this.personRepository.findAll({
+                limit: query.db_limit
+            });
+        } else {
+            persons = await this.personRepository.findAll();
+        }
 
         if (query) {
             persons = this.handleQuery(persons, query)
@@ -68,19 +75,49 @@ export class PersonService {
         })
     }
 
-    async getPersonsByName(name: string) {
-        return await this.personRepository.findAll({
-            where: {
-                [Op.or]: {
-                    name: name,
-                    originalName: name
-                }
-            },
-        })
+    async searchPersons(query) {
+        let persons = [];
+
+        if (query) {
+            if (query.name) {
+                persons = await this.personRepository.findAll({
+                    where: {
+                        [Op.or]: {
+                            name: {
+                                [Op.iLike]: `${query.name}%`
+                            },
+                            originalName: {
+                                [Op.iLike]: `${query.name}%`
+                            }
+                        }
+                    },
+                    include: Profession
+                })
+            }
+            if (query.profession) {
+
+                persons = this.filterPersonsByProfession(persons, query.profession)
+            }
+        }
+
+        return persons;
     }
 
     filterPersonsByName(persons, query) {
         return persons.filter(person => person.name.includes(query.search_query) || person.originalName.includes(query.search_query));
+    }
+
+    filterPersonsByProfession(persons, profession) {
+        let filterResult = [];
+
+        for (const person of persons) {
+            for (const prof of person.professions) {
+                if (prof.name == profession) {
+                    filterResult.push(person);
+                }
+            }
+        }
+        return filterResult
     }
 
     async getAllPersonsFilms(id: number) {

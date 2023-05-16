@@ -1,6 +1,7 @@
 import {IsNumber, IsString, Length, Min} from "class-validator";
 import {IsEmail} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
+import {Review} from "@app/common/models/films_models/reviews/reviews.model";
 
 
 export class UpdateUserDto {
@@ -34,4 +35,6 @@ export class UpdateUserDto {
     @ApiProperty({example: 'Россия', description: 'Страна'})
     @IsString({message: "Должна быть строка"})
     country?: string;
+
+    reviews?: Review[]
 }

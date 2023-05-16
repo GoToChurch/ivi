@@ -49,12 +49,12 @@ export class PersonController {
         return this.personService.getPersonByName(payload.name);
     }
 
-    @MessagePattern({ cmd: 'get-persons-by-name' })
-    async getPersonsByName(@Ctx() context: RmqContext,
+    @MessagePattern({ cmd: 'search-persons' })
+    async searchPersons(@Ctx() context: RmqContext,
                           @Payload() payload) {
         // this.commonService.acknowledgeMessage(context)
 
-        return this.personService.getPersonsByName(payload.name);
+        return this.personService.searchPersons(payload.query);
     }
 
     @MessagePattern({ cmd: 'edit-person' })

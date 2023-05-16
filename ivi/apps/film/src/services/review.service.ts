@@ -1,18 +1,28 @@
-import {Injectable} from "@nestjs/common";
+import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 
 import {CreateReviewDto, Review, UpdateReviewDto} from "@app/common";
+import {ClientProxy} from "@nestjs/microservices";
+import {lastValueFrom} from "rxjs";
 
 
 @Injectable()
 export class ReviewService {
-    constructor(@InjectModel(Review) private reviewRepository: typeof Review) {}
+    constructor(@InjectModel(Review) private reviewRepository: typeof Review,
+                @Inject('USERS') private readonly usersService: ClientProxy) {}
 
     async createReview(createReviewDto: CreateReviewDto, filmId, userId, parentId?) {
         const review = await this.reviewRepository.create(createReviewDto);
 
         review.filmId = filmId;
-        review.userId = userId
+        review.userId = userId;
+
+        let user = await lastValueFrom(this.usersService.send({
+            cmd: "add-review-to-user"
+        }, {
+            review,
+            id: userId
+        }))
 
         if (parentId) {
             review.parentId = parentId;
@@ -26,7 +36,6 @@ export class ReviewService {
     async getAllReviews() {
         return await this.reviewRepository.findAll();
     }
-
 
     async getReviewById(id: number) {
         return await this.reviewRepository.findByPk(id, {
@@ -46,7 +55,14 @@ export class ReviewService {
         return this.getReviewById(id);
     }
 
-    async deleteReview(id: number) {
+    async deleteReview(id: number, userId: number) {
+        let user = await lastValueFrom(this.usersService.send({
+            cmd: "delete-review-from-user"
+        }, {
+            id: userId,
+            reviewId: id
+        }))
+
         return await this.reviewRepository.destroy({
             where: {
                 id

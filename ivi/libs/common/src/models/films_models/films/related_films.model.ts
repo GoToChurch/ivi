@@ -1,6 +1,4 @@
-import {Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
-import {Film} from "@app/common";
-
+import {Column, DataType, Model, Table} from "sequelize-typescript";
 
 
 @Table({tableName: 'related_films'})
