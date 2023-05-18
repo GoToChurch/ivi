@@ -30,7 +30,7 @@ export class FilmService {
     {model: Person, as: "actors", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
     {model: Country, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
     {model: Genre, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
-    {model: Film, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
+    {model: Film, attributes: ["id", "name", "originalName"], through: { attributes: [] }},
     {model: Award, through: { attributes: [] }},
     {model: Review}
   ]

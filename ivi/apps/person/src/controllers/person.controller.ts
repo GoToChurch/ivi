@@ -1,6 +1,6 @@
 import {Controller} from "@nestjs/common";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
-import {PersonService} from "./person.service";
+import {PersonService} from "../services/person.service";
 
 
 @Controller()
@@ -83,41 +83,6 @@ export class PersonController {
     async addProfessionInFilmForPerson(@Ctx() context: RmqContext,
                            @Payload() payload) {
         return this.personService.addProfessionInFilmForPerson(payload.film, payload.person, payload.profession);
-    }
-
-    @MessagePattern({ cmd: "create-profession" })
-    async createProfession(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        return this.personService.createProfession(payload.createProfessionDto);
-    }
-
-    @MessagePattern({ cmd: "get-or-create-profession" })
-    async getOrCreateProfession(@Ctx() context: RmqContext,
-                             @Payload() payload) {
-        return this.personService.getOrCreateProfession(payload.profession);
-    }
-
-    @MessagePattern({ cmd: "get-all-professions" })
-    async getAllProfession(@Ctx() context: RmqContext) {
-        return this.personService.getAllProfessions();
-    }
-
-    @MessagePattern({ cmd: "get-profession" })
-    async getProfession(@Ctx() context: RmqContext,
-                        @Payload() payload) {
-        return this.personService.getProfessionById(payload.id);
-    }
-
-    @MessagePattern({ cmd: "edit-profession" })
-    async editProfession(@Ctx() context: RmqContext,
-                        @Payload() payload) {
-        return this.personService.editProfession(payload.updateProfessionDto, payload.id);
-    }
-
-    @MessagePattern({ cmd: "delete-profession" })
-    async deleteProfession(@Ctx() context: RmqContext,
-                         @Payload() payload) {
-        return this.personService.deleteProfession(payload.id);
     }
 
     @MessagePattern({ cmd: "add-profession-for-person" })

@@ -12,6 +12,7 @@ import {
     CreateProfessionDto,
     UpdatePersonDto, UpdateProfessionDto
 } from "@app/common";
+import {ProfessionService} from "./profession.service";
 
 
 @Injectable()
@@ -19,7 +20,8 @@ export class PersonService {
     constructor(@InjectModel(Person) private personRepository: typeof Person,
                 @InjectModel(Profession) private professionepository: typeof Profession,
                 @InjectModel(PersonFilms) private personFilmsRepository: typeof PersonFilms,
-                @Inject("FILM") private readonly filmClient: ClientProxy) {}
+                @Inject("FILM") private readonly filmClient: ClientProxy,
+                private readonly professionService: ProfessionService) {}
 
     async createPerson(createPersonDto: CreatePersonDto) {
         const person = await this.personRepository.create(createPersonDto);
@@ -123,7 +125,7 @@ export class PersonService {
     }
 
     async getAllPersonsFilmsByProfession(personId: number, professionId: number) {
-        const profession = await this.getProfessionById(professionId);
+        const profession = await this.professionService.getProfessionById(professionId);
         const person = await this.getPersonById(personId);
 
         const personFilms = await this.personFilmsRepository.findAll({
@@ -204,71 +206,19 @@ export class PersonService {
         return filmProfession;
     }
 
-    async createProfession(createProfessionDto: CreateProfessionDto) {
-        return await this.professionepository.create(createProfessionDto);
-    }
-
-    async getAllProfessions() {
-        return await this.professionepository.findAll();
-    }
-
-    async getProfessionById(id: number) {
-        return await this.professionepository.findByPk(id, {
-            include: {
-                all: true
-            },
-        });
-    }
-
-    async getProfessionByName(name: string) {
-        return await this.professionepository.findOne({
-            where: {
-                name
-            }
-        })
-    }
-
-    async editProfession(updateProfessionDto: UpdateProfessionDto, id: number) {
-        await this.professionepository.update({...updateProfessionDto}, {
-            where: {
-                id
-            }
-        });
-
-        return this.getProfessionById(id);
-    }
-
-    async deleteProfession(id: number) {
-        return await this.professionepository.destroy({
-            where: {
-                id
-            }
-        })
-    }
-
-    async getOrCreateProfession(name) {
-        let profession = await this.getProfessionByName(name);
-
-        if(!profession) {
-            profession = await this.createProfession({name});
-        }
-
-        return profession;
-    }
-
     async createPersonFilm(filmId, personId, professionId) {
         return await this.personFilmsRepository.create({filmId: +filmId, personId: +personId, professionId: +professionId})
     }
 
     async addProfessionForPerson(personId, professionDto) {
         const person = await this.getPersonById(personId);
-        const profession = await this.getProfessionByName(professionDto.name);
-        await person.$add('profession', profession.id);
+        const profession = await this.professionService.getProfessionByName(professionDto.name);
+        await person.$add("profession", profession.id);
     }
 
     async addProfessionsForPerson(person: Person, professions) {
         for (const professionName of professions) {
-            const profession = await this.getOrCreateProfession(professionName);
+            const profession = await this.professionService.getOrCreateProfession(professionName);
             await person.$add("profession", profession.id)
         }
     }

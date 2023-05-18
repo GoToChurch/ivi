@@ -15,7 +15,7 @@ import {
 @ApiTags("Личности, участвующие в производстве фильмов")
 @Controller()
 export class AppPersonsController {
-    constructor(@Inject('PERSON') private readonly personClient: ClientProxy) {}
+    constructor(@Inject("PERSON") private readonly personClient: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой персоны. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Person})
@@ -63,7 +63,7 @@ export class AppPersonsController {
     @ApiOperation({summary: "Получение всех персон с указанным именем и/или профессией"})
     @ApiQuery({name: "name", required: false, example: "Омар", description: `Имя персоны на русском или английском 
     языке. Может быть неполным`})
-    @ApiQuery({name: 'profession', required: false, example: "Актер", description: `Професссия персоны на 
+    @ApiQuery({name: "profession", required: false, example: "Актер", description: `Професссия персоны на 
     русском языке. Должно быть полным`})
     @ApiResponse({status: 200, type: [Person]})
     @Get("/persons/search")

@@ -15,7 +15,7 @@ import {VkStrategy} from "../utils/vkStrategy";
 import {GoogleStrategy} from "../utils/googleStrategy";
 import {SessionSerializer} from "../utils/sessionSerializer";
 import {AppParseController} from "./controllers/app_parser.controller";
-
+import {AppReviewController} from "./controllers/app_review.controller";
 
 
 @Module({
@@ -36,9 +36,11 @@ import {AppParseController} from "./controllers/app_parser.controller";
         CommonModule.registerRmq({name: "AWARD"}),
         CommonModule.registerRmq({name: "GENRE"}),
         CommonModule.registerRmq({name: "PERSON"}),
+        CommonModule.registerRmq({name: "REVIEW"}),
     ],
     controllers: [AppFilmsController, AppAwardsController, AppCountriesController, AppGenresController,
-        AppPersonsController, AppParseController, AppAuthController, AppUsersController, AppRolesController],
+        AppPersonsController, AppParseController, AppAuthController, AppUsersController, AppRolesController,
+        AppReviewController],
     providers: [AppService, VkStrategy, GoogleStrategy, SessionSerializer]
 })
 export class AppModule {

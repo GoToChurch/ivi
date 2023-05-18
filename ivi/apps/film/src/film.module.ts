@@ -2,8 +2,6 @@ import {Module} from '@nestjs/common';
 import { FilmController } from './controllers/film.controller';
 import { FilmService } from './services/film.service';
 import {SequelizeModule} from "@nestjs/sequelize";
-import {ReviewController} from "./controllers/review.controller";
-import {ReviewService} from "./services/review.service";
 import {AdminService} from "./services/admin.service";
 import {AdminController} from "./controllers/admin.controller";
 import {
@@ -15,7 +13,6 @@ import {
   FilmMusicians, FilmProducers, FilmWriters,
   PostgresFilmDbModule, RelatedFilms, Review
 } from "@app/common";
-
 
 
 @Module({
@@ -30,9 +27,8 @@ import {
     CommonModule.registerRmq({name: "AWARD"}),
     CommonModule.registerRmq({name: "GENRE"}),
     CommonModule.registerRmq({name: "PERSON"}),
-    CommonModule.registerRmq({name: "USERS"}),
   ],
-  controllers: [FilmController, ReviewController, AdminController],
-  providers: [FilmService, ReviewService, AdminService],
+  controllers: [FilmController, AdminController],
+  providers: [FilmService, AdminService],
 })
 export class FilmModule {}
