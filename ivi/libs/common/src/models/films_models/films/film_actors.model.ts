@@ -3,7 +3,7 @@ import {Film} from "./films.model";
 import {Person} from "../../persons_models/persons.model";
 
 
-@Table({tableName: 'film_actors'})
+@Table({tableName: "film_actors"})
 export class FilmActors extends Model<FilmActors> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number

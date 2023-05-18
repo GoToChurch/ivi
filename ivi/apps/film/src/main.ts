@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory } from "@nestjs/core";
 import {CommonService, ValidationPipe} from "@app/common";
 import {ConfigService} from "@nestjs/config";
 import {FilmModule} from "./film.module";
+
 
 async function bootstrap() {
   const app = await NestFactory.create(FilmModule);

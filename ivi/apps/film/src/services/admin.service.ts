@@ -1,18 +1,18 @@
-import {BadRequestException, HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
+import {HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-import {AddAwardDto, AddCountryDto, AddGenreDto, AddPersonDto, AddRelatedFilmDto, Film} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 import {FilmService} from "./film.service";
+import {AddAwardDto, AddCountryDto, AddGenreDto, AddPersonDto, AddRelatedFilmDto, Film} from "@app/common";
 
 
 @Injectable()
 export class AdminService {
     constructor(@InjectModel(Film) private filmRepository: typeof Film,
-                @Inject("PERSON") private readonly personService: ClientProxy,
-                @Inject("GENRE") private readonly genreService: ClientProxy,
-                @Inject("AWARD") private readonly awardService: ClientProxy,
-                @Inject("COUNTRY") private readonly countryService: ClientProxy,
+                @Inject("PERSON") private readonly personClient: ClientProxy,
+                @Inject("GENRE") private readonly genreClient: ClientProxy,
+                @Inject("AWARD") private readonly awardClient: ClientProxy,
+                @Inject("COUNTRY") private readonly countryClient: ClientProxy,
                 private filmService: FilmService) {}
 
     async addRelatedFilm (id: number, addRelatedFilmDto: AddRelatedFilmDto) {
@@ -62,7 +62,7 @@ export class AdminService {
     }
 
     async addCreator(filmId: number, personId, professionName) {
-        const person = await lastValueFrom(this.personService.send({
+        const person = await lastValueFrom(this.personClient.send({
                     cmd: "get-person-by-id"
                 },
                 {
@@ -82,7 +82,7 @@ export class AdminService {
     }
 
     async addGenre(filmId: number, addGenreDto: AddGenreDto) {
-        const genre = await lastValueFrom(this.genreService.send({
+        const genre = await lastValueFrom(this.genreClient.send({
                     cmd: "get-genre-by-name"
                 },
                 {
@@ -101,7 +101,7 @@ export class AdminService {
     }
 
     async addCountry(filmId: number, addCountryDto: AddCountryDto) {
-        const country = await lastValueFrom(this.countryService.send({
+        const country = await lastValueFrom(this.countryClient.send({
                     cmd: "get-country-by-name"
                 },
                 {
@@ -120,7 +120,7 @@ export class AdminService {
     }
 
     async addAward(filmId: number, addAwardDto: AddAwardDto) {
-        const award = await lastValueFrom(this.awardService.send({
+        const award = await lastValueFrom(this.awardClient.send({
                     cmd: "get-award-by-name-and-year"
                 },
                 {
@@ -137,6 +137,5 @@ export class AdminService {
             throw new HttpException("Неовзможно добавить награду, т.к. её не существует",
                 HttpStatus.BAD_REQUEST);
         }
-
     }
 }

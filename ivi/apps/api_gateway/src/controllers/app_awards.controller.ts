@@ -1,26 +1,24 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {Award, CreateAwardDto, CreateNominationDto, JwtAuthGuard, Nomination, UpdateAwardDto} from "@app/common";
 import {ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {Roles} from "@app/common";
-import {RolesGuard} from "@app/common";
+import {Award, CreateAwardDto, CreateNominationDto, Nomination, Roles, RolesGuard, UpdateAwardDto} from "@app/common";
 
 
-@ApiTags('Награды')
+@ApiTags("Награды")
 @Controller()
 export class AppAwardsController {
-    constructor(@Inject('AWARD') private readonly awardService: ClientProxy) {}
+    constructor(@Inject("AWARD") private readonly awardClient: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой награды"})
     @ApiResponse({status: 201, type: Award})
     @ApiBody({ type: CreateAwardDto })
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Post('/awards')
+    @Post("/awards")
     async createAward(@Body() createAwardDto: CreateAwardDto) {
-        return this.awardService.send(
+        return this.awardClient.send(
             {
-                cmd: 'create-award',
+                cmd: "create-award",
             }, {
                 createAwardDto
             },
@@ -29,11 +27,11 @@ export class AppAwardsController {
 
     @ApiOperation({summary: "Получение списка всех наград"})
     @ApiResponse({status: 200, type: [Award]})
-    @Get('/awards')
+    @Get("/awards")
     async getAllAwards() {
-        return this.awardService.send(
+        return this.awardClient.send(
             {
-                cmd: 'get-all-awards',
+                cmd: "get-all-awards",
             }, {
 
             },
@@ -43,11 +41,11 @@ export class AppAwardsController {
     @ApiParam({name: "id", example: 1})
     @ApiOperation({summary: "Получение награды по id"})
     @ApiResponse({status: 200, type: Award})
-    @Get('/awards/:id')
-    async getAward(@Param('id') id: any) {
-        return this.awardService.send(
+    @Get("/awards/:id")
+    async getAward(@Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'get-award'
+                cmd: "get-award"
             }, {
                 id
             }
@@ -57,14 +55,14 @@ export class AppAwardsController {
     @ApiOperation({summary: "Редактирование награды по id"})
     @ApiResponse({status: 201, type: Award})
     @ApiParam({name: "id", example: 1})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Put('/awards/:id')
+    @Put("/awards/:id")
     async editAward(@Body() updateAwardDto: UpdateAwardDto,
-                    @Param('id') id: any) {
-        return this.awardService.send(
+                    @Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'edit-award'
+                cmd: "edit-award"
             }, {
                 updateAwardDto,
                 id
@@ -75,13 +73,13 @@ export class AppAwardsController {
     @ApiOperation({summary: "Удаление награды по id"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Delete('/awards/:id')
-    async deleteAward(@Param('id') id: any) {
-        return this.awardService.send(
+    @Delete("/awards/:id")
+    async deleteAward(@Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'delete-award'
+                cmd: "delete-award"
             }, {
                 id
             }
@@ -90,13 +88,13 @@ export class AppAwardsController {
 
     @ApiOperation({summary: "Создание новой номинации"})
     @ApiResponse({status: 201, type: Nomination})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Post('/nominations')
+    @Post("/nominations")
     async createNomination(@Body() createNominationDto: CreateNominationDto) {
-        return this.awardService.send(
+        return this.awardClient.send(
             {
-                cmd: 'create-nomination',
+                cmd: "create-nomination",
             }, {
                 createNominationDto
             },
@@ -105,11 +103,11 @@ export class AppAwardsController {
 
     @ApiOperation({summary: "Получение списка всех номинаций"})
     @ApiResponse({status: 200, type: [Nomination]})
-    @Get('/nominations')
+    @Get("/nominations")
     async getAllNominations() {
-        return this.awardService.send(
+        return this.awardClient.send(
             {
-                cmd: 'get-all-nominations',
+                cmd: "get-all-nominations",
             }, {
 
             },
@@ -119,11 +117,11 @@ export class AppAwardsController {
     @ApiOperation({summary: "Получение номинации по id"})
     @ApiResponse({status: 200, type: Nomination})
     @ApiParam({name: "id", example: 1})
-    @Get('/nominations/:id')
-    async getNomination(@Param('id') id: any) {
-        return this.awardService.send(
+    @Get("/nominations/:id")
+    async getNomination(@Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'get-nomination'
+                cmd: "get-nomination"
             }, {
                 id
             }
@@ -133,14 +131,14 @@ export class AppAwardsController {
     @ApiOperation({summary: "Редактирование номинации по id"})
     @ApiResponse({status: 201, type: Nomination})
     @ApiParam({name: "id", example: 1})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Put('/nominations/:id')
+    @Put("/nominations/:id")
     async editNomination(@Body() createNominationDto: CreateNominationDto,
-                         @Param('id') id: any) {
-        return this.awardService.send(
+                         @Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'edit-nomination'
+                cmd: "edit-nomination"
             }, {
                 createNominationDto,
                 id
@@ -151,13 +149,13 @@ export class AppAwardsController {
     @ApiOperation({summary: "Удаление номинации по id"})
     @ApiResponse({status: 201})
     @ApiParam({name: "id", example: 1})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Delete('/nominations/:id')
-    async deleteNomination(@Param('id') id: any) {
-        return this.awardService.send(
+    @Delete("/nominations/:id")
+    async deleteNomination(@Param("id") id: any) {
+        return this.awardClient.send(
             {
-                cmd: 'delete-nomination'
+                cmd: "delete-nomination"
             }, {
                 id
             }

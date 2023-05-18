@@ -3,7 +3,7 @@ import {AuthGuard} from "@nestjs/passport";
 import {CanActivate, ExecutionContext, Injectable} from "@nestjs/common";
 
 @Injectable()
-export class VkAuthGuard extends AuthGuard('vk') {
+export class VkAuthGuard extends AuthGuard("vk") {
     async canActivate(context:ExecutionContext) {
         const activate = (await super.canActivate(context)) as boolean;
         const request = context.switchToHttp().getRequest();

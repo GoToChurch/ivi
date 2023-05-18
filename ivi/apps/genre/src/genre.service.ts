@@ -1,7 +1,6 @@
 import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Op} from "sequelize";
-
 import {Genre, FilmGenres, CreateGenreDto, genresMap, UpdateGenreDto} from "@app/common";
 
 
@@ -112,7 +111,6 @@ export class GenreService {
             if (genre) {
                 ids.push(genre.id);
             }
-
         }
 
         return ids;

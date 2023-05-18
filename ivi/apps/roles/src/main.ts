@@ -9,11 +9,11 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
   const globalService = app.get(CommonService);
-  const queue = configService.get('RABBITMQ_ROLES_QUEUE')//'ROLES'
+  const queue = configService.get("RABBITMQ_ROLES_QUEUE");
 
   app.connectMicroservice(globalService.getRmqOptions(queue, true));
   await app.startAllMicroservices()
-  await app.listen(configService.get('ROLES_PORT'),
+  await app.listen(configService.get("ROLES_PORT"),
       () => console.log(`Microservice Roles запущен на порту ${configService.get('ROLES_PORT')}`));
 }
 bootstrap();

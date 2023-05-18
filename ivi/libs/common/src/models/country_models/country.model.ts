@@ -11,15 +11,19 @@ interface GenreCreationAttrs {
 
 @Table({tableName: 'countries'})
 export class Country extends Model<Country, GenreCreationAttrs> {
+    @ApiProperty({example: 1, description: "Уникальный идентификатор страны"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
 
+    @ApiProperty({example: "Франция", description: "Название страны"})
     @Column({type: DataType.STRING, allowNull: false})
     name: string
 
+    @ApiProperty({example: "fr", description: "Название страны на английском языке"})
     @Column({type: DataType.STRING, allowNull: false})
     englishName: string
 
+    @ApiProperty({example: [{}], description: "Список фильмов, снятых в стране"})
     @BelongsToMany(() => Film, () => FilmCountries)
     films: Film[];
 }

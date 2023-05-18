@@ -1,8 +1,9 @@
 import {Controller} from '@nestjs/common';
-import {RolesService} from './roles.service';
+import {RolesService} from "./roles.service";
 import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 
-@Controller('/api/v1/roles')
+
+@Controller("/api/v1/roles")
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 

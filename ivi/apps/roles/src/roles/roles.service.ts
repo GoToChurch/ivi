@@ -5,8 +5,8 @@ import {UpdateRoleDto} from "@app/common/dto/rolesDto/update_role.dto";
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {
-  }
+  constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {}
+
   async createRole(createRoleDto: CreateRoleDto) {
     const existing_role = await this.getRoleByValue(createRoleDto.value);
 
@@ -17,15 +17,23 @@ export class RolesService {
   }
 
   async getAllRoles() {
-    return await this.roleRepository.findAll({include: {all: true}});
+    return await this.roleRepository.findAll({
+      include: {
+        all: true
+      }
+    });
   }
 
   async getRoleByValue(value: string) {
-    return await this.roleRepository.findOne({where: {value: value}});
+    return await this.roleRepository.findOne({
+      where: {
+        value: value
+      }
+    });
   }
 
-  async getRoleById(id: string) {
-    return await this.roleRepository.findByPk(+id);
+  async getRoleById(id: number) {
+    return await this.roleRepository.findByPk(id);
   }
 
   async updateRole(updateRoleDto: UpdateRoleDto, id: number) {

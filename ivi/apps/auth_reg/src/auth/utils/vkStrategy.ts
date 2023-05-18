@@ -3,7 +3,6 @@ import {PassportStrategy} from "@nestjs/passport";
 import {Params, Profile, Strategy, VerifyCallback} from "passport-vkontakte";
 
 
-
 @Injectable()
 export class VkStrategy extends PassportStrategy(Strategy, "vk") {
     constructor() {
@@ -11,7 +10,7 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
                 clientID: "51626020",
                 clientSecret: "nlDqfipOj0XmVUvoZABT",
                 callbackURL: "http://127.0.0.1:3001/api/auth/vk/redirect",
-                scope: ['status', 'email', 'friends', 'notify']
+                scope: ["status", "email", "friends", "notify"]
             },
             function (
                 accessToken: string,
@@ -20,10 +19,9 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
                 profile: Profile,
                 done: VerifyCallback
             ) {
-
-                console.log(profile.emails[0].value)
-                //const user = userService.getUserByEmail(profile.emails[0].value)
-                return done(null, {profile: profile.emails})
+                return done(null, {
+                    profile: profile.emails
+                })
             })
 
     }

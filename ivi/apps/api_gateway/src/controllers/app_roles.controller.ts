@@ -1,18 +1,15 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {CreateRoleDto, JwtAuthGuard} from "@app/common";
-import {Role} from "@app/common";
-import {Roles} from "@app/common";
-import {RolesGuard} from "@app/common";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
+import {CreateRoleDto, Role, Roles, RolesGuard} from "@app/common";
 
 
-@ApiTags('Роли пользователей')
+@ApiTags("Роли пользователей")
 @Controller("/roles")
 export class AppRolesController {
     constructor(@Inject("ROLES") private readonly rolesClient: ClientProxy) {}
 
-    @ApiOperation({summary: 'Создать роль. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Создать роль. Необходима роль Администратора."})
     @ApiResponse({status: 200, type: Role})
     @Post()
     async createRole(@Body() createRoleDto: CreateRoleDto) {
@@ -23,9 +20,9 @@ export class AppRolesController {
         });
     };
 
-    @ApiOperation({summary: 'Получить все роли. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Получить все роли. Необходима роль Администратора."})
     @ApiResponse({status: 200, type: Role})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Get()
     async getAllRoles() {
@@ -35,11 +32,11 @@ export class AppRolesController {
             });
     };
 
-    @ApiOperation({summary: 'Получить роль по id роли. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Получить роль по id роли. Необходима роль Администратора."})
     @ApiResponse({status: 200, type: Role})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Get(":id")
+    @Get("/:id")
     async getRoleById(@Param("id") id: string) {
         return this.rolesClient.send({
             cmd: "get-role-by-id"
@@ -49,11 +46,11 @@ export class AppRolesController {
 
     };
 
-    @ApiOperation({summary: 'Получить роль по её названию. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Получить роль по её названию. Необходима роль Администратора."})
     @ApiResponse({status: 200, type: Role})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Post("/value")
+    @Post("/:value")
     async getRoleByValue(@Body() value: string) {
         return this.rolesClient.send({
             cmd: "get-role-by-value"
@@ -62,12 +59,13 @@ export class AppRolesController {
         });
     };
 
-    @ApiOperation({summary: 'Изменить роль по id. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Изменить роль по id. Необходима роль Администратора."})
     @ApiResponse({status: 200})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Put(":id")
-    async updateRole(@Param("id") id: string, @Body() createRoleDto: CreateRoleDto) {
+    @Put("/:id")
+    async updateRole(@Param("id") id: any,
+                     @Body() createRoleDto: CreateRoleDto) {
         return this.rolesClient.send({
             cmd: "update-role"
         }, {
@@ -76,12 +74,12 @@ export class AppRolesController {
         });
     };
 
-    @ApiOperation({summary: 'Удалить роль по id. Необходима роль Администратора.'})
+    @ApiOperation({summary: "Удалить роль по id. Необходима роль Администратора."})
     @ApiResponse({status: 200})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Delete(":id")
-    async deleteRole(@Param("id") id: string) {
+    @Delete("/:id")
+    async deleteRole(@Param("id") id: any) {
         return this.rolesClient.send({
             cmd: "delete-role"
         }, {

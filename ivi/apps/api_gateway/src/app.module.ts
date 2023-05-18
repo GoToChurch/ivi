@@ -1,4 +1,6 @@
 import {Module} from '@nestjs/common';
+import {PassportModule} from "@nestjs/passport";
+import {JwtModule} from "@nestjs/jwt";
 import {CommonModule} from "@app/common";
 import {AppService} from "./app.service";
 import {AppFilmsController} from "./controllers/app_films.controller";
@@ -11,8 +13,6 @@ import {AppUsersController} from "./controllers/app_users.controller";
 import {AppRolesController} from "./controllers/app_roles.controller";
 import {VkStrategy} from "../utils/vkStrategy";
 import {GoogleStrategy} from "../utils/googleStrategy";
-import {PassportModule} from "@nestjs/passport";
-import {JwtModule} from "@nestjs/jwt";
 import {SessionSerializer} from "../utils/sessionSerializer";
 import {AppParseController} from "./controllers/app_parser.controller";
 
@@ -22,20 +22,20 @@ import {AppParseController} from "./controllers/app_parser.controller";
     imports: [
         PassportModule.register({session: true}),
         JwtModule.register({
-            secret: process.env.JWT_SECRET || 'SECRET',
+            secret: process.env.JWT_SECRET || "SECRET",
             signOptions: {
-                expiresIn: '24h'
+                expiresIn: "24h"
             }
         }),
         PassportModule.register({session: true}),
         CommonModule.registerRmq({name: "USERS"}),
         CommonModule.registerRmq({name: "ROLES"}),
         CommonModule.registerRmq({name: "AUTH"}),
-        CommonModule.registerRmq({name: 'FILM'}),
-        CommonModule.registerRmq({name: 'COUNTRY'}),
-        CommonModule.registerRmq({name: 'AWARD'}),
-        CommonModule.registerRmq({name: 'GENRE'}),
-        CommonModule.registerRmq({name: 'PERSON'}),
+        CommonModule.registerRmq({name: "FILM"}),
+        CommonModule.registerRmq({name: "COUNTRY"}),
+        CommonModule.registerRmq({name: "AWARD"}),
+        CommonModule.registerRmq({name: "GENRE"}),
+        CommonModule.registerRmq({name: "PERSON"}),
     ],
     controllers: [AppFilmsController, AppAwardsController, AppCountriesController, AppGenresController,
         AppPersonsController, AppParseController, AppAuthController, AppUsersController, AppRolesController],

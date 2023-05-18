@@ -3,6 +3,7 @@ import {CommonService, ValidationPipe} from "@app/common";
 import {ConfigService} from "@nestjs/config";
 import {CountryModule} from "./country.module";
 
+
 async function bootstrap() {
   const app = await NestFactory.create(CountryModule);
   app.useGlobalPipes(new ValidationPipe());

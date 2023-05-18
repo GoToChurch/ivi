@@ -1,6 +1,6 @@
-import {Controller, Inject} from '@nestjs/common';
-import {UserService} from './user.service';
-import {ClientProxy, Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
+import {Controller} from "@nestjs/common";
+import {UserService} from "./user.service";
+import {Ctx, MessagePattern, Payload, RmqContext} from "@nestjs/microservices";
 
 
 @Controller()
@@ -57,14 +57,12 @@ export class UsersController {
     @MessagePattern({cmd: "update-user"})
     async updateUser(@Ctx() context: RmqContext,
                      @Payload() payload) {
-        //this.globalService.acknowledgeMessage(context)
         return await this.userService.updateUser(payload.updateUserDto, payload.id);
     }
 
     @MessagePattern({cmd: "delete-user"})
     async deleteUser(@Ctx() context: RmqContext,
                      @Payload() payload) {
-        //this.globalService.acknowledgeMessage(context)
         return await this.userService.deleteUser(payload.id);
     }
 

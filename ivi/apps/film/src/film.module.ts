@@ -13,7 +13,7 @@ import {
   FilmDirectors,
   FilmEditors, FilmGenres,
   FilmMusicians, FilmProducers, FilmWriters,
-  PostgresFilmDbModule, PostgresUserDbModule, RelatedFilms, Review
+  PostgresFilmDbModule, RelatedFilms, Review
 } from "@app/common";
 
 
@@ -26,10 +26,10 @@ import {
         [Film, FilmDirectors, FilmEditors, FilmCinematography, FilmMusicians, FilmDesigners, FilmProducers,
           FilmWriters, FilmActors, FilmGenres, Review, RelatedFilms]
     ),
-    CommonModule.registerRmq({name: 'COUNTRY'}),
-    CommonModule.registerRmq({name: 'AWARD'}),
-    CommonModule.registerRmq({name: 'GENRE'}),
-    CommonModule.registerRmq({name: 'PERSON'}),
+    CommonModule.registerRmq({name: "COUNTRY"}),
+    CommonModule.registerRmq({name: "AWARD"}),
+    CommonModule.registerRmq({name: "GENRE"}),
+    CommonModule.registerRmq({name: "PERSON"}),
     CommonModule.registerRmq({name: "USERS"}),
   ],
   controllers: [FilmController, ReviewController, AdminController],

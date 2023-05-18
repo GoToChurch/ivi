@@ -48,6 +48,8 @@ export class AuthService {
             return user;
         }
 
-        return {message: "Такой пользователь не зарегистрирован"}
+        return {
+            message: "Такой пользователь не зарегистрирован"
+        }
     }
 }

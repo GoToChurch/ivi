@@ -8,7 +8,7 @@ interface ProfessionCreationAttrs {
     name: string,
 }
 
-@Table({tableName: 'professions'})
+@Table({tableName: "professions"})
 export class Profession extends Model<Profession, ProfessionCreationAttrs> {
     @ApiProperty({example: 1, description: "Уникальный идентификатор"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
@@ -18,6 +18,7 @@ export class Profession extends Model<Profession, ProfessionCreationAttrs> {
     @Column({type: DataType.STRING, allowNull: false})
     name: string
 
+    @ApiProperty({example: [{}], description: "Список персон профессии"})
     @BelongsToMany(() => Person, () => PersonProfessions)
     persons: Person[];
 }

@@ -1,12 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import {INestApplication} from '@nestjs/common';
-import * as request from 'supertest';
-import {Award, FilmAwards, Nomination} from '@app/common';
 import {AwardService} from "../src/award.service";
-import {getModelToken} from "@nestjs/sequelize";
 import {AwardController} from "../src/award.controller";
 import {ClientsModule, RmqContext, Transport} from "@nestjs/microservices";
-
 
 
 describe('Award controller tests', () => {
@@ -30,6 +26,7 @@ describe('Award controller tests', () => {
         getAwardByNameAndYear: jest.fn((name, year) => {}),
         editAward: jest.fn((updateAwardDto, id) => {}),
         deleteAward: jest.fn(id => {}),
+        addFilmAndNominationsForAward: jest.fn()
     }
 
     beforeAll(async () => {
@@ -69,6 +66,12 @@ describe('Award controller tests', () => {
       expect(spy).toHaveBeenCalled();
     });
 
+    it('get or create award test', () => {
+        const spy = jest.spyOn(controller, "getOrCreateAward");
+        controller.getOrCreateAward(context, mockAward);
+        expect(spy).toHaveBeenCalled();
+    });
+
     it('get all awards test', () => {
         const spy = jest.spyOn(controller, "getAllAwards");
         controller.getAllAwards(context);
@@ -97,6 +100,12 @@ describe('Award controller tests', () => {
     it('delete award by id test', () => {
         const spy = jest.spyOn(controller, "deleteAward");
         controller.deleteAward(context, payload);
+        expect(spy).toHaveBeenCalled();
+    });
+
+    it('add film and nominations for award', () => {
+        const spy = jest.spyOn(controller, "addFilmAndNominationsForAward");
+        controller.addFilmAndNominationsForAward(context, payload);
         expect(spy).toHaveBeenCalled();
     });
 

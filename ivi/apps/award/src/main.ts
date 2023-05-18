@@ -1,7 +1,8 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory } from "@nestjs/core";
 import {ConfigService} from "@nestjs/config";
 import {CommonService, ValidationPipe} from "@app/common";
 import {AwardModule} from "./award.module";
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AwardModule);

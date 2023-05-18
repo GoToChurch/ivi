@@ -1,5 +1,9 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
+import {genresMap} from "@app/common/maps/maps";
+import {ClientProxy} from "@nestjs/microservices";
+import {lastValueFrom} from "rxjs";
+import {Op} from "sequelize";
 import {
     Profession,
     Film,
@@ -11,35 +15,31 @@ import {
     Award,
     UpdateFilmDto,
 } from "@app/common";
-import {genresMap} from "@app/common/maps/maps";
-import {ClientProxy} from "@nestjs/microservices";
-import {lastValueFrom} from "rxjs";
-import {Op} from "sequelize";
 
 
 @Injectable()
 export class FilmService {
   INCLUDE_ARRAY = [
-    {model: Person, as: 'directors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'writers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'producers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'cinematography', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'musicians', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'designers', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'editors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Person, as: 'actors', attributes: ['id', 'name', 'originalName', 'photo'], through: { attributes: [] }},
-    {model: Country, attributes: ['id', 'name', 'englishName'], through: { attributes: [] }},
-    {model: Genre, attributes: ['id', 'name', 'englishName'], through: { attributes: [] }},
-    {model: Film, attributes: ['id', 'name', 'originalName'], through: { attributes: [] }},
+    {model: Person, as: "directors", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "writers", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "producers", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "cinematography", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "musicians", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "designers", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "editors", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Person, as: "actors", attributes: ["id", "name", "originalName", "photo"], through: { attributes: [] }},
+    {model: Country, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
+    {model: Genre, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
+    {model: Film, attributes: ["id", "name", "englishName"], through: { attributes: [] }},
     {model: Award, through: { attributes: [] }},
     {model: Review}
   ]
 
   constructor(@InjectModel(Film) private filmRepository: typeof Film,
-              @Inject('PERSON') private readonly personService: ClientProxy,
-              @Inject('GENRE') private readonly genreService: ClientProxy,
-              @Inject('AWARD') private readonly awardService: ClientProxy,
-              @Inject('COUNTRY') private readonly countryService: ClientProxy,) {}
+              @Inject("PERSON") private readonly personCLient: ClientProxy,
+              @Inject("GENRE") private readonly genreCLient: ClientProxy,
+              @Inject("AWARD") private readonly awardCLient: ClientProxy,
+              @Inject("COUNTRY") private readonly countryCLient: ClientProxy,) {}
 
   async createFilm(dto: CreateFilmDto, directors?, actors?, writers?, producers?, cinematography?, musicians?, designers?,
                    editors?, genres?, countries?, awards?, relatedFilms?) {
@@ -61,7 +61,7 @@ export class FilmService {
           await this.addAwardsForFilm(film, awards);
           await this.addRelatedFilmsForFilm(film, relatedFilms);
 
-          await film.$set('reviews', []);
+          await film.$set("reviews", []);
 
           return film;
       }
@@ -131,7 +131,7 @@ export class FilmService {
       films = await this.filterFilmsByGenres(films, genreFilter);
     }
     if (yearFilter) {
-      if (yearFilter.includes('-')) {
+      if (yearFilter.includes("-")) {
         films = this.filterFilmsByYearInterval(films, yearFilter);
       } else {
         films = this.filterFilmsBySingleYear(films, yearFilter)
@@ -146,8 +146,8 @@ export class FilmService {
   }
 
   async filterFilmsByCountries(films, countries) {
-    let filmsIds =  await lastValueFrom(this.countryService.send({
-              cmd: 'get-films-ids-by-countries',
+    let filmsIds =  await lastValueFrom(this.countryCLient.send({
+              cmd: "get-films-ids-by-countries",
             },
             {
               countries
@@ -157,8 +157,8 @@ export class FilmService {
   }
 
   async filterFilmsByGenres(films: Film[], genres) {
-    let filmsIds =  await lastValueFrom(this.genreService.send({
-      cmd: 'get-films-ids-by-genres'
+    let filmsIds =  await lastValueFrom(this.genreCLient.send({
+      cmd: "get-films-ids-by-genres"
     },
         {
           genres
@@ -172,7 +172,7 @@ export class FilmService {
   }
 
   filterFilmsByYearInterval(films, interval: string) {
-    const [firstYear, secondYear] = interval.split('-');
+    const [firstYear, secondYear] = interval.split("-");
     return films.filter(film => film.year >= +firstYear && film.year <= +secondYear);
   }
 
@@ -189,8 +189,8 @@ export class FilmService {
   }
 
   async getFilmsByPerson(name: string) {
-    return await lastValueFrom(this.personService.send({
-      cmd: 'get-all-films-by-person'
+    return await lastValueFrom(this.personCLient.send({
+      cmd: "get-all-films-by-person"
     }, {
       name
     })
@@ -231,129 +231,121 @@ export class FilmService {
 
   async addDirectorsForFilm(film: Film, directors) {
     if (directors) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Режиссер"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Режиссер"
+      })
       );
 
-      await film.$set('directors', []);
+      await film.$set("directors", []);
 
-      await this.addInfoForPesronAndFilm(film, directors, profession, 'director');
+      await this.addInfoForPesronAndFilm(film, directors, profession, "director");
     }
   }
 
   async addActorsForFilm(film: Film, actors) {
     if (actors) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Актер"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Актер"
+      })
       );
 
-      await film.$set('actors', []);
+      await film.$set("actors", []);
 
-      await this.addInfoForPesronAndFilm(film, actors, profession, 'actor');
+      await this.addInfoForPesronAndFilm(film, actors, profession, "actor");
     }
   }
 
   async addWritersForFilm(film: Film, writers) {
     if (writers) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Сценарист"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Сценарист"
+      })
       );
 
-      await film.$set('writers', []);
+      await film.$set("writers", []);
 
-      await this.addInfoForPesronAndFilm(film, writers, profession, 'writer');
+      await this.addInfoForPesronAndFilm(film, writers, profession, "writer");
     }
   }
 
   async addProducersForFilm(film: Film, producers) {
     if (producers) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Продюссер"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Продюссер"
+      })
       );
 
-      await film.$set('producers', []);
+      await film.$set("producers", []);
 
-      await this.addInfoForPesronAndFilm(film, producers, profession, 'producer');
+      await this.addInfoForPesronAndFilm(film, producers, profession, "producer");
     }
   }
 
   async addCinematographyForFilm(film: Film, cinematography) {
     if (cinematography) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Оператор"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Оператор"
+      })
       );
 
-      await film.$set('cinematography', []);
+      await film.$set("cinematography", []);
 
-      await this.addInfoForPesronAndFilm(film, cinematography, profession, 'cinematography');
+      await this.addInfoForPesronAndFilm(film, cinematography, profession, "cinematography");
     }
   }
 
   async addMusiciansForFilm(film: Film, musicians) {
     if (musicians) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Композитор"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Композитор"
+      })
       );
 
-      await film.$set('musicians', []);
+      await film.$set("musicians", []);
 
-      await this.addInfoForPesronAndFilm(film, musicians, profession, 'musician');
+      await this.addInfoForPesronAndFilm(film, musicians, profession, "musician");
     }
   }
 
   async addDesignersForFilm(film: Film, designers) {
     if (designers) {
-      const profession = await lastValueFrom(this.personService.send({
-                cmd: 'get-or-create-profession'
-              },
-              {
-                profession: "Художник"
-              })
+      const profession = await lastValueFrom(this.personCLient.send({
+                cmd: "get-or-create-profession"
+              }, {
+          profession: "Художник"
+      })
       );
 
-      await film.$set('designers', []);
+      await film.$set("designers", []);
 
-      await this.addInfoForPesronAndFilm(film, designers, profession, 'designer');
+      await this.addInfoForPesronAndFilm(film, designers, profession, "designer");
     }
   }
 
   async addEditorsForFilm(film: Film, editors) {
     if (editors) {
-      const profession = await lastValueFrom(this.personService.send({
+      const profession = await lastValueFrom(this.personCLient.send({
                 cmd: "get-or-create-profession"
-              },
-              {
-                profession: "Монтажер"
-              })
+              }, {
+          profession: "Монтажер"
+      })
       );
 
       await film.$set("editors", []);
 
-      await this.addInfoForPesronAndFilm(film, editors, profession, 'editor');
+      await this.addInfoForPesronAndFilm(film, editors, profession, "editor");
     }
   }
 
@@ -362,18 +354,17 @@ export class FilmService {
       await film.$set("genres", []);
 
       for (const genreDto of genres) {
-        const genre = await lastValueFrom(this.genreService.send({
+        const genre = await lastValueFrom(this.genreCLient.send({
                   cmd: "get-or-create-genre"
-                },
-                {
-                  createGenreDto: {
-                    name: genreDto.name,
-                    englishName: genresMap.get(genreDto.name)
-                  }
-                })
+                }, {
+            createGenreDto: {
+                name: genreDto.name,
+                englishName: genresMap.get(genreDto.name)
+            }
+        })
         );
 
-        await film.$add('genre', genre.id);
+        await film.$add("genre", genre.id);
       }
     }
   }
@@ -383,12 +374,11 @@ export class FilmService {
       await film.$set("countries", []);
 
       for (const countryDto of countries) {
-        const country = await lastValueFrom(this.countryService.send<Country>({
+        const country = await lastValueFrom(this.countryCLient.send<Country>({
                   cmd: "get-or-create-country",
-                },
-                {
-                  createCountryDto: countryDto
-                })
+                }, {
+            createCountryDto: countryDto
+        })
         );
 
         await film.$add("country", country.id);
@@ -401,25 +391,23 @@ export class FilmService {
       await film.$set("awards", []);
 
       for (const awardDto of awards) {
-        let award = await lastValueFrom(this.awardService.send({
+        let award = await lastValueFrom(this.awardCLient.send({
                   cmd: "get-or-create-award"
-                },
-                {
-                  createAwardDto: awardDto
-                })
+                }, {
+            createAwardDto: awardDto
+        })
         );
         await film.$add("award", award.id);
 
         const nominations = awardDto.nominations
 
-        let res = await lastValueFrom(this.awardService.send({
+        let res = await lastValueFrom(this.awardCLient.send({
                   cmd: "add-film-and-nominations-for-award"
-                },
-                {
-                  film,
-                  award,
-                  nominations
-                })
+                }, {
+            film,
+            award,
+            nominations
+        })
         );
       }
     }
@@ -442,7 +430,7 @@ export class FilmService {
 
   async addInfoForPesronAndFilm(film: Film, persons, profession: Profession, professionName) {
     for (const personDto of persons) {
-      const person = await lastValueFrom(this.personService.send({
+      const person = await lastValueFrom(this.personCLient.send({
                 cmd: "get-or-create-person"
               },
               {
@@ -450,7 +438,7 @@ export class FilmService {
               })
       );
 
-      let res = await lastValueFrom(this.personService.send({
+      let res = await lastValueFrom(this.personCLient.send({
         cmd: "add-film-for-person"
       },
           {
@@ -461,7 +449,7 @@ export class FilmService {
 
       const professions = personDto.professions;
 
-      await this.personService.send({
+      await this.personCLient.send({
         cmd: "add-professions-for-person"
       }, {
         person,
@@ -470,7 +458,7 @@ export class FilmService {
 
       await film.$add(professionName, person.id);
 
-      res = await lastValueFrom(this.personService.send({
+      res = await lastValueFrom(this.personCLient.send({
                 cmd: "add-profession-in-film-for-person"
               },
               {

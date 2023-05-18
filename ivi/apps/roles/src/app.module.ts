@@ -9,7 +9,7 @@ import {RolesModule} from "./roles/roles.module";
     providers: [],
     imports: [
         ConfigModule.forRoot({
-            envFilePath: '.env'
+            envFilePath: ".env"
         }),
         RolesModule,
         CommonModule

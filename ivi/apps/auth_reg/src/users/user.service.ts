@@ -1,16 +1,17 @@
 import {HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {AddRoleDto, CreateReviewDto, RegistrationDto, Review, UpdateUserDto, User, UserRoles} from "@app/common";
 import * as bcrypt from "bcryptjs";
 import {JwtService} from "@nestjs/jwt";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
+import {AddRoleDto, RegistrationDto, Review, UpdateUserDto, User, UserRoles} from "@app/common";
+
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User) private readonly userRepository: typeof User,
                 @InjectModel(UserRoles) private readonly userRolesRepository: typeof UserRoles,
-                @Inject("ROLES") private readonly roleService: ClientProxy,
+                @Inject("ROLES") private readonly roleClient: ClientProxy,
                 private readonly jwtService: JwtService) {}
 
     async userRegistration(registrationDto: RegistrationDto, role: string) {
@@ -40,11 +41,7 @@ export class UserService {
     };
 
     async getAllUsers() {
-        return await this.userRepository.findAll({
-            include: {
-                all: true
-            }
-        })
+        return await this.userRepository.findAll();
     }
 
     async getUserById(id: number) {
@@ -78,7 +75,7 @@ export class UserService {
 
     async getUsersByRole(value: string) {
         const users = await this.userRepository.findAll();
-        const role = await lastValueFrom(this.roleService.send({
+        const role = await lastValueFrom(this.roleClient.send({
             cmd: "get-role-by-value"
         }, {
             value
@@ -101,11 +98,13 @@ export class UserService {
     async UserCountryAndAgeFilters(param1: string, param2: string) {
         const users: User[] = await this.getAllUsers()
         const first_param = await this.identifyRequestString(param1, users);
+
         return await this.identifyRequestString(param2, first_param);
     };
 
     async UserCountryOrAgeFilter(param1: string) {
-        const users: User[] = await this.getAllUsers()
+        const users: User[] = await this.getAllUsers();
+
         return await this.identifyRequestString(param1, users);
     };
 
@@ -137,7 +136,7 @@ export class UserService {
 
     async addRoleToUser(addRoleDto: AddRoleDto) {
         const user = await this.userRepository.findByPk(addRoleDto.userId);
-        const role = await lastValueFrom(this.roleService.send({
+        const role = await lastValueFrom(this.roleClient.send({
             cmd: "get-role-by-value"
         }, {
             value: addRoleDto.value
@@ -152,7 +151,7 @@ export class UserService {
     };
 
     async deleteRoleFromUser(addRoleDto: AddRoleDto) {
-        const role = await lastValueFrom(this.roleService.send({
+        const role = await lastValueFrom(this.roleClient.send({
             cmd: "get-role-by-value"
         }, {
             value: addRoleDto.value
@@ -173,16 +172,16 @@ export class UserService {
     async addReviewToUser(review: Review, id: number) {
         const user = await this.getUserById(id);
         user.reviews.push(review);
-        const arr = user.reviews;
+        const reviewsArray = user.reviews;
 
-        return await this.updateUser({...user.dataValues, reviews: arr}, user.id);
+        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id);
     }
 
     async deleteReviewFromUser(reviewId: number, id: number) {
         const user = await this.getUserById(id);
-        const arr = (await this.getAllUsersReviews(id)).filter(review => review.id != reviewId);
+        const reviewsArray = (await this.getAllUsersReviews(id)).filter(review => review.id != reviewId);
 
-        return await this.updateUser({...user.dataValues, reviews: arr}, user.id);
+        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id);
     }
 
     async getAllUsersReviews(id: number) {

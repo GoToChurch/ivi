@@ -6,15 +6,10 @@ import * as session from "express-session";
 import * as passport from "passport";
 
 
-
 async function bootstrap() {
     const app = await NestFactory.create(AppAuthModule);
     app.useGlobalPipes(new ValidationPipe());
-
-    const configService = app.get(ConfigService);
-    const commonService = app.get(CommonService);
-    const queue_1 = configService.get("RABBITMQ_USERS_QUEUE"); //'USERS'
-    const queue_2 = configService.get("RABBITMQ_AUTH_QUEUE");//'AUTH'
+    app.setGlobalPrefix("api")
 
     app.use(session({
         cookie: {
@@ -27,14 +22,19 @@ async function bootstrap() {
     }));
     app.use(passport.initialize());
     app.use(passport.session())
-    app.setGlobalPrefix('api')
 
-    app.connectMicroservice(commonService.getRmqOptions(queue_1, true));
-    app.connectMicroservice(commonService.getRmqOptions(queue_2, true));
+    const configService = app.get(ConfigService);
+    const commonService = app.get(CommonService);
+
+    const usersQueue = configService.get("RABBITMQ_USERS_QUEUE"); //'USERS'
+    const authQueue = configService.get("RABBITMQ_AUTH_QUEUE");//'AUTH'
+
+    app.connectMicroservice(commonService.getRmqOptions(usersQueue, true));
+    app.connectMicroservice(commonService.getRmqOptions(authQueue, true));
 
     await app.startAllMicroservices();
 
-    await app.listen(configService.get('AUTH_REG_PORT'),
+    await app.listen(configService.get("AUTH_REG_PORT"),
         () => console.log(`Microservice Auth_Reg запущен на порту ${configService.get('AUTH_REG_PORT')}`));
 }
 

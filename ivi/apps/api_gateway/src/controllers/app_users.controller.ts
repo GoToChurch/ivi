@@ -1,21 +1,21 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
-import {RegistrationDto} from "@app/common";
-import {UpdateUserDto} from "@app/common";
-import {AddRoleDto} from "@app/common";
-import {CurrentUserOrAdminGuard} from "@app/common";
-import {Roles} from "@app/common";
-import {User} from "@app/common";
-import {RolesGuard} from "@app/common";
 import {ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {JwtAuthGuard} from "@app/common";
+import {
+    AddRoleDto,
+    CurrentUserOrAdminGuard, JwtAuthGuard,
+    RegistrationDto,
+    Roles,
+    RolesGuard,
+    UpdateUserDto,
+    User
+} from '@app/common';
 
 
-@ApiTags('Пользователи')
+@ApiTags("Пользователи")
 @Controller("/users")
 export class AppUsersController {
-    constructor(@Inject("USERS") private readonly userService: ClientProxy,
-                @Inject("FILM") private readonly filmService: ClientProxy) {}
+    constructor(@Inject("USERS") private readonly userClient: ClientProxy) {}
 
     @ApiOperation({summary: `Создание пользователя. Первый зарегистрированный пользователь получает роль 
     супер пользователя(SUPERUSER), все последующие пользователи при регистрации получают роль пользователя(USER)`})
@@ -23,7 +23,8 @@ export class AppUsersController {
     @Post()
     async createUser(@Body() registrationDto: RegistrationDto) {
         const role = "USER";
-        return this.userService.send({
+
+        return this.userClient.send({
             cmd: "user-registration"
         }, {
             registrationDto,
@@ -31,39 +32,39 @@ export class AppUsersController {
         });
     };
 
-    @ApiOperation({summary: 'Получить всех пользователей. Необходима роль Администратора'})
+    @ApiOperation({summary: "Получить всех пользователей. Необходима роль Администратора"})
     @ApiResponse({status: 200, type: [User]})
-    @Roles('ADMIN', 'SUPERUSER')
-    @UseGuards(RolesGuard, JwtAuthGuard)
+    @Roles("ADMIN", "SUPERUSER")
+    @UseGuards(RolesGuard)
     @Get()
     async getAllUsers() {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-all-users"
         }, {
 
         });
     };
 
-    @ApiOperation({summary: `Получить пользователя по id. Необходима роль Администратора или быть этим пользователем`})
+    @ApiOperation({summary: "Получить пользователя по id. Необходима роль Администратора или быть этим пользователем"})
     @ApiResponse({status: 200, type: User})
     @ApiParam({name: "id", example: 1})
     @UseGuards(CurrentUserOrAdminGuard)
     @Get("/:id")
     async getUserById(@Param("id") id: any) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-user-by-id"
         }, {
             id
         });
     };
 
-    @ApiOperation({summary: 'Получить пользователя по email. Необходима роль Администратора или быть этим пользователем'})
+    @ApiOperation({summary: "Получить пользователя по email. Необходима роль Администратора или быть этим пользователем"})
     @ApiResponse({status: 200, type: User})
     @UseGuards(CurrentUserOrAdminGuard)
     @ApiParam({name: "email", example: "ivanov@gmail.com"})
     @Get("email/:email")
     async getUserByEmail(@Param("email") email: string) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-user-by-email"
         }, {
             email
@@ -77,7 +78,7 @@ export class AppUsersController {
     @UseGuards(CurrentUserOrAdminGuard)
     @Get("phone/:number")
     async getUserByPhone(@Param("number") number: string) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-user-by-phone"
         }, {
             number
@@ -89,15 +90,15 @@ export class AppUsersController {
     localhost:3000/api/users/Россия/29, очерёдность не имеет значения`})
     @ApiResponse({status: 200, type: [User]})
     @ApiParam({name: "value1", example: "Россия", description: "Первый фильтр"})
-    @ApiParam({name: "value2", example: '29', description: "Второй фильтр"})
-    @Roles('ADMIN', 'SUPERUSER')
+    @ApiParam({name: "value2", example: 29, description: "Второй фильтр"})
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Get("filter/:value1/:value2")
     async UserCountryAndAgeFilters(@Param("value1") value1: string,
                                    @Param("value2") value2?: string,
                                    @Query() query?) {
 
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-users-by-params"
         }, {
             value1,
@@ -110,12 +111,12 @@ export class AppUsersController {
     Необходима роль Администратора`})
     @ApiResponse({status: 200, type: [User]})
     @ApiParam({name: "value", example: "Россия", description: "Фильтр"})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Get("filter/:value")
     async UserCountryOrAgeFilter(@Param("value") value: string,
                                  @Query() query?) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-users-by-param"
         }, {
             value,
@@ -131,7 +132,7 @@ export class AppUsersController {
     @UseGuards(RolesGuard)
     @Get("role/:role")
     async getUsersByRole(@Param("role") role: string,) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-users-by-role"
             }, {
             role
@@ -143,8 +144,9 @@ export class AppUsersController {
     @ApiParam({name: "id", example: 1})
     @UseGuards(CurrentUserOrAdminGuard)
     @Put("/:id")
-    async updateUser(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
-        return this.userService.send({
+    async updateUser(@Param("id") id: string,
+                     @Body() updateUserDto: UpdateUserDto) {
+        return this.userClient.send({
             cmd: "update-user"
         }, {
             updateUserDto,
@@ -158,7 +160,7 @@ export class AppUsersController {
     @UseGuards(CurrentUserOrAdminGuard)
     @Delete("/:id")
     async deleteUser(@Param("id") id: string) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "delete-user"
         }, {
             id
@@ -168,11 +170,11 @@ export class AppUsersController {
     @ApiOperation({summary: `Добавить роль пользователя по id пользователя и значению роли(value). 
     Необходима роль Администратора`})
     @ApiResponse({status: 201, type: User})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Post("role/add")
     async addRoleToUser(@Body() addRoleDto: AddRoleDto) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "add-role-to-user"
         }, {
             addRoleDto
@@ -183,11 +185,11 @@ export class AppUsersController {
     @ApiOperation({summary: `Удалить роль пользователя по id пользователя и значению роли(value). 
     Необходима роль Администратора`})
     @ApiResponse({status: 201, type: User})
-    @Roles('ADMIN', 'SUPERUSER')
+    @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Post("role/delete")
     async deleteRoleFromUser(@Body() addRoleDto: AddRoleDto) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "delete-role-from-user"
         }, {
             addRoleDto
@@ -200,7 +202,7 @@ export class AppUsersController {
     @UseGuards(JwtAuthGuard)
     @Get("/:id/reviews")
     async getAllUsersReviews(@Param("id") id: string) {
-        return this.userService.send({
+        return this.userClient.send({
             cmd: "get-all-users-reviews"
         }, {
             id

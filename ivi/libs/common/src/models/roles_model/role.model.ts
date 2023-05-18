@@ -7,18 +7,18 @@ interface RoleCreationAttrs {
     description: string;
 }
 
-@Table({tableName: 'roles'})
+@Table({tableName: "roles"})
 export class Role extends Model<Role, RoleCreationAttrs>{
 
-    @ApiProperty({example: '1', description: 'Уникальный ключ'})
+    @ApiProperty({example: 1, description: "Уникальный идентификатор роли"})
     @Column({type: DataType.INTEGER, autoIncrement: true, primaryKey: true, unique:true})
     id: number;
 
-    @ApiProperty({example: 'USER', description: 'Название роли'})
+    @ApiProperty({example: "USER", description: "Название роли"})
     @Column({type: DataType.STRING, unique:true, allowNull: false})
     value: string;
 
-    @ApiProperty({example: 'Пользователь', description: 'Описание роли'})
+    @ApiProperty({example: "Пользователь", description: "Описание роли"})
     @Column({type: DataType.STRING, allowNull: false})
     description: string;
 }

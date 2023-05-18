@@ -1,5 +1,8 @@
 import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
+import {ClientProxy} from "@nestjs/microservices";
+import {lastValueFrom} from "rxjs";
+import {Op} from "sequelize";
 import {
     Film,
     Person,
@@ -9,9 +12,6 @@ import {
     CreateProfessionDto,
     UpdatePersonDto, UpdateProfessionDto
 } from "@app/common";
-import {ClientProxy} from "@nestjs/microservices";
-import {lastValueFrom} from "rxjs";
-import {Op} from "sequelize";
 
 
 @Injectable()
@@ -19,7 +19,7 @@ export class PersonService {
     constructor(@InjectModel(Person) private personRepository: typeof Person,
                 @InjectModel(Profession) private professionepository: typeof Profession,
                 @InjectModel(PersonFilms) private personFilmsRepository: typeof PersonFilms,
-                @Inject("FILM") private readonly filmService: ClientProxy) {}
+                @Inject("FILM") private readonly filmClient: ClientProxy) {}
 
     async createPerson(createPersonDto: CreatePersonDto) {
         const person = await this.personRepository.create(createPersonDto);
@@ -31,6 +31,7 @@ export class PersonService {
 
     async getOrCreatePerson(createPersonDto: CreatePersonDto) {
         let person = await this.getPersonByName(createPersonDto.name);
+
         if (!person) {
             person = await this.createPerson(createPersonDto);
         }
@@ -41,16 +42,12 @@ export class PersonService {
     async getAllPersons(query?) {
         let persons;
 
-        if (query.db_limit) {
+        if (query.limit) {
             persons = await this.personRepository.findAll({
-                limit: query.db_limit
+                limit: query.limit
             });
         } else {
             persons = await this.personRepository.findAll();
-        }
-
-        if (query) {
-            persons = this.handleQuery(persons, query)
         }
 
         return persons;
@@ -95,7 +92,6 @@ export class PersonService {
                 })
             }
             if (query.profession) {
-
                 persons = this.filterPersonsByProfession(persons, query.profession)
             }
         }
@@ -143,8 +139,8 @@ export class PersonService {
         let result = [];
 
         for (const film of personFilms) {
-            result.push(await lastValueFrom(this.filmService.send({
-                        cmd: 'get-film',
+            result.push(await lastValueFrom(this.filmClient.send({
+                        cmd: "get-film",
                     },
                     {
                         id: film.filmId,
@@ -181,7 +177,7 @@ export class PersonService {
 
     async addFilmForPerson(personDto, film: Film) {
         const person = await this.getPersonByName(personDto.name);
-        await person.$add('film', film.id);
+        await person.$add("film", film.id);
         return person;
     }
 
@@ -189,7 +185,7 @@ export class PersonService {
         const professionId = profession.id;
         const person = await this.getPersonById(personDto.id)
 
-        await person.$add('profession',professionId);
+        await person.$add("profession",professionId);
 
         const filmProfession = await this.personFilmsRepository.findOne({
             where: {
@@ -273,20 +269,7 @@ export class PersonService {
     async addProfessionsForPerson(person: Person, professions) {
         for (const professionName of professions) {
             const profession = await this.getOrCreateProfession(professionName);
-            await person.$add('profession', profession.id)
+            await person.$add("profession", profession.id)
         }
-    }
-
-    handleQuery(persons, query) {
-        let filteredPersons: Person[] = persons;
-
-        if (query.search_query) {
-            filteredPersons = this.filterPersonsByName(persons, query);
-        }
-        if (query.limit) {
-            filteredPersons = filteredPersons.slice(0, query.limit + 1);
-        }
-
-        return filteredPersons;
     }
 }

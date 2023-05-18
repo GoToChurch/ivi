@@ -1,15 +1,14 @@
 import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
-
-import {CreateReviewDto, Review, UpdateReviewDto} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
+import {CreateReviewDto, Review, UpdateReviewDto} from "@app/common";
 
 
 @Injectable()
 export class ReviewService {
     constructor(@InjectModel(Review) private reviewRepository: typeof Review,
-                @Inject('USERS') private readonly usersService: ClientProxy) {}
+                @Inject("USERS") private readonly usersClient: ClientProxy) {}
 
     async createReview(createReviewDto: CreateReviewDto, filmId, userId, parentId?) {
         const review = await this.reviewRepository.create(createReviewDto);
@@ -17,7 +16,7 @@ export class ReviewService {
         review.filmId = filmId;
         review.userId = userId;
 
-        let user = await lastValueFrom(this.usersService.send({
+        let user = await lastValueFrom(this.usersClient.send({
             cmd: "add-review-to-user"
         }, {
             review,
@@ -56,7 +55,7 @@ export class ReviewService {
     }
 
     async deleteReview(id: number, userId: number) {
-        let user = await lastValueFrom(this.usersService.send({
+        let user = await lastValueFrom(this.usersClient.send({
             cmd: "delete-review-from-user"
         }, {
             id: userId,

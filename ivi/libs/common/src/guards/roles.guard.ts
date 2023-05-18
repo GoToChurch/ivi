@@ -18,7 +18,8 @@ export class RolesGuard implements CanActivate {
                 private reflector: Reflector) {}
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-        const req = context.switchToHttp().getRequest() //получаем request
+        const req = context.switchToHttp().getRequest();
+
         try {
             const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
                 context.getHandler(),
@@ -30,11 +31,10 @@ export class RolesGuard implements CanActivate {
             }
 
             const authHeader = req.headers.authorization;
-            const bearer = authHeader.split(' ')[0];
-            const token = authHeader.split(' ')[1];
+            const [bearer, token] = authHeader.split(" ");
 
-            if (bearer !== 'Bearer' || !token) {
-                throw new UnauthorizedException({message: 'Пользователь не авторизован'})
+            if (bearer !== "Bearer" || !token) {
+                throw new UnauthorizedException({message: "Пользователь не авторизован"})
             }
 
             const user = this.jwtService.verify(token, {secret: process.env.JWT_SECRET});
@@ -42,7 +42,7 @@ export class RolesGuard implements CanActivate {
 
             return user.roles.some(role => requiredRoles.includes(role.value));
         } catch (err) {
-            throw new HttpException('Нет доступа', HttpStatus.FORBIDDEN)
+            throw new HttpException("Нет доступа", HttpStatus.FORBIDDEN)
         }
     }
 

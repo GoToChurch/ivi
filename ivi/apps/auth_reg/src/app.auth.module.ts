@@ -1,11 +1,9 @@
 import {forwardRef, Module} from '@nestjs/common';
-import {CommonModule, PostgresFilmDbModule, PostgresUserDbModule} from "@app/common";
+import {CommonModule} from "@app/common";
 import {UsersModule} from "./users/users.module";
-import {ConfigModule, ConfigService} from "@nestjs/config";
+import {ConfigModule} from "@nestjs/config";
 import {AuthModule} from "./auth/auth.module";
 import {PassportModule} from "@nestjs/passport";
-
-
 
 
 @Module({
@@ -13,7 +11,7 @@ import {PassportModule} from "@nestjs/passport";
     providers: [],
     imports: [
         ConfigModule.forRoot({
-            envFilePath: '.env'
+            envFilePath: ".env"
         }),
         PassportModule.register({session: true}),
         UsersModule,
