@@ -10,7 +10,7 @@ import {
     AddPersonDto,
     AddRelatedFilmDto,
     CreateFilmDto, CreateReviewDto, CurrentUserOrAdminGuard,
-    Film, GoogleAuthenticatedGuard, JwtAuthGuard, Review, Roles, RolesGuard,
+    Film, GoogleAuthenticatedGuard, JwtAuthGuard, Review, Roles, RolesGuard, UpdateFilmDto,
 } from "@app/common";
 
 
@@ -223,13 +223,13 @@ export class AppFilmsController {
     @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Put("/films/:id")
-    async editFilm(@Body() name: string,
+    async editFilm(@Body() updateFilmDto: UpdateFilmDto,
                    @Param("id") id: any) {
         return this.filmClient.send(
             {
                 cmd: "edit-film",
             }, {
-                name,
+                updateFilmDto,
                 id
             },
         );
