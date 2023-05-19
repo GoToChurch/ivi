@@ -27,7 +27,7 @@ export class AppAuthController {
     @Get("/logout")
     async logout(@Req() req) {
         const headers = req.headers;
-        console.log(headers)
+
         return this.usersClient.send({
             cmd: "logout"
         }, {
