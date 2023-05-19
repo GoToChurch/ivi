@@ -5,10 +5,10 @@ import {Profession, CreateProfessionDto, UpdateProfessionDto} from "@app/common"
 
 @Injectable()
 export class ProfessionService {
-    constructor(@InjectModel(Profession) private professionepository: typeof Profession) {}
+    constructor(@InjectModel(Profession) private professionRepository: typeof Profession) {}
 
     async createProfession(createProfessionDto: CreateProfessionDto) {
-        return await this.professionepository.create(createProfessionDto);
+        return await this.professionRepository.create(createProfessionDto);
     }
 
     async getOrCreateProfession(name) {
@@ -22,11 +22,11 @@ export class ProfessionService {
     }
 
     async getAllProfessions() {
-        return await this.professionepository.findAll();
+        return await this.professionRepository.findAll();
     }
 
     async getProfessionById(id: number) {
-        return await this.professionepository.findByPk(id, {
+        return await this.professionRepository.findByPk(id, {
             include: {
                 all: true
             },
@@ -34,7 +34,7 @@ export class ProfessionService {
     }
 
     async getProfessionByName(name: string) {
-        return await this.professionepository.findOne({
+        return await this.professionRepository.findOne({
             where: {
                 name
             }
@@ -42,7 +42,7 @@ export class ProfessionService {
     }
 
     async editProfession(updateProfessionDto: UpdateProfessionDto, id: number) {
-        await this.professionepository.update({...updateProfessionDto}, {
+        await this.professionRepository.update({...updateProfessionDto}, {
             where: {
                 id
             }
@@ -52,12 +52,10 @@ export class ProfessionService {
     }
 
     async deleteProfession(id: number) {
-        return await this.professionepository.destroy({
+        return await this.professionRepository.destroy({
             where: {
                 id
             }
         })
     }
-
-
 }

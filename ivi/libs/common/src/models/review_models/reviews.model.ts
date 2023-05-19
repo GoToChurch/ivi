@@ -1,5 +1,5 @@
 import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
-import {Film} from "../films/films.model";
+import {Film} from "../films_models/films/films.model";
 import {ApiProperty} from "@nestjs/swagger";
 
 
@@ -40,9 +40,9 @@ export class Review extends Model<Review, ReviewCreationAttrs> {
 
     @ApiProperty({example: 1, description: "id родительского комментария"})
     @ForeignKey(() => Review)
-    @Column({type: DataType.INTEGER})
+    @Column({type: DataType.INTEGER, onDelete: "CASCADE"})
     parentId: number;
 
-    @BelongsTo(() => Review, 'parentId')
+    @BelongsTo(() => Review, "parentId")
     parent: string
 }

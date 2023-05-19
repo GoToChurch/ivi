@@ -30,6 +30,12 @@ export class ProfessionController {
         return this.professionService.getProfessionById(payload.id);
     }
 
+    @MessagePattern({ cmd: "get-profession-by-name" })
+    async getProfessionByName(@Ctx() context: RmqContext,
+                        @Payload() payload) {
+        return this.professionService.getProfessionByName(payload.name);
+    }
+
     @MessagePattern({ cmd: "edit-profession" })
     async editProfession(@Ctx() context: RmqContext,
                          @Payload() payload) {

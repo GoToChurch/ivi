@@ -116,12 +116,19 @@ export class UserService {
         }
     };
 
-    async updateUser(updateUserDto: UpdateUserDto, id: number) {
-        const hash_password = await bcrypt.hash(updateUserDto.password, 5);
+    async updateUser(updateUserDto: UpdateUserDto, id) {
+        if (updateUserDto.password) {
+            const hash_password = await bcrypt.hash(updateUserDto.password, 5);
+            return await this.userRepository.update({...updateUserDto, password: hash_password}, {
+                where: {
+                    id: +id
+                }
+            });
+        }
 
-        return await this.userRepository.update({...updateUserDto, password: hash_password}, {
+        return await this.userRepository.update({...updateUserDto}, {
             where: {
-                id
+                id: +id
             }
         });
     };

@@ -101,10 +101,6 @@ export class PersonService {
         return persons;
     }
 
-    filterPersonsByName(persons, query) {
-        return persons.filter(person => person.name.includes(query.search_query) || person.originalName.includes(query.search_query));
-    }
-
     filterPersonsByProfession(persons, profession) {
         let filterResult = [];
 
@@ -207,13 +203,18 @@ export class PersonService {
     }
 
     async createPersonFilm(filmId, personId, professionId) {
-        return await this.personFilmsRepository.create({filmId: +filmId, personId: +personId, professionId: +professionId})
+        return await this.personFilmsRepository.create({
+            filmId: +filmId,
+            personId: +personId,
+            professionId: +professionId}
+        )
     }
 
-    async addProfessionForPerson(personId, professionDto) {
+    async addProfessionForPerson(personId, createProfessionDto) {
         const person = await this.getPersonById(personId);
-        const profession = await this.professionService.getProfessionByName(professionDto.name);
+        const profession = await this.professionService.getProfessionByName(createProfessionDto.name);
         await person.$add("profession", profession.id);
+        return person;
     }
 
     async addProfessionsForPerson(person: Person, professions) {

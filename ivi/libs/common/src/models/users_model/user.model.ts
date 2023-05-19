@@ -1,7 +1,7 @@
 import {Column, DataType, Table, Model, BelongsToMany, HasMany} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "@app/common/models/roles_model/role.model";
-import {Review} from "@app/common/models/films_models/reviews/reviews.model";
+import {Review} from "@app/common/models/review_models/reviews.model";
 import {UserRoles} from "@app/common/models/users_model/user_roles.model";
 
 
@@ -59,4 +59,8 @@ export class User extends Model<User, UserCreationAttrs> {
     @ApiProperty({example: [{}], description: "Список комментариев пользователя"})
     @Column({type: DataType.ARRAY(DataType.STRING), allowNull: false, defaultValue:[]})
     reviews: Review[];
+
+    @ApiProperty({example: "fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt", description: "refreshToken"})
+    @Column({type: DataType.STRING(500), allowNull: true})
+    refreshToken: string;
 }

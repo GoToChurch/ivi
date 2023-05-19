@@ -38,4 +38,8 @@ export class UpdateUserDto {
 
     @ApiProperty({example: [{}], description: "Список комментариев пользователя"})
     reviews?: Review[]
+
+    @ApiProperty({example: "fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt", description: "refreshToken"})
+    @IsString({message: "Должна быть строка"})
+    readonly refreshToken?: string;
 }

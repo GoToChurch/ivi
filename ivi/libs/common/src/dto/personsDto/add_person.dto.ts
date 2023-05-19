@@ -1,10 +1,19 @@
-import {IsNumber, Min} from "class-validator";
+import {IsNumber, IsString, Length, Min} from "class-validator";
 import {ApiProperty} from "@nestjs/swagger";
 
 
 export class AddPersonDto {
-    @ApiProperty({example: 1, description: "id персоны"})
-    @IsNumber({}, {message: "Должно быть числом"})
-    @Min(1)
-    id: number;
+    @ApiProperty({example: "Омар Си", description: "Полное имя персоны"})
+    @IsString({message: "Должно быть строкой"})
+    @Length(1)
+    name: string;
+
+    @ApiProperty({example: "Omar cy", description: "Полное имя персоны на оригальном языке"})
+    @IsString({message: "Должно быть строкой"})
+    @Length(1)
+    originalName: string;
+
+    @ApiProperty({example: "http://example.com/photo", description: "Ссылка на фото персоны"})
+    @IsString({message: "Должно быть строкой"})
+    photo: string;
 }

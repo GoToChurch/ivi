@@ -30,112 +30,77 @@ export class AdminService {
     }
 
     async addDirector(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "director");
+        return await this.addCreator(filmId, addPersonDto, "Режиссер","director");
     }
 
     async addActor(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "actor");
+        return await this.addCreator(filmId, addPersonDto, "Актер","actor");
     }
 
     async addWriter(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "writer");
+        return await this.addCreator(filmId, addPersonDto, "Сценарист","writer");
     }
 
     async addProducer(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "producer");
+        return await this.addCreator(filmId, addPersonDto, "Продюсер","producer");
     }
 
     async addCinematography(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "cinematography");
+        return await this.addCreator(filmId, addPersonDto, "Оператор","cinematography");
     }
 
     async addMusician(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "musician");
+        return await this.addCreator(filmId, addPersonDto, "Композитор","musician");
     }
 
     async addDesigner(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "designer");
+        return await this.addCreator(filmId, addPersonDto, "Художник","designer");
     }
 
     async addEditor(filmId: number, addPersonDto: AddPersonDto) {
-        await this.addCreator(filmId, addPersonDto.id, "editor");
+        return await this.addCreator(filmId, addPersonDto, "Монтажер", "editor");
     }
 
-    async addCreator(filmId: number, personId, professionName) {
-        const person = await lastValueFrom(this.personClient.send({
-                    cmd: "get-person-by-id"
+    async addCreator(filmId: number, addPersonDto, professionRusName, professionEngName) {
+        const profession  = await lastValueFrom(this.personClient.send({
+                    cmd: "get-profession-by-name"
                 },
                 {
-                    id: personId
+                    name: professionRusName
                 })
         );
 
         const film = await this.filmService.getFilmById(filmId);
 
-        if (person) {
-            await film.$add(professionName, person.id);
-        } else {
-            throw new HttpException("Неовзможно добавить персону, т.к. её не существует",
-                HttpStatus.BAD_REQUEST);
-        }
+        await this.filmService.addInfoForPesronAndFilm(film, [addPersonDto], profession, professionEngName);
+
+        return film;
 
     }
 
     async addGenre(filmId: number, addGenreDto: AddGenreDto) {
-        const genre = await lastValueFrom(this.genreClient.send({
-                    cmd: "get-genre-by-name"
-                },
-                {
-                    name: addGenreDto.name
-                })
-        );
-
         const film = await this.filmService.getFilmById(filmId);
 
-        if (genre) {
-            await film.$add("genre", genre.id);
-        } else {
-            throw new HttpException("Неовзможно добавить жанр, т.к. его не существует",
-                HttpStatus.BAD_REQUEST);
-        }
+        await this.filmService.addGenresForFilm(film, [addGenreDto]);
+
+        return film;
+
     }
 
     async addCountry(filmId: number, addCountryDto: AddCountryDto) {
-        const country = await lastValueFrom(this.countryClient.send({
-                    cmd: "get-country-by-name"
-                },
-                {
-                    name: addCountryDto.name
-                })
-        );
-
         const film = await this.filmService.getFilmById(filmId);
 
-        if (country) {
-            await film.$add("country", country.id);
-        } else {
-            throw new HttpException("Неовзможно добавить страну, т.к. её не существует",
-                HttpStatus.BAD_REQUEST);
-        }
+        await this.filmService.addCountriesForFilm(film, [addCountryDto]);
+
+        return film;
     }
 
     async addAward(filmId: number, addAwardDto: AddAwardDto) {
-        const award = await lastValueFrom(this.awardClient.send({
-                    cmd: "get-award-by-name-and-year"
-                },
-                {
-                    name: addAwardDto.name,
-                    year: addAwardDto.year
-                })
-        );
-
         const film = await this.filmService.getFilmById(filmId);
 
-        if (award) {
-            await film.$add("award", award.id);
-        } else {
-            throw new HttpException("Неовзможно добавить награду, т.к. её не существует",
-                HttpStatus.BAD_REQUEST);
-        }
+        await this.filmService.addAwardsForFilm(film, [addAwardDto]);
+
+        return film;
+
     }
 }

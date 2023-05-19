@@ -19,13 +19,13 @@ export class CurrentUserOrAdminGuard implements CanActivate {
                     throw new UnauthorizedException({message: "Пользователь не авторизован"})
                 }
 
-                req.user = this.jwtService.verify(token, {secret: process.env.JWT_SECRET});
+                req.user = this.jwtService.decode(token);
 
                 const roles = req.user.roles.map(role => role.value);
                 const admin = roles.filter(role => role === "ADMIN" || role === "SUPERUSER")
 
-                if (req.user.id === +req.params["id"] || req.user.email === req.params["email"] ||
-                    req.user.phone === req.params["phone"] || admin.length > 0) {
+                if (+req.user["sub"]=== +req.params["id"] || req.user["email"] === req.params["email"] ||
+                    req.user["phone"] === req.params["phone"] || admin.length > 0) {
                     return true;
                 }
             }

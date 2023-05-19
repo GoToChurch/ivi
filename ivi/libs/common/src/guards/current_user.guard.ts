@@ -18,9 +18,9 @@ export class CurrentUserGuard implements CanActivate {
                 throw new UnauthorizedException({message: "Пользователь не авторизован"})
             }
 
-            req.user = this.jwtService.verify(token, {secret: process.env.JWT_SECRET});
+            req.user = this.jwtService.decode(token);
 
-            if (req.user.id === req.body.id) {
+            if (req.user["sub"] === req.body.id) {
                 return true;
             }
 

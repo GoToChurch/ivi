@@ -15,7 +15,7 @@ import {FilmWriters} from "@app/common/models/films_models/films/film_writers.mo
 import {FilmActors} from "@app/common/models/films_models/films/film_actors.model";
 import {FilmGenres} from "@app/common/models/genre_models/film_genres.model";
 import {Nomination} from "@app/common/models/award_models/nominations.model";
-import {Review} from "@app/common/models/films_models/reviews/reviews.model";
+import {Review} from "@app/common/models/review_models/reviews.model";
 import {Genre} from "@app/common/models/genre_models/genre.model";
 import {Person} from "@app/common/models/persons_models/persons.model";
 import {Profession} from "@app/common/models/persons_models/professions.model";

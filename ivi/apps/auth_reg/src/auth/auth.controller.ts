@@ -12,4 +12,10 @@ export class AuthController {
                 @Payload() payload) {
         return await this.authService.login(payload.userLoginDto)
     }
+
+    @MessagePattern({cmd: "logout"})
+    logout(@Ctx() context: RmqContext,
+           @Payload() payload) {
+        return this.authService.logout(payload.headers);
+    }
 }

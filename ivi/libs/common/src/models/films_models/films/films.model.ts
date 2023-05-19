@@ -12,7 +12,7 @@ import {Genre} from "../../genre_models/genre.model";
 import {FilmGenres} from "../../genre_models/film_genres.model";
 import {Award} from "../../award_models/awards.model";
 import {FilmAwards} from "../../award_models/film_awards.model";
-import {Review} from "../reviews/reviews.model";
+import {Review} from "../../review_models/reviews.model";
 import {Country} from "../../country_models/country.model";
 import {FilmCountries} from "../../country_models/film_country.model";
 import {RelatedFilms} from "./related_films.model";

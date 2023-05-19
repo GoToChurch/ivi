@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Inject, Post, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Post, Req, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {GoogleAuthGuard, UserLoginDto, VkAuthGuard} from "@app/common";
@@ -21,6 +21,19 @@ export class AppAuthController {
             userLoginDto
         });
     };
+
+    @ApiOperation({summary: "Выход из профиля"})
+    @ApiResponse({status: 200})
+    @Get("/logout")
+    async logout(@Req() req) {
+        const headers = req.headers;
+        console.log(headers)
+        return this.usersClient.send({
+            cmd: "logout"
+        }, {
+            headers
+        });
+    }
 
     @ApiOperation({summary: "Авторизация через google(gmail) аккаунт"})
     @ApiResponse({status: 200, type: String})

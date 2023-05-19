@@ -201,7 +201,8 @@ export class AppFilmsController {
         );
     }
 
-    @ApiOperation({summary: "Получение списка фильмов с указанным названием. Работает с русским и оригинальным названиями"})
+    @ApiOperation({summary: `Получение списка фильмов с указанным названием. Работает с русским и оригинальным,
+    полным и неполныи названиями`})
     @ApiResponse({status: 200, type: Film})
     @ApiParam({name: "id", example: 1})
     @Get("/films/name/:name")

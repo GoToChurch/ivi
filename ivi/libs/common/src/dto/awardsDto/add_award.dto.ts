@@ -13,4 +13,7 @@ export class AddAwardDto {
     @Min(1895)
     @Max(Number(new Date().getFullYear()))
     year: number;
+
+    @ApiProperty({example: [{}], description: "Список номинаций"})
+    nominations: []
 }

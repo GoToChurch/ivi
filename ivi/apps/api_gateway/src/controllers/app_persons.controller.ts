@@ -53,7 +53,7 @@ export class AppPersonsController {
     async getPerson(@Param("id") id: any) {
         return this.personClient.send(
             {
-                cmd: "get-person"
+                cmd: "get-person-by-id"
             }, {
                 id
             }
@@ -228,11 +228,13 @@ export class AppPersonsController {
     @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
     @Post("/person/:id/add/profession")
-    async addProfessionForPerson(@Body() createProfessionDto: CreateProfessionDto) {
+    async addProfessionForPerson(@Body() createProfessionDto: CreateProfessionDto,
+                                 @Param("id") id: any) {
         return this.personClient.send(
             {
-                cmd: "add-profession-for-person",
+                cmd: "add-profession-for-person"
             }, {
+                id,
                 createProfessionDto
             },
         );

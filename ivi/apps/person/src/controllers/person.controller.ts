@@ -25,9 +25,9 @@ export class PersonController {
         return this.personService.getAllPersons(payload.query);
     }
 
-    @MessagePattern({ cmd: "get-person" })
+    @MessagePattern({ cmd: "get-person-by-id" })
     async getPerson(@Ctx() context: RmqContext,
-                        @Payload() payload) {
+                    @Payload() payload) {
         return this.personService.getPersonById(payload.id);
     }
 

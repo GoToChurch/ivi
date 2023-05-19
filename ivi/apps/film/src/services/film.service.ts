@@ -104,12 +104,16 @@ export class FilmService {
 
   async getFilmsByName(name) {
       return await this.filmRepository.findAll({
-        where: {
-          [Op.or]: {
-            name: name,
-            originalName: name
-          }
-        },
+          where: {
+              [Op.or]: {
+                  name: {
+                      [Op.iLike]: `${name}%`
+                  },
+                  originalName: {
+                      [Op.iLike]: `${name}%`
+                  }
+              }
+          },
       });
 
   }
@@ -188,13 +192,20 @@ export class FilmService {
     return films.filter(film => film.name.includes(query.search_query) || film.originalName.includes(query.search_query));
   }
 
-  async getFilmsByPerson(name: string) {
-    return await lastValueFrom(this.personCLient.send({
-      cmd: "get-all-films-by-person"
-    }, {
-      name
-    })
-    )
+  async getFilmsByPersonName(name: string) {
+      const person = await lastValueFrom(this.personCLient.send({
+          cmd: "get-person-by-name"
+      }, {
+          name
+      }));
+
+      if (person) {
+          return await lastValueFrom(this.personCLient.send({
+              cmd: "get-all-persons-films"
+          }, {
+              id: person.id
+          }))
+      }
   }
 
   async editFilm(updateFilmDto: UpdateFilmDto, id: number) {
@@ -391,12 +402,11 @@ export class FilmService {
       await film.$set("awards", []);
 
       for (const awardDto of awards) {
-        let award = await lastValueFrom(this.awardCLient.send({
+        const award = await lastValueFrom(this.awardCLient.send({
                   cmd: "get-or-create-award"
                 }, {
             createAwardDto: awardDto
-        })
-        );
+        }));
         await film.$add("award", award.id);
 
         const nominations = awardDto.nominations
@@ -474,7 +484,7 @@ export class FilmService {
     let filteredFilms: Film[] = films;
 
     if (query.person) {
-      filteredFilms = await this.getFilmsByPerson(query.person);
+      filteredFilms = await this.getFilmsByPersonName(query.person);
     }
     if (query.search_query) {
       filteredFilms = this.filterFilmsByName(filteredFilms, query);

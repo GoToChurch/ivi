@@ -12,7 +12,6 @@ export class ReviewService {
 
   async createReview(createReviewDto: CreateReviewDto, filmId, userId, parentId?) {
     const review = await this.reviewRepository.create(createReviewDto);
-
     review.filmId = filmId;
     review.userId = userId;
 
