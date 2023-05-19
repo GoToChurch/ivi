@@ -17,7 +17,7 @@ export class Current_user_or_admin_guard implements CanActivate {
                 const bearer = authHeader.split(' ')[0];
                 const token = authHeader.split(' ')[1];
                 if (bearer !== 'Bearer' || !token) {
-                    throw new UnauthorizedException({message: 'Пользователь не авторизован!!!!!'})
+                    throw new UnauthorizedException({message: 'Пользователь не авторизован'})
                 }
                 const user = this.jwtService.decode(token);
                 req.user = user
@@ -27,12 +27,12 @@ export class Current_user_or_admin_guard implements CanActivate {
                     return true;
                 }
             }
-            //if (req.user.id === +req.params['id'] || req.user.email === req.params['email'] ||
-            //    req.user.phone === req.params['phone']) {
-            //    return true;
-            //}
+            if (req.user.id === +req.params['id'] || req.user.email === req.params['email'] ||
+                req.user.phone === req.params['phone']) {
+                return true;
+            }
         } catch (err) {
-            throw new UnauthorizedException({message: 'Вы не можете удалить этого пользователя'})
+            throw new UnauthorizedException({message: 'Вам нужно авторизоваться'})
         }
     }
 }
