@@ -143,6 +143,20 @@ export class UserService {
 
     async addRoleToUser(addRoleDto: AddRoleDto) {
         const user = await this.userRepository.findByPk(addRoleDto.userId);
+
+        if (addRoleDto.value === 'SUPERUSER') {
+            const createRoleDto = {
+                value: 'SUPERUSER',
+                description: 'Суперпользователь'
+            }
+
+            const role = await lastValueFrom(this.roleClient.send({
+                cmd: "create-role"
+            }, {
+                createRoleDto
+            }))
+        }
+
         const role = await lastValueFrom(this.roleClient.send({
             cmd: "get-role-by-value"
         }, {

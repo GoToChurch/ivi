@@ -8,11 +8,26 @@ export class RolesService {
   constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {}
 
   async createRole(createRoleDto: CreateRoleDto) {
+    if (createRoleDto.value === "SUPERUSER") {
+      const superUserRole = await this.roleRepository.create(createRoleDto);
+
+      await this.roleRepository.create({
+        value: "USER",
+        description: "Пользователь"});
+      await this.roleRepository.create({
+        value: "ADMIN",
+        description: "Администратор"
+      });
+
+      return superUserRole;
+    }
+
     const existing_role = await this.getRoleByValue(createRoleDto.value);
 
-    if(!existing_role) {
+    if (!existing_role) {
       return await this.roleRepository.create(createRoleDto);
     }
+
     throw new HttpException("Такая роль уже существует", HttpStatus.BAD_REQUEST)
   }
 
