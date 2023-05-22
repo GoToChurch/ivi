@@ -1,7 +1,16 @@
-import {Body, Controller, Get, Inject, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Inject, Post, Req, Res, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {GoogleAuthGuard, UserLoginDto, VkAuthGuard} from "@app/common";
+import {
+    GoogleAuthGuard,
+    JwtAuthGuard,
+    LoginGuard,
+    LogoutGuard,
+    RolesGuard,
+    UserLoginDto,
+    VkAuthGuard
+} from "@app/common";
+import {Response} from "express";
 
 
 
@@ -13,17 +22,19 @@ export class AppAuthController {
     @ApiOperation({summary: `Авторизация через email и пароль. В ответ получаете jwt-token, который нужно 
     поместить в заголовки запроса ("Authorization: Bearer jwt-token)`})
     @ApiResponse({status: 200, type: String})
+    @UseGuards(LoginGuard)
     @Post("/login")
     async login(@Body() userLoginDto: UserLoginDto) {
         return this.usersClient.send({
             cmd: "login"
         }, {
-            userLoginDto
+            userLoginDto,
         });
     };
 
     @ApiOperation({summary: "Выход из профиля"})
     @ApiResponse({status: 200})
+    @UseGuards(JwtAuthGuard, LogoutGuard)
     @Get("/logout")
     async logout(@Req() req) {
         const headers = req.headers;

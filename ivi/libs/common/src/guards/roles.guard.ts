@@ -45,5 +45,4 @@ export class RolesGuard implements CanActivate {
             throw new HttpException("Нет доступа", HttpStatus.FORBIDDEN)
         }
     }
-
 }

@@ -20,7 +20,6 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
                 profile: Profile,
                 done: VerifyCallback
             ) {
-                console.log(profile.emails[0].value)
                 return done(null, {profile: profile.emails})
             })
 

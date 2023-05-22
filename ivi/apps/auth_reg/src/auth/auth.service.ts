@@ -32,9 +32,9 @@ export class AuthService {
     }
 
     async logout(headers: any) {
-        const user = this.jwtService.decode(headers["authorization"].split(" ")[1])
-
+        const user = this.jwtService.decode(headers["authorization"].split(" ")[1]);
         await this.userService.updateUser({refreshToken: null}, user.sub);
+
 
         return {
             msg: `Пользователь ${user['email']} вышел из аккаунта`

@@ -77,6 +77,8 @@ export * from "./guards/jwt_auth.guard";
 export * from "./guards/roles_auth.decorator";
 export * from "./guards/roles.guard";
 export * from "./guards/vk.guard";
+export * from "./guards/login.guard";
+export * from "./guards/logout.guard";
 
 export * from "./exceptions/validation.exception";
 
