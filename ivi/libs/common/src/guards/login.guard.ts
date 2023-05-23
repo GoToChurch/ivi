@@ -19,8 +19,9 @@ export class LoginGuard implements CanActivate {
             let roleValue = "USER";
 
             for (let role of result.roles) {
-                if (role.value == "ADMIN" || role.value == "SUPERUSER") {}
-                roleValue = "ADMIN"
+                if (role.value == "ADMIN" || role.value == "SUPERUSER") {
+                    roleValue = "ADMIN"
+                }
             }
 
             res.cookie("Role", roleValue, {
