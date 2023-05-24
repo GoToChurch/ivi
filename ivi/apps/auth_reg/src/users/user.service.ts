@@ -15,6 +15,7 @@ export class UserService {
                 private readonly jwtService: JwtService) {}
 
     async userRegistration(registrationDto: RegistrationDto, role: string) {
+        console.log(registrationDto)
         const existing_user = await this.getUserByEmail(registrationDto.email)
         const users: User[] = await this.getAllUsers();
 
@@ -22,8 +23,8 @@ export class UserService {
             role = "SUPERUSER";
             const hash_password = await bcrypt.hash(registrationDto.password, 5);
             const user = await this.userRepository.create({...registrationDto, password: hash_password});
-
             await user.$set("roles", []);
+
             await this.addRoleToUser({userId: user.id, value: role});
 
             return user;
@@ -31,10 +32,11 @@ export class UserService {
         if (!existing_user) {
             const hash_password = await bcrypt.hash(registrationDto.password, 5);
             const user = await this.userRepository.create({...registrationDto, password: hash_password});
-
+            console.log(1)
             await user.$set("roles", []);
+            console.log(2)
             await this.addRoleToUser({userId: user.id, value: role});
-
+            console.log(3)
             return user;
         }
         throw new HttpException("Такой пользователь уже существует", HttpStatus.BAD_REQUEST)

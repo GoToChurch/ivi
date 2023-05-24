@@ -16,17 +16,21 @@ export class LoginGuard implements CanActivate {
         }, {
             email: req.body.email
         })).then(function (result) {
-            let roleValue = "USER";
+            if (result) {
+                let roleValue = "USER";
 
-            for (let role of result.roles) {
-                if (role.value == "ADMIN" || role.value == "SUPERUSER") {
-                    roleValue = "ADMIN"
+                for (let role of result.roles) {
+                    if (role.value == "ADMIN" || role.value == "SUPERUSER") {
+                        roleValue = "ADMIN"
+                    }
                 }
-            }
 
-            res.cookie("Role", roleValue, {
-                httpOnly: true,
-            })
+                res.cookie("Role", roleValue, {
+                    httpOnly: true,
+                })
+            } else {
+            return false
+            }
         })
 
         return true;

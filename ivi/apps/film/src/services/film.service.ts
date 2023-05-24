@@ -47,6 +47,11 @@ export class FilmService {
 
       if (!exists) {
           const film = await this.filmRepository.create(dto);
+          await film.$set("genres", []);
+          await film.$set("awards", []);
+          await film.$set("countries", []);
+          await film.$set("relatedFilms", []);
+          await film.$set("reviews", []);
 
           await this.addDirectorsForFilm(film, directors);
           await this.addActorsForFilm(film, actors);
@@ -60,8 +65,6 @@ export class FilmService {
           await this.addCountriesForFilm(film, countries);
           await this.addAwardsForFilm(film, awards);
           await this.addRelatedFilmsForFilm(film, relatedFilms);
-
-          await film.$set("reviews", []);
 
           return film;
       }
@@ -362,8 +365,6 @@ export class FilmService {
 
   async addGenresForFilm(film: Film, genres) {
     if (genres) {
-      await film.$set("genres", []);
-
       for (const genreDto of genres) {
         const genre = await lastValueFrom(this.genreCLient.send({
                   cmd: "get-or-create-genre"
@@ -382,8 +383,6 @@ export class FilmService {
 
   async addCountriesForFilm(film: Film, countries) {
     if (countries) {
-      await film.$set("countries", []);
-
       for (const countryDto of countries) {
         const country = await lastValueFrom(this.countryCLient.send<Country>({
                   cmd: "get-or-create-country",
@@ -399,8 +398,6 @@ export class FilmService {
 
   async addAwardsForFilm(film: Film, awards) {
     if (awards) {
-      await film.$set("awards", []);
-
       for (const awardDto of awards) {
         const award = await lastValueFrom(this.awardCLient.send({
                   cmd: "get-or-create-award"
@@ -425,8 +422,6 @@ export class FilmService {
 
   async addRelatedFilmsForFilm(film: Film, relatedFilms) {
     if (relatedFilms) {
-      await film.$set("relatedFilms", []);
-
       for (const relatedFilmObject of relatedFilms) {
         const relatedFilm = await this.getFilmByName(relatedFilmObject.name);
 
