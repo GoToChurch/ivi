@@ -16,11 +16,11 @@ export class Genre extends Model<Genre, GenreCreationAttrs> {
     id: number
 
     @ApiProperty({example: "Драма", description: "Название жанра"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     name: string
 
     @ApiProperty({example: "drama", description: "Название жанра на английском языке"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     englishName: string
 
     @ApiProperty({example: [{}], description: "Список фильмов в жанре"})

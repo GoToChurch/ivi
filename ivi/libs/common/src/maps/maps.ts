@@ -25,5 +25,6 @@ export const genresMap = new Map([
         ["фильм-нуар", "noir"],
         ["семейный", "forFamily"],
         ["мультфильм", "cartoon"],
+        ["тест", "test"],
     ]
 )

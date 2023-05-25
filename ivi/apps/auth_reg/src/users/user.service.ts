@@ -33,6 +33,9 @@ export class UserService {
             const hashPassword = await bcrypt.hash(registrationDto.password, 5);
             const user = await this.userRepository.create({...registrationDto, password: hashPassword});
             await user.$set("roles", []);
+            if (registrationDto.role == "ADMIN") {
+                role = "ADMIN"
+            }
             await this.addRoleToUser({userId: user.id, value: role});
             return user;
         }

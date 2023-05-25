@@ -16,11 +16,11 @@ export class Country extends Model<Country, GenreCreationAttrs> {
     id: number
 
     @ApiProperty({example: "Франция", description: "Название страны"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     name: string
 
     @ApiProperty({example: "fr", description: "Название страны на английском языке"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     englishName: string
 
     @ApiProperty({example: [{}], description: "Список фильмов, снятых в стране"})

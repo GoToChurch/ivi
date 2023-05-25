@@ -293,7 +293,7 @@ export class FilmService {
       const profession = await lastValueFrom(this.personCLient.send({
                 cmd: "get-or-create-profession"
               }, {
-          profession: "Продюссер"
+          profession: "Продюсер"
       })
       );
 

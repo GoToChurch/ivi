@@ -61,6 +61,6 @@ export class User extends Model<User, UserCreationAttrs> {
     reviews: Review[];
 
     @ApiProperty({example: "fjioertherty843optjiskvjw8opru92fpj348t5up34tijerpt", description: "refreshToken"})
-    @Column({type: DataType.STRING(500), allowNull: true})
+    @Column({type: DataType.STRING(1000), allowNull: true})
     refreshToken: string;
 }

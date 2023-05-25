@@ -4,23 +4,30 @@ import * as request from 'supertest';
 import {AppModule} from "../src/app.module";
 import {JwtModule, JwtService} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
-import {CreateRoleDto} from "@app/common";
+import {CreateCountryDto} from "@app/common";
 
 
-describe('AppController (e2e)', () => {
+describe('e2e tests for country endpoints', () => {
     let app: INestApplication;
     let jwtService: JwtService;
     let token;
-    let roleId;
+    let userId;
+    let countryId;
 
-    const createRoleDto: CreateRoleDto = {
-        value: 'STAFF',
-        description: 'Персонал'
+    const createCountryDto: CreateCountryDto = {
+        name: 'США',
+        englishName: 'us'
     };
 
     const mockUser = {
-        email: 'Neil@gmail.com',
-        password: 'password'
+        email: "Admin@gmail.com",
+        password: "admin",
+        first_name: "Admin",
+        second_name: "Adminov",
+        phone: "89000055066",
+        age: 35,
+        country: "USA",
+        role: "ADMIN"
     };
 
     beforeAll(async () => {
@@ -42,59 +49,67 @@ describe('AppController (e2e)', () => {
         app = moduleFixture.createNestApplication();
         await app.init();
 
+        const registrtionResponse = await request(app.getHttpServer())
+            .post('/users/')
+            .send(mockUser)
+            .expect(201)
+
+        userId = registrtionResponse.body.id;
+
         const loginResponse = await request(app.getHttpServer())
             .post('/auth/login')
-            .send(mockUser)
+            .send({
+                email: mockUser.email,
+                password: mockUser.password
+            })
             .expect(201)
 
         token = loginResponse.body.accessToken;
     });
 
-    it('/roles (POST)', async () => {
-        const role = await request(app.getHttpServer())
-            .post('/roles')
+    it('/countries (POST)', async () => {
+        const countryResponse = await request(app.getHttpServer())
+            .post('/countries')
             .set('Authorization', `Bearer ${token}`)
-            .send(createRoleDto)
+            .send(createCountryDto)
             .expect(201)
 
-        roleId = role.body.id;
+        countryId = countryResponse.body.id;
 
-        return role;
+        return countryResponse;
     });
 
-    it('/roles (GET)', async () => {
+    it('/countries (GET)', async () => {
         return request(app.getHttpServer())
-            .get('/roles')
+            .get('/countries')
+            .expect(200)
+    });
+
+    it('/countries/:id (GET)', async () => {
+        return request(app.getHttpServer())
+            .get(`/countries/${countryId}`)
+            .expect(200)
+    });
+
+    it('/countries/:id (PUT)', async () => {
+        return request(app.getHttpServer())
+            .put(`/countries/${countryId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({...createCountryDto})
+            .expect(200)
+    });
+
+    it('/countries/:id (DELETE)', async () => {
+        return request(app.getHttpServer())
+            .delete(`/countries/${countryId}`)
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
     });
 
-    it('/roles/:id (GET)', async () => {
-        return request(app.getHttpServer())
-            .get(`/roles/${roleId}`)
+    afterAll(async () => {
+        await request(app.getHttpServer())
+            .delete(`/users/${userId}`)
             .set('Authorization', `Bearer ${token}`)
-            .expect(200)
-    });
-
-    it('/roles/value/:value (GET)', async () => {
-        return request(app.getHttpServer())
-            .get(`/roles/value/${createRoleDto.value}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200)
-    });
-
-    it('/roles/:id (PUT)', async () => {
-        return request(app.getHttpServer())
-            .put(`/roles/${roleId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .send({...createRoleDto})
-            .expect(200)
-    });
-
-    it('/roles/:id (DELETE)', async () => {
-        return request(app.getHttpServer())
-            .delete(`/roles/${roleId}`)
-            .set('Authorization', `Bearer ${token}`)
-            .expect(200)
-    });
+            .expect(201)
+    })
 })

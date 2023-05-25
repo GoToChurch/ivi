@@ -15,7 +15,7 @@ export class Profession extends Model<Profession, ProfessionCreationAttrs> {
     id: number
 
     @ApiProperty({example: "Режиссер", description: "Название профессии"})
-    @Column({type: DataType.STRING, allowNull: false})
+    @Column({type: DataType.STRING, allowNull: false, unique: true})
     name: string
 
     @ApiProperty({example: [{}], description: "Список персон профессии"})

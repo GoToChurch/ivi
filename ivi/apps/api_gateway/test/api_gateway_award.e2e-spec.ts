@@ -7,10 +7,11 @@ import {ConfigService} from "@nestjs/config";
 import {CreateAwardDto, CreateNominationDto} from "@app/common";
 
 
-describe('AppController (e2e)', () => {
+describe('e2e tests for award and nominations endpoints', () => {
     let app: INestApplication;
     let jwtService: JwtService;
     let token;
+    let userId;
     let awardId;
     let nominationId;
 
@@ -20,8 +21,14 @@ describe('AppController (e2e)', () => {
     };
 
     const mockUser = {
-            email: 'Neil@gmail.com',
-            password: 'password'
+        email: "Admin@gmail.com",
+        password: "admin",
+        first_name: "Admin",
+        second_name: "Adminov",
+        phone: "89000055066",
+        age: 35,
+        country: "USA",
+        role: "ADMIN"
     };
 
     const createNominationDto: CreateNominationDto = {
@@ -47,9 +54,19 @@ describe('AppController (e2e)', () => {
         app = moduleFixture.createNestApplication();
         await app.init();
 
+        const registrtionResponse = await request(app.getHttpServer())
+            .post('/users/')
+            .send(mockUser)
+            .expect(201)
+
+        userId = registrtionResponse.body.id;
+
         const loginResponse = await request(app.getHttpServer())
             .post('/auth/login')
-            .send(mockUser)
+            .send({
+                email: mockUser.email,
+                password: mockUser.password
+            })
             .expect(201)
 
         token = loginResponse.body.accessToken;
@@ -130,4 +147,11 @@ describe('AppController (e2e)', () => {
             .set('Authorization', `Bearer ${token}`)
             .expect(200)
     });
+
+    afterAll(async () => {
+        await request(app.getHttpServer())
+            .delete(`/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .expect(201)
+    })
 })

@@ -34,4 +34,8 @@ export class RegistrationDto {
     @ApiProperty({example: "Россия", description: "Страна"})
     @IsString({message: "Должна быть строка"})
     country: string;
+
+    @ApiProperty({example: "ADMIN", description: "Необязательный параметр роли. Нужен чтобы создать админа"})
+    @IsString({message: "Должна быть строка"})
+    role?: string;
 }

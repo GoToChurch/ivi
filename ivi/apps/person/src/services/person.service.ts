@@ -166,7 +166,7 @@ export class PersonService {
     }
 
     async deletePerson(id: number) {
-        await this.personRepository.destroy({
+        return await this.personRepository.destroy({
             where: {
                 id
             }
