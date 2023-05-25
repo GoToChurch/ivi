@@ -54,9 +54,13 @@ export class AppService {
     }
 
     async parseFilms(query) {
-        const from = query.from ? query.from : 1;
-        const to = query.to ? query.to : 2;
-        const limit = query.limit ? query.limit : 10;
+        const from = query.from ? +query.from : 1;
+        const to = query.to ? +query.to : 2;
+        const limit = query.limit ? +query.limit : 10;
+
+        if (from > to) {
+            throw new HttpException("Параметр 'from' не может быть больше параметра 'to'", HttpStatus.BAD_REQUEST);
+        }
 
         if (![10, 25, 50, 75, 100, 200].includes(limit)) {
             throw new HttpException("Фильмов на странице может быть только 10, 25, 50, 75, 100, 200", HttpStatus.BAD_REQUEST);

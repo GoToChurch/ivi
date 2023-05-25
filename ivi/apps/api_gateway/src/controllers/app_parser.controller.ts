@@ -13,7 +13,7 @@ export class AppParseController {
     Существует ограничение на 200 запросов в день. Парсинг одного фильма делает 2 запроса.`})
     @ApiQuery({ name: "from", required: false, example: 1,
         description: "С какой страницы начинать парсинг. Если не указано, то парсинг будет вестись с первой страницы"})
-    @ApiQuery({ name: "to", required: false, example: 5,
+    @ApiQuery({ name: "to", required: false, example: 2,
         description: "До какой страницы продолжать парсинг. Если не указано, то парсинг будет вестись до второй страницы"})
     @ApiQuery({ name: "limit", required: false, example: 10,
         description: `Сколько фильмов будет на одной странице. Если не указано, то будет десять фильмов на странице
