@@ -9,22 +9,27 @@ export class RolesService {
 
   async createRole(createRoleDto: CreateRoleDto) {
     if (createRoleDto.value === "SUPERUSER") {
-      const superUserRole = await this.roleRepository.create(createRoleDto);
+      try {
+        const superUserRole = await this.roleRepository.create(createRoleDto);
 
-      await this.roleRepository.create({
-        value: "USER",
-        description: "Пользователь"});
-      await this.roleRepository.create({
-        value: "ADMIN",
-        description: "Администратор"
-      });
+        await this.roleRepository.create({
+          value: "USER",
+          description: "Пользователь"});
+        await this.roleRepository.create({
+          value: "ADMIN",
+          description: "Администратор"
+        });
+      } catch (e) {
 
-      return superUserRole;
+      }
+      finally {
+        return createRoleDto;
+      }
     }
 
-    const existing_role = await this.getRoleByValue(createRoleDto.value);
+    const existingRole = await this.getRoleByValue(createRoleDto.value);
 
-    if (!existing_role) {
+    if (!existingRole) {
       return await this.roleRepository.create(createRoleDto);
     }
 
@@ -42,7 +47,7 @@ export class RolesService {
   async getRoleByValue(value: string) {
     return await this.roleRepository.findOne({
       where: {
-        value: value
+        value
       }
     });
   }

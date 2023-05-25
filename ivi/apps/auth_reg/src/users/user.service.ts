@@ -21,8 +21,8 @@ export class UserService {
 
         if (users.length === 0) {
             role = "SUPERUSER";
-            const hash_password = await bcrypt.hash(registrationDto.password, 5);
-            const user = await this.userRepository.create({...registrationDto, password: hash_password});
+            const hashPassword = await bcrypt.hash(registrationDto.password, 5);
+            const user = await this.userRepository.create({...registrationDto, password: hashPassword});
             await user.$set("roles", []);
 
             await this.addRoleToUser({userId: user.id, value: role});
@@ -30,13 +30,10 @@ export class UserService {
             return user;
         }
         if (!existing_user) {
-            const hash_password = await bcrypt.hash(registrationDto.password, 5);
-            const user = await this.userRepository.create({...registrationDto, password: hash_password});
-            console.log(1)
+            const hashPassword = await bcrypt.hash(registrationDto.password, 5);
+            const user = await this.userRepository.create({...registrationDto, password: hashPassword});
             await user.$set("roles", []);
-            console.log(2)
             await this.addRoleToUser({userId: user.id, value: role});
-            console.log(3)
             return user;
         }
         throw new HttpException("Такой пользователь уже существует", HttpStatus.BAD_REQUEST)
@@ -118,14 +115,23 @@ export class UserService {
         }
     };
 
-    async updateUser(updateUserDto: UpdateUserDto, id) {
+    async updateUser(updateUserDto: UpdateUserDto, id, hash=true) {
         if (updateUserDto.password) {
-            const hash_password = await bcrypt.hash(updateUserDto.password, 5);
-            return await this.userRepository.update({...updateUserDto, password: hash_password}, {
-                where: {
-                    id: +id
-                }
-            });
+            if (hash) {
+                const hashPassword = await bcrypt.hash(updateUserDto.password, 5);
+                return await this.userRepository.update({...updateUserDto, password: hashPassword}, {
+                    where: {
+                        id: +id
+                    }
+                });
+            } else {
+                return await this.userRepository.update({...updateUserDto}, {
+                    where: {
+                        id: +id
+                    }
+                });
+            }
+
         }
 
         return await this.userRepository.update({...updateUserDto}, {
@@ -197,14 +203,14 @@ export class UserService {
         user.reviews.push(review);
         const reviewsArray = user.reviews;
 
-        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id);
+        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id, false);
     }
 
     async deleteReviewFromUser(reviewId: number, id: number) {
         const user = await this.getUserById(id);
         const reviewsArray = (await this.getAllUsersReviews(id)).filter(review => review.id != reviewId);
 
-        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id);
+        return await this.updateUser({...user.dataValues, reviews: reviewsArray}, user.id, false);
     }
 
     async getAllUsersReviews(id: number) {

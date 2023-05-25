@@ -50,8 +50,8 @@ export class AppRolesController {
     @ApiResponse({status: 200, type: Role})
     @Roles("ADMIN", "SUPERUSER")
     @UseGuards(RolesGuard)
-    @Post("/:value")
-    async getRoleByValue(@Body() value: string) {
+    @Get("/value/:value")
+    async getRoleByValue(@Param("value") value: string) {
         return this.rolesClient.send({
             cmd: "get-role-by-value"
         }, {

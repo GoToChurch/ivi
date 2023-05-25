@@ -18,7 +18,7 @@ export class AppReviewController {
                     @Req() request,
                     @Param("filmId") filmId: any) {
         const user = request.user;
-        const userId = user.id;
+        const userId = +user.sub;
 
         return this.reviewClient.send(
             {
@@ -41,7 +41,7 @@ export class AppReviewController {
                          @Param("filmId") filmId: any,
                          @Param("parentId") parentId: any) {
         const user = request.user;
-        const userId = user.id;
+        const userId = +user.sub;
 
         return this.reviewClient.send(
             {
@@ -106,12 +106,15 @@ export class AppReviewController {
     @Delete("/reviews/:id")
     async deleteReview(@Param("id") id: any,
                        @Req() request) {
+        const user = request.user;
+        const userId = +user.sub;
+
         return this.reviewClient.send(
             {
                 cmd: "delete-review"
             }, {
                 id,
-                userId: request.user.id
+                userId
             }
         )
     }
