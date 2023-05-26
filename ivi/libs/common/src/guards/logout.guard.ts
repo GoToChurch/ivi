@@ -14,6 +14,10 @@ export class LogoutGuard implements CanActivate {
             httpOnly: true,
         })
 
+        res.cookie("RefreshToken", "", {
+            httpOnly: true
+        })
+
         return true;
     }
 }
