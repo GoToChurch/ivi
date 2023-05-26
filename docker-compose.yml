@@ -42,8 +42,6 @@ services:
     build:
       context: ./
       dockerfile: ./apps/auth_reg/Dockerfile
-    ports:
-      - '3001:3001'
     env_file:
       - .env
     depends_on:
@@ -60,8 +58,6 @@ services:
     build:
       context: ./
       dockerfile: ./apps/roles/Dockerfile
-    ports:
-      - '3002:3002'
     env_file:
       - .env
     depends_on:
