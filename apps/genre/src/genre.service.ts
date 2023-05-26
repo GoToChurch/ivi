@@ -1,8 +1,7 @@
-import {Injectable} from "@nestjs/common";
+import {HttpException, HttpStatus, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {Op} from "sequelize";
-
-import {Genre, FilmGenres, CreateGenreDto} from "@app/common";
+import {Genre, FilmGenres, CreateGenreDto, genresMap, UpdateGenreDto} from "@app/common";
 
 
 @Injectable()
@@ -11,18 +10,18 @@ export class GenreService {
                 @InjectModel(FilmGenres) private filmGenresRepository: typeof FilmGenres,
                 ) {}
 
-    async createGenre(dto: CreateGenreDto) {
-        const genre =  await this.genreRepository.create(dto);
-        genre.$set('films', [])
+    async createGenre(createGenreDto: CreateGenreDto) {
+        const genre =  await this.genreRepository.create(createGenreDto);
+        await genre.$set('films', [])
 
         return genre;
     }
 
-    async getOrCreateGenre(dto) {
-        let genre = await this.getGenreByName(dto.name);
+    async getOrCreateGenre(createGenreDto: CreateGenreDto) {
+        let genre = await this.getGenreByName(createGenreDto.name);
 
         if (!genre) {
-            genre = await this.createGenre(dto);
+            genre = await this.createGenre(createGenreDto);
         }
 
         return genre;
@@ -59,14 +58,20 @@ export class GenreService {
         });
     }
 
-    async editGenre(name: string, id: number) {
-        await this.genreRepository.update({name}, {
-            where: {
-                id
-            }
-        });
+    async editGenre(updateGenreDto: UpdateGenreDto, id: number) {
+        try {
+            await this.genreRepository.update({...updateGenreDto, englishName: genresMap.get(updateGenreDto.name)}, {
+                where: {
+                    id
+                }
+            });
 
-        return this.getGenreById(id);
+            return this.getGenreById(id);
+        } catch (e) {
+            throw new HttpException("Указанный жанр не может быть использован в качестве имени. Повторите попытку",
+                HttpStatus.BAD_REQUEST)
+        }
+
     }
 
     async deleteGenre(id: number) {
@@ -106,9 +111,12 @@ export class GenreService {
             if (genre) {
                 ids.push(genre.id);
             }
-
         }
 
         return ids;
+    }
+
+    async addGenreInMap(createGenreDto: CreateGenreDto) {
+        genresMap.set(createGenreDto.name, createGenreDto.englishName)
     }
 }

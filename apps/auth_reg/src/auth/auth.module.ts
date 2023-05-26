@@ -4,10 +4,8 @@ import {AuthService} from "./auth.service";
 import {forwardRef, Module} from "@nestjs/common";
 import {AuthController} from "./auth.controller";
 import {CommonService} from "@app/common";
-import {AccessTokenStrategy} from "./Utils/accessToken.strategy";
-import {RefreshTokenStrategy} from "./Utils/refreshToken.strategy";
-import {ConfigService} from "@nestjs/config";
-
+import {AccessTokenStrategy} from "./utils/accessToken.strategy";
+import {RefreshTokenStrategy} from "./utils/refreshToken.strategy";
 
 
 @Module({
@@ -16,12 +14,6 @@ import {ConfigService} from "@nestjs/config";
     exports: [AuthService, JwtModule],
     imports: [
         JwtModule.register({}),
-        //JwtModule.register({
-            //secret: process.env.JWT_SECRET || 'SECRET',
-            //signOptions: {
-            //    expiresIn: '24h'
-            //}
-        //}),
         forwardRef(() => UsersModule)
     ]
 })

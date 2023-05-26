@@ -7,104 +7,79 @@ import {AwardService} from "./award.service";
 export class AwardController {
     constructor(private readonly awardService: AwardService) {}
 
-    @MessagePattern({ cmd: 'create-award' })
+    @MessagePattern({ cmd: "create-award" })
     async createAward(@Ctx() context: RmqContext,
                       @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
         return this.awardService.createAward(payload.createAwardDto);
     }
 
-    @MessagePattern({ cmd: 'get-all-awards' })
-    async getAllAwards(@Ctx() context: RmqContext) {
-        // this.commonService.acknowledgeMessage(context)
+    @MessagePattern({ cmd: "get-or-create-award" })
+    async getOrCreateAward(@Ctx() context: RmqContext,
+                           @Payload() payload) {
+        return this.awardService.getOrCreateAward(payload.createAwardDto);
+    }
 
+    @MessagePattern({ cmd: "get-all-awards" })
+    async getAllAwards(@Ctx() context: RmqContext) {
         return this.awardService.getAllAwards();
     }
 
-    @MessagePattern({ cmd: 'get-award' })
+    @MessagePattern({ cmd: "get-award" })
     async getAward(@Ctx() context: RmqContext,
                    @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
         return this.awardService.getAwardById(payload.id);
     }
 
-    @MessagePattern({ cmd: 'get-award-by-name' })
-    async getAwardByName(@Ctx() context: RmqContext,
-                         @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
-        return this.awardService.getAwardByName(payload.name);
+    @MessagePattern({ cmd: "get-award-by-name-and-year" })
+    async getAwardByNameAndYear(@Ctx() context: RmqContext,
+                                @Payload() payload) {
+        return this.awardService.getAwardByNameAndYear(payload.name, payload.year);
     }
 
-    @MessagePattern({ cmd: 'edit-award' })
+    @MessagePattern({ cmd: "edit-award" })
     async editAward(@Ctx() context: RmqContext,
                     @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
-        return this.awardService.editAward(payload.createAwardDto, payload.id);
+        return this.awardService.editAward(payload.updateAwardDto, payload.id);
     }
 
-    @MessagePattern({ cmd: 'delete-award' })
+    @MessagePattern({ cmd: "delete-award" })
     async deleteAward(@Ctx() context: RmqContext,
                       @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
         return this.awardService.deleteAward(payload.id);
     }
 
-    @MessagePattern({ cmd: 'create-nomination' })
+    @MessagePattern({ cmd: "create-nomination" })
     async createNomination(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
+                      @Payload() payload) {
         return this.awardService.createNomination(payload.createNominationDto);
     }
 
-    @MessagePattern({ cmd: 'get-all-nominations' })
+    @MessagePattern({ cmd: "get-all-nominations" })
     async getAllNominations(@Ctx() context: RmqContext) {
-        // this.commonService.acknowledgeMessage(context)
-
         return this.awardService.getAllNominations();
     }
 
-    @MessagePattern({ cmd: 'get-nomination' })
+    @MessagePattern({ cmd: "get-nomination" })
     async getNomination(@Ctx() context: RmqContext,
-                        @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
+                   @Payload() payload) {
         return this.awardService.getNominationById(payload.id);
     }
 
-    @MessagePattern({ cmd: 'edit-nomination' })
+    @MessagePattern({ cmd: "edit-nomination" })
     async editNomination(@Ctx() context: RmqContext,
-                         @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
+                    @Payload() payload) {
         return this.awardService.editNomination(payload.createNominationDto, payload.id);
     }
 
-    @MessagePattern({ cmd: 'delete-nomination' })
+    @MessagePattern({ cmd: "delete-nomination" })
     async deleteNomination(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
+                      @Payload() payload) {
         return this.awardService.deleteNomination(payload.id);
     }
 
-    @MessagePattern({ cmd: 'get-or-create-award' })
-    async getOrCreateAward(@Ctx() context: RmqContext,
-                           @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-        return this.awardService.getOrCreateAward(payload.awardDto);
-    }
-
-    @MessagePattern({ cmd: 'add-film-and-nominations-for-award' })
+    @MessagePattern({ cmd: "add-film-and-nominations-for-award" })
     async addFilmAndNominationsForAward(@Ctx() context: RmqContext,
                                         @Payload() payload) {
-        // this.commonService.acknowledgeMessage(context)
-
         return this.awardService.addFilmAndNominationsForAward(payload.film, payload.award, payload.nominations);
     }
 }

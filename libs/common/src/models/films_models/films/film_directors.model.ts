@@ -3,16 +3,16 @@ import {Film} from "./films.model";
 import {Person} from "../../persons_models/persons.model";
 
 
-@Table({tableName: 'film_directors'})
+@Table({tableName: "film_directors"})
 export class FilmDirectors extends Model<FilmDirectors> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
-    id: number;
+    id: number
 
     @ForeignKey(() => Film)
     @Column({type: DataType.INTEGER})
-    filmId: number;
+    filmId: number
 
     @ForeignKey(() => Person)
     @Column({type: DataType.INTEGER})
-    personId: number;
+    personId: number
 }

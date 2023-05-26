@@ -12,25 +12,25 @@ interface PersonCreationAttrs {
     englishName: string
 }
 
-@Table({tableName: 'persons'})
+@Table({tableName: "persons"})
 export class Person extends Model<Person, PersonCreationAttrs> {
-    @ApiProperty({example: 1, description: "Уникальный идентификатор"})
+    @ApiProperty({example: 1, description: "Уникальный идентификатор персоны"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
-    id: number;
+    id: number
 
     @ApiProperty({example: "Омар Си", description: "Полное имя персоны"})
     @Column({type: DataType.STRING, allowNull: false})
-    name: string;
+    name: string
 
     @ApiProperty({example: "Omar cy", description: "Полное имя персоны на оригальном языке"})
     @Column({type: DataType.STRING, allowNull: false})
-    originalName: string;
+    originalName: string
 
     @ApiProperty({example: "http://example.com/photo", description: "Ссылка на фото персоны"})
     @Column({type: DataType.STRING})
-    photo: string;
+    photo: string
 
-    @ApiProperty({example: [{}], description: "Список всех фильмов персоны"})
+    @ApiProperty({example: [{}], description: "Список фильмов персоны"})
     @BelongsToMany(() => Film, {
         through: {
             model: () => PersonFilms,
@@ -39,7 +39,7 @@ export class Person extends Model<Person, PersonCreationAttrs> {
     })
     films: Film[];
 
-    @ApiProperty({example: [{}], description: "Список всех профессий персоны"})
+    @ApiProperty({example: [{}], description: "Список профессий персоны"})
     @BelongsToMany(() => Profession, () => PersonProfessions)
     professions: Profession[];
 }

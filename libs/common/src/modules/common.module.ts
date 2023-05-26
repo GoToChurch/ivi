@@ -1,5 +1,4 @@
 import {ConfigModule, ConfigService} from "@nestjs/config";
-
 import {DynamicModule, Module} from "@nestjs/common";
 import {ClientsModule, Transport} from "@nestjs/microservices";
 import {CommonService} from "@app/common/services/common.service";
@@ -13,7 +12,7 @@ interface CommonModuleOptions {
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: './.env',
+      envFilePath: "./.env",
     }),
   ],
   providers: [CommonService],
@@ -30,7 +29,7 @@ export class CommonModule {
             useFactory: (configService: ConfigService) => ({
               transport: Transport.RMQ,
               options: {
-                urls: [configService.get<string>('RABBITMQ_URI')],
+                urls: [configService.get<string>("RABBITMQ_URI")],
                 queue: configService.get<string>(`RABBITMQ_${name}_QUEUE`),
                 noAck: false,
                 persistent: true,

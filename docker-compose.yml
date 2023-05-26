@@ -31,6 +31,7 @@ services:
       - country
       - roles
       - users_and_auth
+      - review
     volumes:
       - .:/usr/src/app
       - .:/app
@@ -101,7 +102,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: npm run start:dev person
+    command: npm run start:dev controllers
 
   award:
     build:
@@ -145,18 +146,33 @@ services:
       - /usr/src/app/node_modules
     command: npm run start:dev genre
 
-  postgresDB:
-    image: postgres
+  review:
+    build:
+      context: ./
+      dockerfile: ./apps/review/Dockerfile
     env_file:
       - .env
+    depends_on:
+      - postgresDB
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    command: npm run start:dev review
+
+  postgresDB:
+    image: postgres:latest
+    restart: always
     environment:
+      - POSTGRES_DB=ivi
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=users_auth
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_URI=postgresql://postgres:passwordpostgresDB:5432/ivi
     ports:
       - 5432:5432
     volumes:
       - ./db/data:/var/lib/postgresql/data
+      - ./create_second_db.sh:/docker-entrypoint-initdb.d/create_second_db.sh
 
   chrome:
     image: selenium/standalone-chrome:latest

@@ -1,82 +1,43 @@
 import {BadRequestException, Injectable} from "@nestjs/common";
+import {Role, UserLoginDto} from "@app/common";
 import {JwtService} from "@nestjs/jwt";
-import {UserLoginDto} from "@app/common";
 import {UserService} from "../users/user.service";
 import * as bcrypt from "bcryptjs";
 import {ConfigService} from "@nestjs/config";
 
+
 @Injectable()
 export class AuthService {
-    constructor(
-        private readonly userService: UserService,
-        private readonly jwtService: JwtService,
-        private readonly configService: ConfigService
-    ) {
-    }
+    constructor(private readonly userService: UserService,
+                private readonly jwtService: JwtService,
+                private readonly configService: ConfigService) {}
 
-    //async login(dto: UserLoginDto) {
-    //    const user = await this.validateUser(dto);
-    //    const user_token = await this.generateToken(user)
-    //    //await this.sendAuthToken(user_token);
-    //    return user_token;
-    //}
-//
-    //async generateToken(user: User) {
-    //    const payload = {email: user.email, id: user.id, phone: user.phone, roles: user.roles}
-    //    return {
-    //        token: this.jwtService.sign(payload)
-    //    }
-    //}
-//
-    //private async validateUser(dto: UserLoginDto) {
-    //    const user = await this.userService.getUserByEmail(dto.email);
-    //    const passwordEquals = await bcrypt.compare(dto.password, user.password)
-    //    if (user && passwordEquals) {
-    //        return user;
-    //    }
-    //    throw new UnauthorizedException({message: 'Некорректный email или пароль'})
-    //}
-//
-//
-    //async validateUserByGoogleEmail(email: string) {
-    //    const user = await this.userService.getUserByEmail(email);
-    //    if (user) return user;
-    //    return {message: "Такой пользователь не зарегистрирован"}
-    //}
+    async login(userLoginDto: UserLoginDto) {
+        const user = await this.userService.getUserByEmail(userLoginDto.email);
 
-    //async signUp(dto: RegistrationDto): Promise<any> {
-    //    const userExists = await this.userService.getUserByEmail(
-    //        dto.email,
-    //    );
-    //    if (userExists) {
-    //        throw new BadRequestException('Пользователь уже существует');
-    //    }
+        if (!user) {
+            throw new BadRequestException("User does not exist");
+        }
 
-    //    // Hash password
-    //    const hash = await this.hashData(dto.password);
-    //    const newUser = await this.userService.userRegistration({
-    //        ...dto,
-    //        password: hash,
-    //    });
-    //    const tokens = await this.getTokens(newUser._id, newUser.username);
-    //    await this.updateRefreshToken(newUser._id, tokens.refreshToken);
-    //    return tokens;
-    //}
+        const passwordMatches = await bcrypt.compare(userLoginDto.password, user.password);
 
-    async login(dto: UserLoginDto) {
-        const user = await this.userService.getUserByEmail(dto.email);
-        if (!user) throw new BadRequestException('User does not exist');
-        const passwordMatches = await bcrypt.compare(dto.password, user.password);
-        if (!passwordMatches)
-            throw new BadRequestException('Неверный пароль');
+        if (!passwordMatches) {
+            throw new BadRequestException("Неверный пароль");
+        }
+
         const tokens = await this.getTokens(user.id.toString(), user.email, user.phone, user.roles);
-        console.log(tokens.refreshToken)
         await this.updateRefreshToken(user.id.toString(), tokens.refreshToken);
+
         return tokens;
     }
 
-    async logout(userId: string) {
-        return this.userService.updateUser({refreshToken: null}, userId);
+    async logout(headers: any) {
+        const user = this.jwtService.decode(headers["authorization"].split(" ")[1]);
+        await this.userService.updateUser({refreshToken: null}, user.sub);
+
+        return {
+            msg: `Пользователь ${user['email']} вышел из аккаунта`
+        }
     }
 
     async hashData(data: string) {
@@ -84,16 +45,12 @@ export class AuthService {
     }
 
     async updateRefreshToken(userId: string, refreshToken: string) {
-        //const hashedRefreshToken = await this.hashData(refreshToken);
-        //await this.userService.updateUser({
-        //    refreshToken: hashedRefreshToken,
-        //}, userId);
         await this.userService.updateUser({
             refreshToken: refreshToken,
         }, userId)
     }
 
-    async getTokens(userId: string, email: string, phone: string, roles: [string]) {
+    async getTokens(userId: string, email: string, phone: string, roles: Role[]) {
         const [accessToken, refreshToken] = await Promise.all([
             this.jwtService.signAsync(
                 {
@@ -103,7 +60,7 @@ export class AuthService {
                     roles
                 },
                 {
-                    secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+                    secret: this.configService.get<string>("JWT_ACCESS_SECRET"),
                     expiresIn: '15m',
                 },
             ),
@@ -115,8 +72,8 @@ export class AuthService {
                     roles
                 },
                 {
-                    secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-                    expiresIn: '7d',
+                    secret: this.configService.get<string>("JWT_REFRESH_SECRET"),
+                    expiresIn: "7d",
                 },
             ),
         ]);

@@ -6,13 +6,13 @@ interface NominationCreationAttrs {
     name: string
 }
 
-@Table({tableName: 'nominations'})
+@Table({tableName: "nominations"})
 export class Nomination extends Model<Nomination, NominationCreationAttrs> {
-    @ApiProperty({example: 1, description: "Уникальный идентификатор"})
+    @ApiProperty({example: 1, description: "Уникальный идентификатор номинации"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
-    id: number;
+    id: number
 
-    @ApiProperty({example: "Лучший фильм", description: "Название номинации"})
+    @ApiProperty({example: "Оскар", description: "Название номинации"})
     @Column({type: DataType.STRING, allowNull: false})
-    name: string;
+    name: string
 }

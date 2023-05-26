@@ -1,73 +1,29 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+Бэкэнд финального проекта
+Посмотреть документацию можно по адресу: localhost:3000/api/docs.
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Чтобы запустить проект через докер необходимо:
+1. Сколнировать проект к себе на компьютер выполнив команду "git clone https://github.com/GoToChurch/ivi.git".
+2. Находясь в директории с файлом docker-compose.yml выполнить команду "docker-compose up --build" с включенным докером.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Installation
-
-```bash
-$ npm install
-```
-
-## Running the app
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+Чтобы запустить проект без докера необходимо:
+1. Иметь на компьютере устанволенный node.js.
+2. Установить postgresql, желательно установить 15-ю версию и создать в нём базы ivi и ivi_user вручную.
+3. Установить rabbitmq, здесь рассказано, как это сделать https://www.youtube.com/playlist?list=PLCpsrvs6hImZShRjUbqewZWgjJgU6SIvU.
+4. В файле .env необходимо поменять следующие строки:
+     - POSTGRES_HOST=localhost
+     - POSTGRES_PASSWORD=свой пароль
+     - RABBITMQ_URI=amqp://guest:guest@localhost:5672 или если не подключается, то amqp://guest:guest@127.0.0.1:5672
+   Также необходимо убрать строку ".usingServer("http://chrome:4444/wd/hub%22)" в файле libs/common/src/driver.ts
+5. Установить браузер Google Chrome последней версии.
+6. Находясь в директории с файлом package.json, выполнить команду "npm install", чтобы установить все зависимости. 
+7. Чтобы запустить все микросервисы, необходимо поочередно выполнить следующие команды, находясь в директории с файлом nest-cli:
+     - npm run start:dev users_and_auth 
+     - npm run start:dev roles 
+     - npm run start:dev award 
+     - npm run start:dev country 
+     - npm run start:dev genre 
+     - npm run start:dev person 
+     - npm run start:dev film 
+     - npm run start:dev review 
+     - npm run start:dev api_gateway
+   Каждую команду нужно выполнить в отдельном терминале.

@@ -1,43 +1,74 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {Role} from "@app/common";
-import {CreateRoleGTO} from "@app/common";
+import {CreateRoleDto, Role} from "@app/common";
+import {UpdateRoleDto} from "@app/common/dto/rolesDto/update_role.dto";
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {
-  }
-  async createRole(dto: CreateRoleGTO) {
-    const existing_role = await this.getRoleByValue(dto.value);
-    if(!existing_role) {
-      const new_role = await this.roleRepository.create(dto);
-      return new_role;
+  constructor(@InjectModel(Role) private readonly roleRepository: typeof Role) {}
+
+  async createRole(createRoleDto: CreateRoleDto) {
+    if (createRoleDto.value === "SUPERUSER") {
+      try {
+        const superUserRole = await this.roleRepository.create(createRoleDto);
+
+        await this.roleRepository.create({
+          value: "USER",
+          description: "Пользователь"});
+        await this.roleRepository.create({
+          value: "ADMIN",
+          description: "Администратор"
+        });
+      } catch (e) {
+
+      }
+      finally {
+        return createRoleDto;
+      }
     }
-    throw new HttpException('Такая роль уже существует', HttpStatus.BAD_REQUEST)
+
+    const existingRole = await this.getRoleByValue(createRoleDto.value);
+
+    if (!existingRole) {
+      return await this.roleRepository.create(createRoleDto);
+    }
+
+    throw new HttpException("Такая роль уже существует", HttpStatus.BAD_REQUEST)
   }
 
   async getAllRoles() {
-    const roles = await this.roleRepository.findAll({include: {all: true}});
-    return roles;
+    return await this.roleRepository.findAll({
+      include: {
+        all: true
+      }
+    });
   }
 
   async getRoleByValue(value: string) {
-    const role = await this.roleRepository.findOne({where: {value: value}});
-    return role;
+    return await this.roleRepository.findOne({
+      where: {
+        value
+      }
+    });
   }
 
-  async getRoleById(id: string) {
-    const role = await this.roleRepository.findByPk(+id);
-    return role;
+  async getRoleById(id: number) {
+    return await this.roleRepository.findByPk(id);
   }
 
-  async updateRole(dto: CreateRoleGTO, role_id: string) {
-    const role = await this.roleRepository.update({...dto}, {where: {id: +role_id}});
-    return role;
+  async updateRole(updateRoleDto: UpdateRoleDto, id: number) {
+    return await this.roleRepository.update({...updateRoleDto}, {
+      where: {
+        id
+      }
+    });
   }
 
-  async deleteRole(role_id: string) {
-    const role = await this.roleRepository.destroy({where: {id: +role_id}});
-    return role;
+  async deleteRole(id: number) {
+    return await this.roleRepository.destroy({
+      where: {
+        id
+      }
+    });
   }
 }

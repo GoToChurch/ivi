@@ -12,7 +12,7 @@ import {Genre} from "../../genre_models/genre.model";
 import {FilmGenres} from "../../genre_models/film_genres.model";
 import {Award} from "../../award_models/awards.model";
 import {FilmAwards} from "../../award_models/film_awards.model";
-import {Review} from "../reviews/reviews.model";
+import {Review} from "../../review_models/reviews.model";
 import {Country} from "../../country_models/country.model";
 import {FilmCountries} from "../../country_models/film_country.model";
 import {RelatedFilms} from "./related_films.model";
@@ -29,12 +29,12 @@ interface FilmCreationAttrs {
     ratingsNumber: number,
     year: number,
     duration: number,
-    description: string
+    description: string,
 }
 
-@Table({tableName: 'films'})
+@Table({tableName: "films"})
 export class Film extends Model<Film, FilmCreationAttrs> {
-    @ApiProperty({example: 1, description: "Уникальный идентификатор"})
+    @ApiProperty({example: 1, description: "Уникальный идентификатор фильма"})
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
     id: number
 
@@ -78,55 +78,55 @@ export class Film extends Model<Film, FilmCreationAttrs> {
     @Column({type: DataType.TEXT})
     description: string
 
-    @ApiProperty({example: [{}, {}], description: "Список режиссеров фильма"})
+    @ApiProperty({example: [{}], description: "Список режиссеров фильма"})
     @BelongsToMany(() => Person, () => FilmDirectors)
     directors: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список актеров фильма"})
+    @ApiProperty({example: [{}], description: "Список актеров фильма"})
     @BelongsToMany(() => Person, () => FilmActors)
     actors: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список сценаристов фильма"})
+    @ApiProperty({example: [{}], description: "Список сценаристов фильма"})
     @BelongsToMany(() => Person, () => FilmWriters)
     writers: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список продюсеров фильма"})
+    @ApiProperty({example: [{}], description: "Список продюсеров фильма"})
     @BelongsToMany(() => Person, () => FilmProducers)
     producers: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список операторов фильма"})
+    @ApiProperty({example: [{}], description: "Список операторов фильма"})
     @BelongsToMany(() => Person, () => FilmCinematography)
     cinematography: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список композиторов фильма"})
+    @ApiProperty({example: [{}], description: "Список композиторов фильма"})
     @BelongsToMany(() => Person, () => FilmMusicians)
     musicians: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список художников фильма"})
+    @ApiProperty({example: [{}], description: "Список художников фильма"})
     @BelongsToMany(() => Person, () => FilmDesigners)
     designers: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список монтажеров фильма"})
+    @ApiProperty({example: [{}], description: "Список монтажеров фильма"})
     @BelongsToMany(() => Person, () => FilmEditors)
     editors: Person[];
 
-    @ApiProperty({example: [{}, {}], description: "Список жанров фильма"})
+    @ApiProperty({example: [{}], description: "Список жанров"})
     @BelongsToMany(() => Genre, () => FilmGenres)
     genres: Genre[];
 
-    @ApiProperty({example: [{}, {}], description: "Список наград фильма"})
+    @ApiProperty({example: [{}], description: "Список наград фильма"})
     @BelongsToMany(() => Award, () => FilmAwards)
     awards: Award[];
 
-    @ApiProperty({example: [{}, {}], description: "Список стран фильма"})
+    @ApiProperty({example: [{}], description: "Список стран фильма"})
     @BelongsToMany(() => Country, () => FilmCountries)
     countries: Award[];
 
-    @ApiProperty({example: [{}, {}], description: "Список комментариев к фильму"})
+    @ApiProperty({example: [{}], description: "Список комментариев к фильму"})
     @HasMany(() => Review)
     reviews: Review[];
 
-    @ApiProperty({example: [{}, {}], description: "Список похожих фильмов"})
+    @ApiProperty({example: [{}], description: "Список связанных фильмов"})
     @BelongsToMany(() => Film, () => RelatedFilms, 'filmId', 'relatedFilmId')
     relatedFilms;
 }

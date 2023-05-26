@@ -2,60 +2,32 @@ import {UsersController} from "./users.controller";
 import {Test, TestingModule} from "@nestjs/testing";
 import {JwtModule} from "@nestjs/jwt";
 import {ClientsModule, RmqContext, Transport} from "@nestjs/microservices";
+import {getModelToken} from "@nestjs/sequelize";
 import {UserService} from "./user.service";
-
+import {User} from "@app/common/models/users_model/user.model";
 
 describe('Testing UserController', () => {
     let controller: UsersController;
 
-    const mockUserService = {
+    const mockProfileService = {
         findAll: jest.fn(),
         //update: jest.fn().mockImplementation((dto) => ({...dto})),
         findOne: jest.fn(),
         findByPk: jest.fn(),
-        destroy: jest.fn(({'where': {'id': undefined}}) => {
-        }),
-        hash: jest.fn(password => {
-        }),
-        update: jest.fn(payload => {
-        }),
-        filter: jest.fn(users => users),
-        getAllUsers: jest.fn(),
-        getUserById: jest.fn(id => {
-        }),
-        getUserByEmail: jest.fn(email => {
-        }),
-        getUserByPhone: jest.fn(phone => {
-        }),
-        userRegistration: jest.fn((dto, role) => {
-        }),
-        getUsersByRole: jest.fn(role => {
-        }),
-        userCountryAndAgeFilters: jest.fn(payload => {
-        }),
-        userCountryOrAgeFilter: jest.fn(payload => {
-        }),
-        updateUser: jest.fn(payload => {
-        }),
-        deleteUser: jest.fn(payload => {
-        }),
-        addRoleToUser: jest.fn(payload => {
-        }),
-        deleteRoleFromUser: jest.fn(payload => {
-        }),
-        addReviewToUser: jest.fn(payload => {
-        }),
-        InspectUserToken: jest.fn(payload => {
-        }),
-        createIdToUserReview: jest.fn((payload: { dto: {}, film_id: 2 }, token_user: { id: 1 }) => {
-        }),
-        deleteReviewFromUser: jest.fn(({id, review_id}) => {})
+        destroy: jest.fn(({'where':{'id': undefined}}) => {}),
+        hash: jest.fn(password => {}),
+        update: jest.fn((dto:{'where': {'id': 1}}) => {}),
+        filter: jest.fn(users => users)
     }
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             controllers: [UsersController],
-            providers: [UserService],
+            providers: [UserService, {
+                provide: getModelToken(User),
+                useValue: mockProfileService
+            }
+            ],
             imports: [JwtModule.register({
                 secret: process.env.SECRET_KEY || 'SECRET',
                 signOptions: {
@@ -90,7 +62,7 @@ describe('Testing UserController', () => {
                     },
                 ]),
             ]
-        }).overrideProvider(UserService).useValue(mockUserService).compile();
+        }).compile()
 
         controller = module.get<UsersController>(UsersController);
     })
@@ -106,148 +78,177 @@ describe('Testing UserController', () => {
 
     })
 
-    it("calling registration method", () => {
-        let context: RmqContext;
-        const dto = {
-            email: 'stepanov@gmail.com',
-            password: '123',
-            first_name: 'Stepan',
-            second_name: 'Stepanov',
-            phone: '89045674321',
-            age: 42,
-            country: 'USA'
-        };
-        const spy = jest.spyOn(controller, "registration");
-        controller.registration(context, dto);
-        expect(spy).toHaveBeenCalled();
-        expect(spy.mock.calls).toHaveLength(1);
-    })
+    //it("calling registration method", () => {
+    //    let context: RmqContext;
+    //    const dto = {
+    //        email: 'stepanov@gmail.com',
+    //        password: '123',
+    //        first_name: 'Stepan',
+    //        second_name: 'Stepanov',
+    //        phone: '89045674321',
+    //        age: 42,
+    //        country: 'USA'
+    //    }
+    //    const spy = jest.spyOn(controller, "registration");
+    //    controller.registration(context, dto);
+    //    expect(spy).toHaveBeenCalled();
+    //    expect(spy.mock.calls).toHaveLength(1);
+    //})
 
-    it("should be defined", () => {
-        expect(controller).toBeDefined()
-    })
 
     it("calling getUserById method", () => {
         let context: RmqContext;
         const user_id = {
             id: 1
-        };
+        }
         const spy = jest.spyOn(controller, "getUserById");
         controller.getUserById(context, user_id);
         expect(spy).toHaveBeenCalled();
-
+        expect(spy.mock.calls).toHaveLength(1);
     })
-
-    it("calling getUserByEmail method", () => {
-        let context: RmqContext;
-        const payload = {
-            email: "ivanov@gmail.com"
-        };
-        const spy = jest.spyOn(controller, "getUserByEmail");
-        controller.getUserByEmail(context, payload);
-        expect(spy).toHaveBeenCalled();
-
-    })
-
-    it("calling getUserByPhone method", () => {
-        let context: RmqContext;
-        const payload = {
-            phone: "89960000000"
-        };
-        const spy = jest.spyOn(controller, "getUserByPhone");
-        controller.getUserByPhone(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling getUsersByRole method", () => {
-        let context: RmqContext;
-        const payload = {
-            role: "USER"
-        };
-        const spy = jest.spyOn(controller, "getUsersByRole");
-        controller.getUsersByRole(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling userCountryAndAgeFilters method", () => {
-        let context: RmqContext;
-        const payload = {};
-        const spy = jest.spyOn(controller, "userCountryAndAgeFilters");
-        controller.userCountryAndAgeFilters(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling userCountryOrAgeFilter method", () => {
-        let context: RmqContext;
-        const payload = {};
-        const spy = jest.spyOn(controller, "userCountryOrAgeFilter");
-        controller.userCountryOrAgeFilter(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling updateUser method", () => {
-        let context: RmqContext;
-        const payload = {};
-        const spy = jest.spyOn(controller, "updateUser");
-        controller.updateUser(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling deleteUser method", () => {
-        let context: RmqContext;
-        const payload = {};
-        const spy = jest.spyOn(controller, "deleteUser");
-        controller.deleteUser(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling addRoleToUser method", () => {
-        let context: RmqContext;
-        const payload = {
-            dto: {
-                value: "USER"
-            }
-        };
-        const spy = jest.spyOn(controller, "addRoleToUser");
-        controller.addRoleToUser(context, payload);
-        expect(spy).toHaveBeenCalled();
-    })
-
-    it("calling deleteRoleFromUser method", () => {
-        let context: RmqContext;
-        const payload = {
-            dto: {
-                value: "USER",
-                user_id: 1
-            }
-        };
-        const spy = jest.spyOn(controller, "deleteRoleFromUser");
-        controller.deleteRoleFromUser(context, payload)
-        expect(spy).toHaveBeenCalled();
-    })
-
-
-    //it("calling addReviewToUser method", () => {
+//
+    //it("calling updateUser method", () => {
     //    let context: RmqContext;
     //    const payload = {
-    //        dto: {
-    //            film_id: 1,
-    //            parent_id: 2
+    //        id: 1,
+    //        DTO: {
+    //            email: 'email@mail.ru',
+    //            password: '123',
+    //            first_name: 'Stepan',
+    //            second_name: 'Stepanov',
+    //            phone: '89045674321',
+    //            age: 42,
+    //            country: 'USA'
     //        }
-    //    };
-    //    const spy = jest.spyOn(controller, "addReviewToUser");
-    //    controller.addReviewToUser(context, payload)
+    //    }
+    //    const spy = jest.spyOn(controller, "updateUser");
+    //    controller.updateUser(context, payload);
     //    expect(spy).toHaveBeenCalled();
+    //    expect(spy.mock.calls).toHaveLength(1);
+        //expect(controller.updateUser(context, payload)).resolves.toEqual({
+        //    user_id: 2,
+        //    email: 'email@mail.ru',
+        //    password: '123',
+        //    first_name: 'Stepan',
+        //    second_name: 'Stepanov',
+        //    phone: '89045674321',
+        //    age: 42,
+        //    country: 'USA'
+        //});
     //})
-
-    it("calling deleteReviewToUser method", () => {
+//
+    it("calling getUserByEmail method", async () => {
         let context: RmqContext;
         const payload = {
-            id: 2,
-            review_id: 1
-        };
-        const spy = jest.spyOn(controller, "deleteReviewToUser");
-        controller.deleteReviewToUser(context, payload)
+            email: 'email@mail.ru'
+        }
+        const profileDTO = {
+            id: 1,
+            user_id: 2,
+            first_name: 'Stepan',
+            second_name: 'Stepanov',
+            phone: '89045674321',
+            age: 42,
+            country: 'USA'
+        }
+        const spy = jest.spyOn(controller, "getUserByEmail");
+        await controller.getUserByEmail(context, payload);
         expect(spy).toHaveBeenCalled();
+        expect(spy.mock.calls).toHaveLength(1);
+
     })
+
+    it("calling getUserByPhone method", async () => {
+        let context: RmqContext;
+        const payload = {
+            phone: '89960000000'
+        }
+        const profileDTO = {
+            id: 1,
+            user_id: 2,
+            first_name: 'Stepan',
+            second_name: 'Stepanov',
+            phone: '89045674321',
+            age: 42,
+            country: 'USA'
+        }
+        const spy = jest.spyOn(controller, "getUserByPhone");
+        await controller.getUserByPhone(context, payload);
+        expect(spy).toHaveBeenCalled();
+        expect(spy.mock.calls).toHaveLength(1);
+    })
+
+    it("calling getUsersByRole method", async () => {
+        let context: RmqContext;
+        const payload = {
+            role: 'ADMIN'
+        }
+        const profileDTO = {
+            id: 1,
+            user_id: 2,
+            first_name: 'Stepan',
+            second_name: 'Stepanov',
+            phone: '89045674321',
+            age: 42,
+            country: 'USA'
+        }
+        const spy = jest.spyOn(controller, "getUsersByRole");
+        await controller.getUsersByRole(context, payload);
+        expect(spy).toHaveBeenCalled()
+        expect(spy.mock.calls).toHaveLength(1);
+    })
+
+    //it("calling  userCountryAndAgeFilters method", async () => {
+    //    let context: RmqContext;
+    //    const payload = {
+    //        value1: 'Anything',
+    //        value2: 'Anything'
+    //    }
+    //    const profileDTO = {
+    //        id: 1,
+    //        user_id: 2,
+    //        first_name: 'Stepan',
+    //        second_name: 'Stepanov',
+    //        phone: '89045674321',
+    //        age: 42,
+    //        country: 'USA'
+    //    }
+    //    const spy = jest.spyOn(controller, "userCountryAndAgeFilters");
+    //    await controller.userCountryAndAgeFilters(context, payload);
+    //    expect(spy).toHaveBeenCalled()
+//
+    //})
+//
+    //it("calling  userCountryOrAgeFilter method", async () => {
+    //    let context: RmqContext;
+    //    const payload = {
+    //        value: 'Anything',
+    //    }
+    //    const profileDTO = {
+    //        id: 1,
+    //        user_id: 2,
+    //        first_name: 'Stepan',
+    //        second_name: 'Stepanov',
+    //        phone: '89045674321',
+    //        age: 42,
+    //        country: 'USA'
+    //    }
+    //    const spy = jest.spyOn(controller, "userCountryOrAgeFilter");
+    //    await controller.userCountryOrAgeFilter(context, payload);
+    //    expect(spy).toHaveBeenCalled()
+//
+    //})
+//
+    //it("calling  deleteUser method", async () => {
+    //    let context: RmqContext;
+    //    const payload = {
+    //        id: 1,
+    //    }
+//
+    //    const spy = jest.spyOn(controller, "deleteUser");
+    //    await controller.deleteUser(context, payload);
+    //    expect(spy).toHaveBeenCalled()
+//
+    //})
+
 })

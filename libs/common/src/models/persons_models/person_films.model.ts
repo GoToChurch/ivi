@@ -4,20 +4,20 @@ import {Profession} from "./professions.model";
 import {Person} from "./persons.model";
 
 
-@Table({tableName: 'person_films'})
+@Table({tableName: "person_films"})
 export class PersonFilms extends Model<PersonFilms> {
     @Column({type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true})
-    id: number;
+    id: number
 
     @ForeignKey(() => Film)
     @Column({type: DataType.INTEGER})
-    filmId: number;
+    filmId: number
 
     @ForeignKey(() => Person)
     @Column({type: DataType.INTEGER, unique: false})
-    personId: number;
+    personId: number
 
     @ForeignKey(() => Profession)
     @Column({type: DataType.INTEGER})
-    professionId: number;
+    professionId: number
 }
