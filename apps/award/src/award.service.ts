@@ -7,8 +7,7 @@ import {Award, CreateAwardDto, CreateNominationDto, Film, FilmAwards, Nomination
 export class AwardService {
     constructor(@InjectModel(Award) private awardRepository: typeof Award,
                 @InjectModel(FilmAwards) private filmAwardsRepository: typeof FilmAwards,
-                @InjectModel(Nomination) private nominationRepository: typeof Nomination,
-                ) {}
+                @InjectModel(Nomination) private nominationRepository: typeof Nomination) {}
 
     async createAward(createAwardDto: CreateAwardDto) {
         const award = await this.awardRepository.create(createAwardDto);

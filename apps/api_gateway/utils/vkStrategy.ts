@@ -8,9 +8,9 @@ import {ConfigService} from "@nestjs/config";
 export class VkStrategy extends PassportStrategy(Strategy, "vk") {
     constructor( private readonly configService: ConfigService) {
         super({
-                clientID: configService.get("VK_CLIENT_ID"),//"51626020",
-                clientSecret: configService.get("VK_CLIENT_SECRET"),//"nlDqfipOj0XmVUvoZABT",
-                callbackURL: configService.get("VK_CALLBACKURL"),//"http://127.0.0.1:3000/api/auth/vk/redirect",
+                clientID: configService.get("VK_CLIENT_ID"),
+                clientSecret: configService.get("VK_CLIENT_SECRET"),
+                callbackURL: configService.get("VK_CALLBACKURL"),
                 scope: ["status", "email", "friends", "notify"]
             },
             function (
@@ -22,6 +22,5 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
             ) {
                 return done(null, {profile: profile.emails})
             })
-
     }
 }

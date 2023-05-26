@@ -1,7 +1,7 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {getModelToken} from "@nestjs/sequelize";
 import {Role} from "@app/common";
-import {RolesService} from "../src/roles/roles.service";
+import {RolesService} from "../src/roles.service";
 
 
 describe('Testing RolesService', () => {

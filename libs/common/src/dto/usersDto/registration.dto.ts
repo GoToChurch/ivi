@@ -35,7 +35,7 @@ export class RegistrationDto {
     @IsString({message: "Должна быть строка"})
     country: string;
 
-    @ApiProperty({example: "ADMIN", description: "Необязательный параметр роли. Нужен чтобы создать админа"})
-    @IsString({message: "Должна быть строка"})
+    @ApiProperty({example: "ADMIN", description: `Необязательный параметр роли. Принимает только значение 'ADMIN'.
+    Если параметр указан, то созданный пользователь получит роль администатора`})
     role?: string;
 }

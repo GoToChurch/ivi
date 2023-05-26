@@ -1,7 +1,8 @@
 import {HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
-import {CreateFilmDto, Driver} from "@app/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
+import {InjectModel} from "@nestjs/sequelize";
+import {CreateFilmDto, Driver, User} from "@app/common";
 
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -10,7 +11,8 @@ const {By, until} = require("selenium-webdriver");
 
 @Injectable()
 export class AppService {
-    constructor(@Inject("FILM") private readonly filmClient: ClientProxy) {}
+    constructor(@Inject("FILM") private readonly filmClient: ClientProxy,
+                @InjectModel(User) private readonly usersRep: typeof User) {}
 
     addFiltersToFilterObject(filterObject, filter: string) {
         if (filter.includes("-") || filter.length == 4) {
@@ -50,7 +52,6 @@ export class AppService {
         } catch (e) {
             throw new HttpException("Произошла ошибка на сервере при создании фильма", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     async parseFilms(query) {
@@ -70,11 +71,12 @@ export class AppService {
 
         for (let i = from; i < to; i++) {
             let url = `https://api.kinopoisk.dev/v1.3/movie?page=${i}&limit=${limit}`;
-            let f = await fetch(url,{
+
+            const fetchResponse = await fetch(url,{
                 method: "GET",
                 headers: {"content-type": "application/json; charset=UTF-8", "X-API-Key": api_key}
             })
-            const response = await f.json();
+            const response = await fetchResponse.json();
             const driver = await new Driver();
 
             for (let film of response.docs) {
@@ -102,11 +104,11 @@ export class AppService {
         let filmResponse = null;
 
         try {
-            let fetchRes = await fetch(filmUrl,{
+            const fetchResponse = await fetch(filmUrl,{
                 method: "GET",
                 headers: {"content-type": "application/json; charset=UTF-8", "X-API-Key": api_key}
             })
-            filmResponse = await fetchRes.json();
+            filmResponse = await fetchResponse.json();
         } catch (e) {
             throw new HttpException("Произошла ошибка при попытке запроса к api кинопоиска", HttpStatus.BAD_REQUEST);
         }
@@ -210,11 +212,11 @@ export class AppService {
             let serialResponse = null;
 
             try {
-                let fetchRes = await fetch(serialUrl,{
+                const fetchResponse = await fetch(serialUrl,{
                     method: "GET",
                     headers: {"content-type": "application/json; charset=UTF-8", "X-API-Key": api_key}
                 })
-                serialResponse = await fetchRes.json();
+                serialResponse = await fetchResponse.json();
             } catch (e) {
                 throw new HttpException("Произошла ошибка при попытке запроса к api кинопоиска", HttpStatus.BAD_REQUEST)
             }
@@ -377,8 +379,13 @@ export class AppService {
         return awards;
     }
 
-    // async getUserByEmail(email: string) {
-    //     const user = await this.usersRep.findOne({where: {email: email}, include: {all: true}});
-    //     return user;
-    // };
+    async getUserByEmail(email: string) {
+        return await this.usersRep.findOne({
+            where: {
+                email: email
+            }, include: {
+                all: true
+            }
+        });
+    };
 }

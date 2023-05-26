@@ -26,16 +26,13 @@ async function bootstrap() {
     const configService = app.get(ConfigService);
     const commonService = app.get(CommonService);
 
-    const usersQueue = configService.get("RABBITMQ_USERS_QUEUE"); //'USERS'
-    const authQueue = configService.get("RABBITMQ_AUTH_QUEUE");//'AUTH'
+    const usersQueue = configService.get("RABBITMQ_USERS_QUEUE");
+    const authQueue = configService.get("RABBITMQ_AUTH_QUEUE");
 
     app.connectMicroservice(commonService.getRmqOptions(usersQueue, true));
     app.connectMicroservice(commonService.getRmqOptions(authQueue, true));
 
     await app.startAllMicroservices();
-
-    await app.listen(configService.get("AUTH_REG_PORT"),
-        () => console.log(`Microservice Auth_Reg запущен на порту ${configService.get('AUTH_REG_PORT')}`));
 }
 
 bootstrap();

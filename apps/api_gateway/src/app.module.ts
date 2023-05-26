@@ -1,7 +1,7 @@
 import {Module} from '@nestjs/common';
 import {PassportModule} from "@nestjs/passport";
 import {JwtModule} from "@nestjs/jwt";
-import {CommonModule} from "@app/common";
+import {CommonModule, PostgresUserDbModule, User} from "@app/common";
 import {AppService} from "./app.service";
 import {AppFilmsController} from "./controllers/app_films.controller";
 import {AppAwardsController} from "./controllers/app_awards.controller";
@@ -16,6 +16,7 @@ import {GoogleStrategy} from "../utils/googleStrategy";
 import {SessionSerializer} from "../utils/sessionSerializer";
 import {AppParseController} from "./controllers/app_parser.controller";
 import {AppReviewController} from "./controllers/app_review.controller";
+import {SequelizeModule} from "@nestjs/sequelize";
 
 
 @Module({
@@ -27,7 +28,8 @@ import {AppReviewController} from "./controllers/app_review.controller";
                 expiresIn: "24h"
             }
         }),
-        PassportModule.register({session: true}),
+        PostgresUserDbModule,
+        SequelizeModule.forFeature([User]),
         CommonModule.registerRmq({name: "USERS"}),
         CommonModule.registerRmq({name: "ROLES"}),
         CommonModule.registerRmq({name: "AUTH"}),

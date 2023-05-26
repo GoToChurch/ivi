@@ -7,8 +7,7 @@ import {Country, FilmCountries, CreateCountryDto, UpdateCountryDto} from "@app/c
 @Injectable()
 export class CountryService {
     constructor(@InjectModel(Country) private countryRepository: typeof Country,
-                @InjectModel(FilmCountries) private filmCountriesRepository: typeof FilmCountries,
-    ) {}
+                @InjectModel(FilmCountries) private filmCountriesRepository: typeof FilmCountries) {}
 
     async createCountry(dto: CreateCountryDto) {
         const country = await this.countryRepository.create(dto);

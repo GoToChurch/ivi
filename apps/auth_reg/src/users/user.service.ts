@@ -15,7 +15,6 @@ export class UserService {
                 private readonly jwtService: JwtService) {}
 
     async userRegistration(registrationDto: RegistrationDto, role: string) {
-        console.log(registrationDto)
         const existing_user = await this.getUserByEmail(registrationDto.email)
         const users: User[] = await this.getAllUsers();
 

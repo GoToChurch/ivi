@@ -14,7 +14,8 @@ export class RolesService {
 
         await this.roleRepository.create({
           value: "USER",
-          description: "Пользователь"});
+          description: "Пользователь"
+        });
         await this.roleRepository.create({
           value: "ADMIN",
           description: "Администратор"

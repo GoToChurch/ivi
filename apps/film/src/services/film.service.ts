@@ -39,7 +39,7 @@ export class FilmService {
               @Inject("PERSON") private readonly personCLient: ClientProxy,
               @Inject("GENRE") private readonly genreCLient: ClientProxy,
               @Inject("AWARD") private readonly awardCLient: ClientProxy,
-              @Inject("COUNTRY") private readonly countryCLient: ClientProxy,) {}
+              @Inject("COUNTRY") private readonly countryCLient: ClientProxy) {}
 
   async createFilm(dto: CreateFilmDto, directors?, actors?, writers?, producers?, cinematography?, musicians?, designers?,
                    editors?, genres?, countries?, awards?, relatedFilms?) {

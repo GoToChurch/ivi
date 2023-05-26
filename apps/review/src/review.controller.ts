@@ -15,7 +15,6 @@ export class ReviewController {
 
   @MessagePattern({cmd: "get-all-reviews"})
   async getAllReviews(@Ctx() context: RmqContext) {
-    console.log(1)
     return this.reviewService.getAllReviews();
   }
 

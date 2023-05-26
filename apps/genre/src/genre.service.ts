@@ -7,8 +7,7 @@ import {Genre, FilmGenres, CreateGenreDto, genresMap, UpdateGenreDto} from "@app
 @Injectable()
 export class GenreService {
     constructor(@InjectModel(Genre) private genreRepository: typeof Genre,
-                @InjectModel(FilmGenres) private filmGenresRepository: typeof FilmGenres,
-                ) {}
+                @InjectModel(FilmGenres) private filmGenresRepository: typeof FilmGenres) {}
 
     async createGenre(createGenreDto: CreateGenreDto) {
         const genre =  await this.genreRepository.create(createGenreDto);

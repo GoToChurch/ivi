@@ -1,7 +1,7 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {RmqContext} from "@nestjs/microservices";
-import {RolesController} from "../src/roles/roles.controller";
-import {RolesService} from "../src/roles/roles.service";
+import {RolesController} from "../src/roles.controller";
+import {RolesService} from "../src/roles.service";
 
 
 describe('Testing RolesController', () => {

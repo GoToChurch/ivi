@@ -13,7 +13,5 @@ async function bootstrap() {
 
   app.connectMicroservice(globalService.getRmqOptions(queue, true));
   await app.startAllMicroservices()
-  await app.listen(configService.get("ROLES_PORT"),
-      () => console.log(`Microservice Roles запущен на порту ${configService.get('ROLES_PORT')}`));
 }
 bootstrap();

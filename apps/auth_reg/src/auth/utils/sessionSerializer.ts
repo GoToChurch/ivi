@@ -8,6 +8,7 @@ export class SessionSerializer extends PassportSerializer {
     constructor(private readonly userService: UserService) {
         super()
     }
+
     async serializeUser(user: any, done: (err: Error, user: any) => void) {
         done(null, user)
     }

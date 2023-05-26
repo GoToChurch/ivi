@@ -11,8 +11,7 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
                 clientSecret: "nlDqfipOj0XmVUvoZABT",
                 callbackURL: "http://127.0.0.1:3001/api/auth/vk/redirect",
                 scope: ["status", "email", "friends", "notify"]
-            },
-            function (
+            }, function (
                 accessToken: string,
                 refreshToken: string,
                 params: Params,
@@ -22,7 +21,6 @@ export class VkStrategy extends PassportStrategy(Strategy, "vk") {
                 return done(null, {
                     profile: profile.emails
                 })
-            })
-
+        })
     }
 }
