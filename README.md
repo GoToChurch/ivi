@@ -13,7 +13,7 @@
      - POSTGRES_HOST=localhost
      - POSTGRES_PASSWORD=свой пароль
      - RABBITMQ_URI=amqp://guest:guest@localhost:5672 или если не подключается, то amqp://guest:guest@127.0.0.1:5672
-   Также необходимо убрать строку ".usingServer("http://chrome:4444/wd/hub%22)" в файле libs/common/src/driver.ts
+   Также необходимо убрать строку ".usingServer("http://chrome:4444/wd/hub)" в файле libs/common/src/driver.ts
 5. Установить браузер Google Chrome последней версии.
 6. Находясь в директории с файлом package.json, выполнить команду "npm install", чтобы установить все зависимости. 
 7. Чтобы запустить все микросервисы, необходимо поочередно выполнить следующие команды, находясь в директории с файлом nest-cli:
