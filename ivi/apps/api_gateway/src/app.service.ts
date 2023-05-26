@@ -69,7 +69,7 @@ export class AppService {
         const api_key = process.env.API_KEY;
 
         for (let i = from; i < to; i++) {
-            let url = `https://api.kinopoisk.dev/v1.3/movie?page=${i}&limit=${limit}`
+            let url = `https://api.kinopoisk.dev/v1.3/movie?page=${i}&limit=${limit}`;
             let f = await fetch(url,{
                 method: "GET",
                 headers: {"content-type": "application/json; charset=UTF-8", "X-API-Key": api_key}
