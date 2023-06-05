@@ -5,7 +5,7 @@ import { PersonService } from './services/person.service';
 import {ProfessionService} from "./services/profession.service";
 import {SequelizeModule} from "@nestjs/sequelize";
 import {
-  CommonModule,
+  CommonModule, FILM,
   Film,
   Person,
   PersonFilms,
@@ -18,7 +18,7 @@ import {
 @Module({
   imports: [
     CommonModule,
-    CommonModule.registerRmq({name: "FILM"}),
+    CommonModule.registerRmq({name: FILM}),
     PostgresFilmDbModule,
     SequelizeModule.forFeature(
         [Film, Person, PersonFilms, Profession, PersonProfessions]

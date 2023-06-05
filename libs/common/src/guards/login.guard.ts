@@ -24,12 +24,16 @@ export class LoginGuard implements CanActivate {
                         roleValue = "ADMIN"
                     }
                 }
-
+                document.cookie = `role = ${roleValue}`;
                 res.cookie("Role", roleValue, {
                     httpOnly: true,
+                    origin: '*',
+                    credentials: true
                 })
                 res.cookie('RefreshToken', result.refreshToken, {
-                    httpOnly: true
+                    httpOnly: true,
+                    origin: '*',
+                    credentials: true
                 })
             } else {
             return false

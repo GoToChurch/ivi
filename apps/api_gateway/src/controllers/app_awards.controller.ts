@@ -1,13 +1,22 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {Award, CreateAwardDto, CreateNominationDto, Nomination, Roles, RolesGuard, UpdateAwardDto} from "@app/common";
+import {
+    AWARD,
+    Award,
+    CreateAwardDto,
+    CreateNominationDto,
+    Nomination,
+    Roles,
+    RolesGuard,
+    UpdateAwardDto
+} from "@app/common";
 
 
 @ApiTags("Награды")
 @Controller()
 export class AppAwardsController {
-    constructor(@Inject("AWARD") private readonly awardClient: ClientProxy) {}
+    constructor(@Inject(AWARD) private readonly awardClient: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой награды"})
     @ApiResponse({status: 201, type: Award})

@@ -8,14 +8,14 @@ import {
     Roles,
     RolesGuard,
     UpdateUserDto,
-    User
+    User, USERS
 } from '@app/common';
 
 
 @ApiTags("Пользователи")
 @Controller("/users")
 export class AppUsersController {
-    constructor(@Inject("USERS") private readonly userClient: ClientProxy) {}
+    constructor(@Inject(USERS) private readonly userClient: ClientProxy) {}
 
     @ApiOperation({summary: `Создание пользователя. Первый зарегистрированный пользователь получает роль 
     супер пользователя(SUPERUSER), все последующие пользователи при регистрации получают роль пользователя(USER)`})

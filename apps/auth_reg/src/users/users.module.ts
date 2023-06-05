@@ -5,7 +5,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {JwtModule} from "@nestjs/jwt";
 import {ConfigService} from "@nestjs/config";
 import {AuthModule} from "../auth/auth.module";
-import {CommonModule, PostgresUserDbModule, Review, User, UserRoles} from "@app/common";
+import {CommonModule, PostgresUserDbModule, Review, ROLES, User, UserRoles} from "@app/common";
 
 
 @Module({
@@ -21,7 +21,7 @@ import {CommonModule, PostgresUserDbModule, Review, User, UserRoles} from "@app/
             }),
             inject: [ConfigService],
         }),
-        CommonModule.registerRmq({name: "ROLES"}),
+        CommonModule.registerRmq({name: ROLES}),
         PostgresUserDbModule,
         SequelizeModule.forFeature([User, UserRoles]),
         SequelizeModule.forFeature([Review]),

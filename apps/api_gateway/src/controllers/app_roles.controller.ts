@@ -1,13 +1,13 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateRoleDto, Role, Roles, RolesGuard} from "@app/common";
+import {CreateRoleDto, Role, ROLES, Roles, RolesGuard} from "@app/common";
 
 
 @ApiTags("Роли пользователей")
 @Controller("/roles")
 export class AppRolesController {
-    constructor(@Inject("ROLES") private readonly rolesClient: ClientProxy) {}
+    constructor(@Inject(ROLES) private readonly rolesClient: ClientProxy) {}
 
     @ApiOperation({summary: "Создать роль. Необходима роль Администратора."})
     @ApiResponse({status: 200, type: Role})

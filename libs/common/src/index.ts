@@ -86,4 +86,6 @@ export * from "./pipes/validation.pipe";
 
 export * from "./maps/maps";
 
+export * from "./consts"
+
 export * from "./driver"

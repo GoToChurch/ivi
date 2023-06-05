@@ -1,6 +1,6 @@
 import {Test, TestingModule} from "@nestjs/testing";
 import {JwtService} from "@nestjs/jwt";
-import {User, UserRoles} from "@app/common";
+import {ROLES, User, UserRoles} from "@app/common";
 import {getModelToken} from "@nestjs/sequelize";
 import {UserService} from "../src/users/user.service";
 
@@ -38,7 +38,7 @@ describe('Testing UserService', () => {
                     provide: getModelToken(UserRoles),
                     useValue: mockUserRolesService
                 }, {
-                    provide: "ROLES",
+                    provide: ROLES,
                     useValue: mockClientProxy
                 },
 

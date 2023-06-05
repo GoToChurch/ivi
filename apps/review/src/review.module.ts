@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import {SequelizeModule} from "@nestjs/sequelize";
 import { ReviewController } from './review.controller';
 import { ReviewService } from './review.service';
-import {CommonModule, Film, PostgresFilmDbModule, Review} from "@app/common";
+import {CommonModule, Film, PostgresFilmDbModule, Review, USERS} from "@app/common";
 
 
 @Module({
@@ -12,7 +12,7 @@ import {CommonModule, Film, PostgresFilmDbModule, Review} from "@app/common";
     SequelizeModule.forFeature(
         [Film, Review]
     ),
-    CommonModule.registerRmq({name: "USERS"}),
+    CommonModule.registerRmq({name: USERS}),
   ],
   controllers: [ReviewController],
   providers: [ReviewService],

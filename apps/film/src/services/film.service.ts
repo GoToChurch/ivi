@@ -13,7 +13,7 @@ import {
     Genre,
     Review,
     Award,
-    UpdateFilmDto,
+    UpdateFilmDto, COUNTRY, GENRE, PERSON, AWARD,
 } from "@app/common";
 
 
@@ -36,10 +36,10 @@ export class FilmService {
   ]
 
   constructor(@InjectModel(Film) private filmRepository: typeof Film,
-              @Inject("PERSON") private readonly personCLient: ClientProxy,
-              @Inject("GENRE") private readonly genreCLient: ClientProxy,
-              @Inject("AWARD") private readonly awardCLient: ClientProxy,
-              @Inject("COUNTRY") private readonly countryCLient: ClientProxy) {}
+              @Inject(PERSON) private readonly personCLient: ClientProxy,
+              @Inject(GENRE) private readonly genreCLient: ClientProxy,
+              @Inject(AWARD) private readonly awardCLient: ClientProxy,
+              @Inject(COUNTRY) private readonly countryCLient: ClientProxy) {}
 
   async createFilm(dto: CreateFilmDto, directors?, actors?, writers?, producers?, cinematography?, musicians?, designers?,
                    editors?, genres?, countries?, awards?, relatedFilms?) {

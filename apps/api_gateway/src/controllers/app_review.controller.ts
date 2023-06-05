@@ -1,13 +1,20 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, Req, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiParam, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {CreateReviewDto, CurrentUserOrAdminGuard, GoogleAuthenticatedGuard, JwtAuthGuard, Review} from "@app/common";
+import {
+    CreateReviewDto,
+    CurrentUserOrAdminGuard,
+    GoogleAuthenticatedGuard,
+    JwtAuthGuard,
+    REVIEW,
+    Review
+} from "@app/common";
 
 
 @ApiTags("Комментарии")
 @Controller()
 export class AppReviewController {
-    constructor(@Inject("REVIEW") private readonly reviewClient: ClientProxy) {}
+    constructor(@Inject(REVIEW) private readonly reviewClient: ClientProxy) {}
 
     @ApiOperation({summary: "Добавление комментария к фильму с указанным filmId"})
     @ApiResponse({status: 201, type: Review})

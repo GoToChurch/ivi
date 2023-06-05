@@ -10,7 +10,7 @@ import {
     PersonFilms,
     CreatePersonDto,
     CreateProfessionDto,
-    UpdatePersonDto, UpdateProfessionDto
+    UpdatePersonDto, UpdateProfessionDto, FILM
 } from "@app/common";
 import {ProfessionService} from "./profession.service";
 
@@ -20,7 +20,7 @@ export class PersonService {
     constructor(@InjectModel(Person) private personRepository: typeof Person,
                 @InjectModel(Profession) private professionepository: typeof Profession,
                 @InjectModel(PersonFilms) private personFilmsRepository: typeof PersonFilms,
-                @Inject("FILM") private readonly filmClient: ClientProxy,
+                @Inject(FILM) private readonly filmClient: ClientProxy,
                 private readonly professionService: ProfessionService) {}
 
     async createPerson(createPersonDto: CreatePersonDto) {

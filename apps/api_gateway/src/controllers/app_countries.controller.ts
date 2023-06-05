@@ -1,13 +1,13 @@
 import {Body, Controller, Delete, Get, Inject, Param, Post, Put, UseGuards} from '@nestjs/common';
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
-import {Country, CreateCountryDto, Roles, RolesGuard, UpdateCountryDto} from "@app/common";
+import {COUNTRY, Country, CreateCountryDto, Roles, RolesGuard, UpdateCountryDto} from "@app/common";
 
 
 @ApiTags("Страны")
 @Controller()
 export class AppCountriesController {
-    constructor(@Inject("COUNTRY") private readonly countryClient: ClientProxy) {}
+    constructor(@Inject(COUNTRY) private readonly countryClient: ClientProxy) {}
 
     @ApiOperation({summary: "Создание новой страны. Лучше этот метод не использовать, а использовать метод parse/:id"})
     @ApiResponse({status: 201, type: Country})

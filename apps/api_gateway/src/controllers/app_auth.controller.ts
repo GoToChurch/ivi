@@ -2,11 +2,11 @@ import {Body, Controller, Get, Inject, Post, Req, Res, UseGuards} from '@nestjs/
 import {ClientProxy} from "@nestjs/microservices";
 import {ApiOperation, ApiResponse, ApiTags} from "@nestjs/swagger";
 import {
+    AUTH,
     GoogleAuthGuard,
     JwtAuthGuard,
     LoginGuard,
     LogoutGuard,
-    RolesGuard,
     UserLoginDto,
     VkAuthGuard
 } from "@app/common";
@@ -17,7 +17,7 @@ import {Response} from "express";
 @ApiTags("Авторизация пользователей")
 @Controller("/auth")
 export class AppAuthController {
-    constructor(@Inject("AUTH") private readonly usersClient: ClientProxy) {};
+    constructor(@Inject(AUTH) private readonly usersClient: ClientProxy) {};
 
     @ApiOperation({summary: `Авторизация через email и пароль. В ответ получаете jwt-token, который нужно 
     поместить в заголовки запроса ("Authorization: Bearer jwt-token)`})

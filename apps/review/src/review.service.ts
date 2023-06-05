@@ -2,13 +2,13 @@ import {Inject, Injectable} from "@nestjs/common";
 import {InjectModel} from "@nestjs/sequelize";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
-import {CreateReviewDto, Review, UpdateReviewDto} from "@app/common";
+import {CreateReviewDto, Review, UpdateReviewDto, USERS} from "@app/common";
 
 
 @Injectable()
 export class ReviewService {
   constructor(@InjectModel(Review) private reviewRepository: typeof Review,
-              @Inject("USERS") private readonly usersClient: ClientProxy) {}
+              @Inject(USERS) private readonly usersClient: ClientProxy) {}
 
   async createReview(createReviewDto: CreateReviewDto, filmId, userId, parentId?) {
     const review = await this.reviewRepository.create(createReviewDto);

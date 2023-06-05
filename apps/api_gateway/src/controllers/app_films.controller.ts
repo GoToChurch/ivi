@@ -9,7 +9,7 @@ import {
     AddGenreDto,
     AddPersonDto,
     AddRelatedFilmDto,
-    CreateFilmDto,
+    CreateFilmDto, FILM,
     Film, Roles, RolesGuard, UpdateFilmDto,
 } from "@app/common";
 
@@ -17,7 +17,7 @@ import {
 @ApiTags("Фильмы")
 @Controller()
 export class AppFilmsController {
-    constructor(@Inject("FILM") private readonly filmClient: ClientProxy,
+    constructor(@Inject(FILM) private readonly filmClient: ClientProxy,
                 private appService: AppService) {}
 
     @ApiOperation({summary: "Создание нового фильма. Лучше этот метод не использовать, а использовать метод parse/:id"})

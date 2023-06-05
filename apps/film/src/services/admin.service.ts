@@ -3,16 +3,25 @@ import {InjectModel} from "@nestjs/sequelize";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 import {FilmService} from "./film.service";
-import {AddAwardDto, AddCountryDto, AddGenreDto, AddPersonDto, AddRelatedFilmDto, Film} from "@app/common";
+import {
+    AddAwardDto,
+    AddCountryDto,
+    AddGenreDto,
+    AddPersonDto,
+    AddRelatedFilmDto,
+    AWARD,
+    COUNTRY,
+    Film, GENRE, PERSON
+} from "@app/common";
 
 
 @Injectable()
 export class AdminService {
     constructor(@InjectModel(Film) private filmRepository: typeof Film,
-                @Inject("PERSON") private readonly personClient: ClientProxy,
-                @Inject("GENRE") private readonly genreClient: ClientProxy,
-                @Inject("AWARD") private readonly awardClient: ClientProxy,
-                @Inject("COUNTRY") private readonly countryClient: ClientProxy,
+                @Inject(PERSON) private readonly personClient: ClientProxy,
+                @Inject(GENRE) private readonly genreClient: ClientProxy,
+                @Inject(AWARD) private readonly awardClient: ClientProxy,
+                @Inject(COUNTRY) private readonly countryClient: ClientProxy,
                 private filmService: FilmService) {}
 
     async addRelatedFilm (id: number, addRelatedFilmDto: AddRelatedFilmDto) {

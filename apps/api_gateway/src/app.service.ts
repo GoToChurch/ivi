@@ -1,8 +1,8 @@
-import {HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
+import {BadRequestException, HttpException, HttpStatus, Inject, Injectable} from "@nestjs/common";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
 import {InjectModel} from "@nestjs/sequelize";
-import {CreateFilmDto, Driver, User} from "@app/common";
+import {CreateFilmDto, Driver, FILM, User} from "@app/common";
 
 const axios = require("axios");
 const cheerio = require("cheerio");
@@ -11,7 +11,7 @@ const {By, until} = require("selenium-webdriver");
 
 @Injectable()
 export class AppService {
-    constructor(@Inject("FILM") private readonly filmClient: ClientProxy,
+    constructor(@Inject(FILM) private readonly filmClient: ClientProxy,
                 @InjectModel(User) private readonly usersRep: typeof User) {}
 
     addFiltersToFilterObject(filterObject, filter: string) {
@@ -112,7 +112,7 @@ export class AppService {
         } catch (e) {
             throw new HttpException("Произошла ошибка при попытке запроса к api кинопоиска", HttpStatus.BAD_REQUEST);
         }
-
+        console.log(filmResponse)
         const film = await this.parseFilmInfo(filmResponse, api_key);
 
         const creators = this.parseCreators(filmResponse);
@@ -129,8 +129,7 @@ export class AppService {
                 originalName: relatedFilm.alternativeName
             })
         }
-
-        const awards = await this.getAwardsData(driver, `https://www.kinopoisk.ru/film/${filmResponse.id}/`);
+        let awards = await this.getAwardsData(driver, `https://www.kinopoisk.ru/film/${filmResponse.id}/`);
 
         return {
             film,
@@ -173,8 +172,12 @@ export class AppService {
         if (poster) {
             film.poster = poster;
         }
+        let trailer;
 
-        const trailer = filmResponse.videos.trailers[0].url;
+        if (filmResponse.videos.trailers.length > 0) {
+            trailer = filmResponse.videos.trailers[0].url;
+        }
+
         if (trailer) {
             film.trailer = trailer;
         }

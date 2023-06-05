@@ -1,7 +1,19 @@
 import {Module} from '@nestjs/common';
 import {PassportModule} from "@nestjs/passport";
 import {JwtModule} from "@nestjs/jwt";
-import {CommonModule, PostgresUserDbModule, User} from "@app/common";
+import {
+    AUTH,
+    AWARD,
+    CommonModule,
+    COUNTRY,
+    FILM,
+    GENRE,
+    PERSON,
+    PostgresUserDbModule,
+    REVIEW, ROLES,
+    User,
+    USERS
+} from "@app/common";
 import {AppService} from "./app.service";
 import {AppFilmsController} from "./controllers/app_films.controller";
 import {AppAwardsController} from "./controllers/app_awards.controller";
@@ -30,15 +42,15 @@ import {SequelizeModule} from "@nestjs/sequelize";
         }),
         PostgresUserDbModule,
         SequelizeModule.forFeature([User]),
-        CommonModule.registerRmq({name: "USERS"}),
-        CommonModule.registerRmq({name: "ROLES"}),
-        CommonModule.registerRmq({name: "AUTH"}),
-        CommonModule.registerRmq({name: "FILM"}),
-        CommonModule.registerRmq({name: "COUNTRY"}),
-        CommonModule.registerRmq({name: "AWARD"}),
-        CommonModule.registerRmq({name: "GENRE"}),
-        CommonModule.registerRmq({name: "PERSON"}),
-        CommonModule.registerRmq({name: "REVIEW"}),
+        CommonModule.registerRmq({name: USERS}),
+        CommonModule.registerRmq({name: ROLES}),
+        CommonModule.registerRmq({name: AUTH}),
+        CommonModule.registerRmq({name: FILM}),
+        CommonModule.registerRmq({name: COUNTRY}),
+        CommonModule.registerRmq({name: AWARD}),
+        CommonModule.registerRmq({name: GENRE}),
+        CommonModule.registerRmq({name: PERSON}),
+        CommonModule.registerRmq({name: REVIEW}),
     ],
     controllers: [AppFilmsController, AppAwardsController, AppCountriesController, AppGenresController,
         AppPersonsController, AppParseController, AppAuthController, AppUsersController, AppRolesController,

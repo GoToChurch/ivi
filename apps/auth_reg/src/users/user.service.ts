@@ -4,14 +4,14 @@ import * as bcrypt from "bcryptjs";
 import {JwtService} from "@nestjs/jwt";
 import {ClientProxy} from "@nestjs/microservices";
 import {lastValueFrom} from "rxjs";
-import {AddRoleDto, RegistrationDto, Review, UpdateUserDto, User, UserRoles} from "@app/common";
+import {AddRoleDto, RegistrationDto, Review, ROLES, UpdateUserDto, User, UserRoles} from "@app/common";
 
 
 @Injectable()
 export class UserService {
     constructor(@InjectModel(User) private readonly userRepository: typeof User,
                 @InjectModel(UserRoles) private readonly userRolesRepository: typeof UserRoles,
-                @Inject("ROLES") private readonly roleClient: ClientProxy,
+                @Inject(ROLES) private readonly roleClient: ClientProxy,
                 private readonly jwtService: JwtService) {}
 
     async userRegistration(registrationDto: RegistrationDto, role: string) {
